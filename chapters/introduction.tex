@@ -1,3 +1,15 @@
-\section{Introduction}\raggedbottom
+\section{Introduction}
+\raggedbottom
 
-This is a test
+Most Machine Learning (ML) applications operate under closed-world assumptions.
+Models are trained on the \textit{train set}, hyperparameters are tuned on some \textit{validation set}, while the true performance is evaluated on a held-out \textit{test set}, which was not seen in the training process.
+It is implicitly assumed, that the \textit{test set} serves as a proxy for the true performance which would be encountered, when models are deployed in real-world applications.
+Recent works question the generalization performance of ML models trained under closed-world assumptions.
+The worse performance is often a result from unsuitable input data, where incoming data is shifted due to a covariate shift or a semantic shift.
+The latter shift describes the case that the new input data is sampled from (semantically) different classes, while the former describes the case where received data differs due do the domain (e.g. classifier trained on real world images receives synthetic input of the same classes).
+\\
+\\
+In general the data which is known to the classifier (train and validation set) is described as \textit{in-distribution} (ID) while new, unknown data subject to semantic- and covariate shift represent samples from \textit{out-of-distribution} (OOD).
+The task of out-of-distribution detection (OoDD) is to find inputs that are so far away from the training distribution that a reliable model output cannot be guaranteed.
+This detection tasks is important for high-risk environments like medicine, where mistakes can cost human lifes and human intervention is often needed.
+A good detector should confidently reject OD samples while minimizing false negatives \textcolor{red}{?}, as neural networks often overstate their prediction confidence.
