@@ -13,3 +13,17 @@ In general the data which is known to the classifier (train and validation set) 
 The task of out-of-distribution detection (OoDD) is to find inputs that are so far away from the training distribution that a reliable model output cannot be guaranteed.
 This detection tasks is important for high-risk environments like medicine, where mistakes can cost human lifes and human intervention is often needed.
 A good detector should confidently reject OD samples while minimizing false negatives \textcolor{red}{?}, as neural networks often overstate their prediction confidence.
+In the literature one can often find a distinction between far OoDD and near OoDD, where far OoDD contains problems where images from in-distribution and out-of-distribution are visibly different from each other and where detection is thought to be easier.
+Near OoDD is magnitudes harder because samples from both distributions tend to be very close together, making it even hard for human eyes to distinguish from (e.g. CIFAR100 (ID) vs. CIFAR10 (OOD)).
+There are potential use-cases for xray-images in both near and far detection.
+In this thesis the focus is mainly on near OoDD as this remains mostly unsolved for xray-images.
+\\
+\\
+While there has been some research in detecting OOD samples for xray-images, a lot of authors leverage supervised learning methods.
+A clear disadvantage of those methods is the fact, that an extensive amount of labels is required.
+In medical context it is often costly to obtain manually annotated datasets of a decent quality.
+The focus in this master thesis is on using Self-Supervised-Learning (SSL) which does not require manually annotated labels but rather constructs labels by itself. 
+In particular SSL models learn a semantic representation of different image classes.
+Semantic representations are obtained by applying the learned model to the images.
+This representations is often expressed through feature vectors, where each numeric vector encodes an image.
+Features can then be used as the basis for various downstream tasks.
