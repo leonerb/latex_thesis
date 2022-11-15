@@ -1,0 +1,33 @@
+\section{Methods}
+Vision Transformers (ViTs) form the backbone of all models that will be trained in this thesis.
+They were introduced by \citep{Dosovitskiy2020} and transfer the concept of text transformers developed by \citep{Vaswani2017} to the image (classification) domain.
+ViTs will be used in this thesis in conjunction with the DINO model objective, which stands for a paradigm of training SSL models on images \citep{Caron2021}.
+The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponenial moving average of the student's weights \citep{Caron2021}.
+
+\subsection{Vision Transformer}
+Vision Transformers transfer the attention mechanism designed in \citep{Vaswani2017} to images.
+Whereas text transformer split a sequence of natural language into tokens, Vision Transformers split images into a fixed number of image patches \citep{Dosovitskiy2020}.
+\\
+The flattened image patches represent the token sequence which is passed to the transformer encoder architecture.
+The encoder itself consists of a number of stacked transformer blocks, where each block contains linear layers, normalization layers and attention \citep{Vaswani2017,Dosovitskiy2020}.
+\\
+These patches are fed into a neural network architecture that consists of a number of stacked transformer blocks, where each block contains linear layers, normalization layers and attention \textcolor{red}{?}
+By design, the original patch order does not matter, which means that positional encodings need to be added to establish an order \citep{Dosovitskiy2020,Vaswani2017}.
+\begin{figure}[h]
+	\centering
+    \includegraphics[width=\textwidth]{diagrams/ViT-arch.pdf}
+	\caption{Architecture of ViT Transformer.
+    \textcolor{red}{TODO: Change images with xray-image.}
+    Adapted from \citep{Dosovitskiy2020}}
+	\label{intro-vit-arch}
+\end{figure}
+\\
+Attention is implemented by the following formula \citep{Vaswani2017}:
+\begin{align}
+    \text{attention}(Q,K,V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V
+\end{align}
+\\
+\\
+\subsection{Model Architecture}
+We will use a DINO head to obtain weights for the ViT backbone.
+
