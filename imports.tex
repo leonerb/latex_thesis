@@ -47,9 +47,10 @@
 \usepackage{amsmath}
 \usepackage[colorlinks,citecolor=Periwinkle,linkcolor=black, hyperindex]{hyperref} %anklickbares Inhaltsverzeichnis
 \usepackage{setspace}
+\newcommand{\citestyle}{nature}
 \ifthenelse{\boolean{\biber}}{
   % only needed for biber
-  \usepackage[style=authoryear,natbib=true,backend=biber,mincitenames=1,maxcitenames=2,maxbibnames=99,uniquelist=false]{biblatex}
+  \usepackage[style=\citestyle,natbib=true,backend=biber,mincitenames=1,maxcitenames=2,maxbibnames=99,uniquelist=false]{biblatex}
 
   % https://tex.stackexchange.com/a/334703/8850
   \AtEveryBibitem{%
@@ -119,7 +120,7 @@
 \addtolength{\oddsidemargin}{-1in}
 \addtolength{\evensidemargin}{-1in}
 
-\RequireBibliographyStyle{authoryear}
+\RequireBibliographyStyle{\citestyle}
 
 \ifthenelse{\boolean{\biber}}{\addbibresource{references.bib}}{}
 
