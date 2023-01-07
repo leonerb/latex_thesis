@@ -29,9 +29,7 @@ To understand what it is really doing it helps to look at the two components.
 In a first step, the inner product between all queries $Q$ and all keys $K$ is considered.
 This is rescaled with $\sqrt{d_k}$ and applying the softmax function consecutively results in a probability distribution over the elements.
 The resulting matrix acts as an attending algorithm and can be thought of as a covariance matrix, where higher values in $(i,j)$ should indicate that the architecture should attend to the $j$-th token, when processing token $i$ \citep{Vaswani2017} \textcolor{red}{???}.    
-\\
-\\
-
+\par
 \subsection{Model Architecture}
 A DINO head will be used to obtain weights for the ViT backbone.
 The notation and terminology in the following subsection are adapted from \citep{Caron2021}.
