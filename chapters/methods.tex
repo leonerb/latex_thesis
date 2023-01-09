@@ -4,6 +4,63 @@ They were introduced by \citep{Dosovitskiy2020} and transfer the concept of text
 ViTs will be used in this thesis in conjunction with the DINO model objective, which resembles a paradigm of training SSL models on image data \citep{Caron2021}.
 The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponenial moving average of the student's weights \citep{Caron2021}.
 
+\subsection{Pathologies}
+Medical Imaging datasets are very different to standard benchmark imaging datasets like CIFAR-10.
+In particular, classifying the underlying labels is challenging for non-experts [QUELLE], while classifying (coarse) labels for datasets like CIFAR-10 is often considered to be "easy" [QUELLE].
+Therefore, domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations and can result in better performance.
+\par
+In this subsection, six different conditions are briefly discussed to provide basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
+The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the a glossary of the Fleischner Society for thoracic imaging \citep{Hansell2008}.
+\\
+Cardiomegaly is the first condition of interest. The collective term refers to all sorts of heart enlargements [RADIOPAE.].
+Pneumothorax is another medical condition that will be used as an in-distribution pathology.
+It is associated to the pleural space, which is ... [QUELLE, ergänzen] and is also called pleural cavity.
+If the pleural space is filled with gas (frequently air) [RADIOPAE.] the medical term is Pneumothorax.
+Rib fractures refer to a broken rib bone [QUELLE, wird oft übersehen ergänzen].
+A Pleural Effusion is the medical expression for an irregular fluid conglomeration in the pleural cavity [RADIOPAE.].
+Lung Opacity describes .. \\
+Pneumonia is another lung disease and refers as a broad term to an infection within a lung [RADIOPAE.]. 
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}[t]{0.3\textwidth}
+		\includegraphics[width=\textwidth, height=\textwidth]{plots/cardiomegaly.png}
+		\caption{Cardiomegaly}
+		%\label{fig:first}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.3\textwidth}
+		\includegraphics[width=\textwidth, height=\textwidth]{plots/pneumonia.jpg}
+		\caption{Pneumonia}
+		%\label{fig:second}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.3\textwidth}
+		\includegraphics[width=\textwidth, height=\textwidth]{plots/rib-fracture.PNG}
+		\caption{Rib Fracture}
+		%\label{fig:third}
+	\end{subfigure}
+	\hfill
+	\vskip 1pt
+	\begin{subfigure}[t]{0.3\textwidth}
+		\includegraphics[width=\textwidth, height=\textwidth]{plots/pneumothorax.png}
+		\caption{Pneumothorax}
+		%\label{fig:fourth}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.3\textwidth}
+		\includegraphics[width=\textwidth, height=\textwidth]{plots/lung opacity.png}
+		\caption{Lung Opacity}
+		%\label{fig:fifth}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.3\textwidth}
+		\includegraphics[width=\textwidth, height=\textwidth]{plots/pleural effusion.png}
+		\caption{Pleural Effusion}
+		%\label{fig:sixth}
+	\end{subfigure}	
+	\caption{Pathologies}
+	\label{fig-pathologies}
+	\end{figure}
 \subsection{Vision Transformers}
 Vision Transformers are based on the transformer architecture and reformulate the attention mechanism designed in \cite{Vaswani2017} to images.
 Whereas text transformer split a sequence of natural language into tokens, Vision Transformers split images into a fixed number of image patches \citep{Dosovitskiy2020}.
