@@ -2,7 +2,13 @@
 Vision Transformers (ViTs) form the backbone of all models that will be trained in this thesis.
 They were introduced by \citep{Dosovitskiy2020} and transfer the concept of text transformers developed by \citep{Vaswani2017} to the image (classification) domain.
 ViTs will be used in this thesis in conjunction with the DINO model objective, which resembles a paradigm of training SSL models on image data \citep{Caron2021}.
-The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponenial moving average of the student's weights \citep{Caron2021}.
+The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponential moving average of the student's weights \citep{Caron2021}.
+
+\subsection{Dataset}
+The dataset which is used is the CheXpert dataset \citep{Irvin2019}.
+
+\subsection{Out-Of-Distribution Detection}
+xx
 
 \subsection{Pathologies}
 Medical Imaging datasets are very different to standard benchmark imaging datasets like CIFAR-10.
@@ -10,7 +16,7 @@ In particular, classifying the underlying labels is challenging for non-experts 
 Therefore, domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations and can result in better performance.
 \par
 In this subsection, six different conditions are briefly discussed to provide basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
-The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the a glossary of the Fleischner Society for thoracic imaging \citep{Hansell2008}.
+The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary of the Fleischner Society for thoracic imaging \citep{Hansell2008}.
 \\
 Cardiomegaly is the first condition of interest. The collective term refers to all sorts of heart enlargements [RADIOPAE.].
 Pneumothorax is another medical condition that will be used as an in-distribution pathology.
@@ -124,7 +130,7 @@ The images of the set of augmentations called $V$ represent manipulated views of
 Equation \ref{methods-training-obj} is the training objective of the DINO head, which also reveals the setup of the feed-forward pass:
 The outer sum collects all global views $x$, while the inner sum goes over all local views $x'\neq x$.
 The global views are only passed to the teacher network and the local views are passed to the student network.
-From these global-to-local correspondance [QUELLE, mehr zu cross entropy ergänzen] the teacher and student distribution should be as close as possible (entropy-wise).
+From these global-to-local correspondence [QUELLE, mehr zu cross entropy ergänzen] the teacher and student distribution should be as close as possible (entropy-wise).
 \\
 In this thesis, the number of global views is restricted to two and several local views are assumed, which adheres to the logic of the authors in \citep{Caron2021}. 
 The parameter weights of the student network $\theta_s$ are updated by stochastic gradient descent with learning rate $\eta$ and fixed teacher network, i.e. [QUELLE]:
@@ -142,3 +148,4 @@ The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponenti
 
 A new estimate of $\theta_t$ at iteration $T+1$ is the result of the $\lambda$ weighted convex combination of the current value of $\theta_t$ and $\theta_s$ at time $T$ respectively.
 The update rule in \ref{methods-momentum-encoder} is the same as a momentum encoder \citep{He2019} and $\lambda$ is set according to a cosine schedule \citep{Grill2020}.
+\loadTable{Table:test}

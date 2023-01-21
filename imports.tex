@@ -48,6 +48,10 @@
 \usepackage[colorlinks,citecolor=Periwinkle,linkcolor=black, hyperindex]{hyperref} %anklickbares Inhaltsverzeichnis
 \usepackage{setspace}
 \usepackage{subcaption}
+\usepackage{catchfilebetweentags}
+\newcommand{\loadTable}[1]{ % define command to load figures
+   \ExecuteMetaData[tables.tex]{#1} % call the package macro to load chunk from file
+}
 \newcommand{\citestyle}{nature}
 \ifthenelse{\boolean{\biber}}{
   % only needed for biber
