@@ -15,7 +15,7 @@ Medical Imaging datasets are very different to standard benchmark imaging datase
 In particular, classifying the underlying labels is challenging for non-experts [QUELLE], while classifying (coarse) labels for datasets like CIFAR-10 is often considered to be "easy" [QUELLE].
 Therefore, domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations and can result in better performance.
 \par
-In this subsection, six different conditions are briefly discussed to provide basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
+In this subsection, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
 The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary of the Fleischner Society for thoracic imaging \citep{Hansell2008}.
 \\
 Cardiomegaly is the first condition of interest. The collective term refers to all sorts of heart enlargements [RADIOPAE.].
@@ -148,4 +148,8 @@ The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponenti
 
 A new estimate of $\theta_t$ at iteration $T+1$ is the result of the $\lambda$ weighted convex combination of the current value of $\theta_t$ and $\theta_s$ at time $T$ respectively.
 The update rule in \ref{methods-momentum-encoder} is the same as a momentum encoder \citep{He2019} and $\lambda$ is set according to a cosine schedule \citep{Grill2020}.
-\loadTable{Table:test}
+\newpage
+\loadTable{Table:dino-head-dim}
+\loadTable{Table:normalizations}
+\loadTable{Table:weights-init-method}
+Some text.

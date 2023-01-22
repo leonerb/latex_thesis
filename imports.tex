@@ -52,6 +52,12 @@
 \newcommand{\loadTable}[1]{ % define command to load figures
    \ExecuteMetaData[tables.tex]{#1} % call the package macro to load chunk from file
 }
+% following is a fix for the catchfilebetweentags package: otherwise a new line swallows the whitespace
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\CatchFBT@Fin@l}{\endlinechar\m@ne}{}
+  {}{\typeout{Unsuccessful patch!}}
+\makeatother
 \newcommand{\citestyle}{nature}
 \ifthenelse{\boolean{\biber}}{
   % only needed for biber
