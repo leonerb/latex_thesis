@@ -26,47 +26,9 @@ Rib fractures refer to a broken rib bone [QUELLE, wird oft übersehen ergänzen]
 A Pleural Effusion is the medical expression for an irregular fluid conglomeration in the pleural cavity [RADIOPAE.].
 Lung Opacity describes .. \\
 Pneumonia is another lung disease and refers as a broad term to an infection within a lung [RADIOPAE.]. 
-\begin{figure}[htbp]
-	\centering
-	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{plots/cardiomegaly.png}
-		\caption{Cardiomegaly}
-		%\label{fig:first}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{plots/pneumonia.jpg}
-		\caption{Pneumonia}
-		%\label{fig:second}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{plots/rib-fracture.PNG}
-		\caption{Rib Fracture}
-		%\label{fig:third}
-	\end{subfigure}
-	\hfill
-	\vskip 1pt
-	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{plots/pneumothorax.png}
-		\caption{Pneumothorax}
-		%\label{fig:fourth}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{plots/lung opacity.png}
-		\caption{Lung Opacity}
-		%\label{fig:fifth}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{plots/pleural effusion.png}
-		\caption{Pleural Effusion}
-		%\label{fig:sixth}
-	\end{subfigure}	
-	\caption{Pathologies}
-	\label{fig-pathologies}
-	\end{figure}
+%Figure of pathologies
+\loadFigure{Figure:pathologies}
+
 \subsection{Vision Transformers}
 Vision Transformers are based on the transformer architecture and reformulate the attention mechanism designed in \cite{Vaswani2017} to images.
 Whereas text transformer split a sequence of natural language into tokens, Vision Transformers split images into a fixed number of image patches \citep{Dosovitskiy2020}.
@@ -76,12 +38,7 @@ The encoder itself consists of a number of stacked transformer blocks, where eac
 \\
 These patches are fed into a neural network architecture that consists of a number of stacked transformer blocks, where each block contains linear layers, normalization layers and attention \textcolor{red}{?}
 By design, the original patch order does not matter, which means that positional encodings need to be added to establish an order \citep{Dosovitskiy2020,Vaswani2017}.
-\begin{figure}[ht]
-	\centering
-    \includegraphics[width=\textwidth]{diagrams/vit_arch.drawio.pdf}
-	\caption{Architecture of DINO head with ViT Transformer as backbone. Adapted from \citep{Dosovitskiy2020}. The Chest X-ray image is taken from the CheXpert dataset \citep{Irvin2019}.}
-	\label{methods-vit-arch}
-\end{figure}
+\loadFigure{Figure:vit-arch}
 \\
 Attention is implemented by the following formula \citep{Vaswani2017}:
 \begin{align}
@@ -152,4 +109,5 @@ The update rule in \ref{methods-momentum-encoder} is the same as a momentum enco
 \loadTable{Table:dino-head-dim}
 \loadTable{Table:normalizations}
 \loadTable{Table:weights-init-method}
-Some text.
+\loadFigure{Figure:labels-used-AUC-setting1}
+\loadFigure{Figure:labels-used-AUC-setting2}
