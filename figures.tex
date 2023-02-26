@@ -1,3 +1,13 @@
+%<*Figure:multilabel-struc>
+\begin{figure}[h]
+	\centering
+    \includegraphics[width=\textwidth]{figures/multilabel-struc.pdf}
+    \caption{Hierarchical structure of the CheXpert dataset. 
+	The labels are grouped into 14 categories. Adapted from \citep{Irvin2019}.}
+    \label{fig:multilabel-struc}
+\end{figure}
+%</Figure:multilabel-struc>
+
 %<*Figure:pathologies>
 \begin{figure}[htbp]
 	\centering
@@ -69,4 +79,54 @@
 	\label{fig:labels-used-AUC-setting2}
 \end{figure}
 %</Figure:labels-used-AUC-setting2>
+
+%<*Figure:heatmap-geom>
+\begin{figure}
+	\centering
+	\begin{subfigure}[t]{0.45\textwidth}
+		\includegraphics[width=\textwidth, height=0.8\textwidth]{figures/heatmap-geom-acc.pdf}
+		\caption{k-nn accuracy}
+		%\label{fig:third}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.45\textwidth}
+		\includegraphics[width=\textwidth, height=0.8\textwidth]{figures/heatmap-geom-auroc.pdf}
+		\caption{AUROC OOD}
+		%\label{fig:third}
+	\end{subfigure}
+    % \includegraphics[width=\textwidth]{figures/heatmap-geom-acc.pdf}
+    \caption{k-nn classification accuracy and AUROC for different geometrical augmentations.}
+    \label{fig:heatmap-geom}
+\end{figure}
+%</Figure:heatmap-geom>
+
+%<*Figure:heatmap-spatial>
+\begin{figure}
+	\centering
+	\begin{subfigure}[t]{0.45\textwidth}
+		\includegraphics[width=\textwidth, height=0.8\textwidth]{figures/heatmap-spatial-acc.pdf}
+		\caption{k-nn accuracy}
+		%\label{fig:third}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.45\textwidth}
+		\includegraphics[width=\textwidth, height=0.8\textwidth]{figures/heatmap-spatial-auroc.pdf}
+		\caption{AUROC OOD}
+		%\label{fig:third}
+	\end{subfigure}
+    % \includegraphics[width=\textwidth]{figures/heatmap-spatial-acc.pdf}
+    \caption{k-nn classification accuracy and AUROC for different spatial augmentations.}
+    \label{fig:heatmap-spatial}
+\end{figure}
+%</Figure:heatmap-spatial>
+
+%<*Figure:heatmap-ood-auc>
+\begin{figure}
+	\centering
+    \includegraphics[width=\textwidth]{figures/heatmap-ood-auc.pdf}
+    \caption{Averaged over both settings. 
+	For a detailed breakdown of both settings see the appendix [\textcolor{red}{add REF}].}
+    \label{fig:heatmap-ood-auc}
+\end{figure}
+%</Figure:heatmap-ood-auc>
+
+
 

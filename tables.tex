@@ -1,23 +1,56 @@
+%<*Table:chexpert-concurrence-matrix>
+\begin{table}[h]
+    \addtolength\tabcolsep{-1pt}
+    \centering
+    \begin{adjustbox}{width = 1.\textwidth}
+    \begin{tabular}{l r r r r r r r r r r r r r r}
+        \toprule
+        {} &  \rotatebox{90}{(1) No Finding} & \rotatebox{90}{(2) Atelectasis} & \rotatebox{90}{(3) Cardiomegaly} & \rotatebox{90}{(4) Consolidation} &  \rotatebox{90}{(5) Edema} & \rotatebox{90}{(6) Enlarged Cardiom.} & \rotatebox{90}{(7) Fracture} & \rotatebox{90}{(8) Lung Lesion} & \rotatebox{90}{(9) Lung Opacity} & \rotatebox{90}{(10) Pleural Effusion} & \rotatebox{90}{(11) Pleural Other} & \rotatebox{90}{(12) Pneumonia} & \rotatebox{90}{(13) Pneumothorax} & \rotatebox{90}{(14) Support Devices} \\
+        \midrule
+        (1)                        &       22381 &           - &            - &             - &      - &                          - &        - &           - &            - &                - &             - &         - &            - &               - \\
+        (2)                        &           0 &       33376 &            - &             - &      - &                          - &        - &           - &            - &                - &             - &         - &            - &               - \\
+        (3)                        &           0 &        3828 &        27000 &             - &      - &                          - &        - &           - &            - &                - &             - &         - &            - &               - \\
+        (4)                        &           0 &        2003 &         1436 &         14783 &      - &                          - &        - &           - &            - &                - &             - &         - &            - &               - \\
+        (5)                        &           0 &        8844 &        11659 &          3154 &  52246 &                          - &        - &           - &            - &                - &             - &         - &            - &               - \\
+        (6)                        &           0 &        1491 &         1901 &           585 &   2129 &                      10798 &        - &           - &            - &                - &             - &         - &            - &               - \\
+        (7)                        &           0 &        1281 &          801 &           401 &   1009 &                        637 &     9040 &           - &            - &                - &             - &         - &            - &               - \\
+        (8)                        &           0 &        1025 &          623 &           748 &    866 &                        509 &      343 &        9186 &            - &                - &             - &         - &            - &               - \\
+        (9)                        &           0 &       14146 &        13049 &          5574 &  27455 &                       5100 &     3611 &        5316 &       105581 &                - &             - &         - &            - &               - \\
+        (10)                       &           0 &       16290 &        11836 &          7403 &  26521 &                       3888 &     2456 &        3265 &        52198 &            86187 &             - &         - &            - &               - \\
+        (11)                       &           0 &         389 &          325 &           300 &    304 &                        193 &      296 &         310 &         1879 &              920 &          3523 &         - &            - &               - \\
+        (12)                       &           0 &         615 &          495 &          1014 &   1204 &                        150 &      141 &         454 &         4025 &             1733 &           123 &      6039 &            - &               - \\
+        (13)                       &           0 &        3131 &          777 &           739 &   1479 &                        773 &     1050 &         866 &         9063 &             6691 &           253 &       146 &        19448 &               - \\
+        (14)                       &        8808 &       20166 &        15539 &          7728 &  33491 &                       5614 &     3628 &        3212 &        61338 &            52869 &          1357 &      1765 &        11676 &          116001 \\
+        \bottomrule
+    \end{tabular}
+    \addtolength\tabcolsep{+1pt}
+    \end{adjustbox}
+    \caption{Concurrence matrix of positive instances of the CheXpert dataset labels. 
+Adapted and recalculated from \citep{Garbin2021}.
+Cell values of the upper triangle are marked by "-" because the concurrence matrix is symmetric.}
+\end{table}
+%</Table:chexpert-concurrence-matrix>
+
 %<*Table:normalizations>
 \begin{table}[h]
     \centering
     \begin{tabular}{l c c} 
-     \hline
+     \toprule
      & ImageNet Normalization & CheXpert Normalization \\
-     \hline\hline
+     \midrule
      k-nn accuracy & - - & - - \\ 
      \hline 
      AUC OOD & - - & - - \\
      \hline
      AUCPR OOD & - - & - - \\
-     \hline
+     \bottomrule
     \end{tabular}
     \caption{Classification accuracies, AUC and AUCPR of OOD detection for two different normalizations.
     For the ImageNet normalization, all images were scaled with $\mu=(0.485, 0.456, 0.406)$ and $\sigma=(0.229, 0.224, 0.225)$. 
     The CheXpert normalization stands for a normalization with $\mu=(0.5330, 0.5330, 0.5330)$ and $\sigma=(0.0349, 0.0349, 0.0349)$ \citep[\href{https://github.com/christophbrgr/ood_detection_framework}{\color{Periwinkle}{implementation}}]{Berger2021}. 
     All metrics are averaged across both settings. 
     Separated metrics for both settings are available in the appendix [\textcolor{red}{add REF}].}
-    \end{table}
+\end{table}
 %</Table:normalizations>
 
 %<*Table:dino-head-dim>
@@ -38,7 +71,7 @@
     \caption{Classification accuracies, AUC and AUCPR of OOD detection for varying sizes of the DINO head. 
     All metrics are averaged across both settings. 
     Separated metrics for both settings are available in the appendix [\textcolor{red}{add REF}].}
-    \end{table}
+\end{table}
 %</Table:dino-head-dim>
 
 %<*Table:weights-init-method>
@@ -59,7 +92,7 @@
     A DINO model pretrained on ImageNet was used as ImageNet initialization \citep[\href{https://github.com/facebookresearch/dino}{\color{Periwinkle}{implementation}}]{Caron2021}. 
     The truncated normal distribution initialization is based on \citep{Burkardt2014}.
     All metrics are averaged across both settings. 
-    Separated metrics for both settings are available in the appendix [\textcolor{red}{add REF}].}
-    \end{table}
+    Separated metrics for both settings are available in the appendix [\textcolor{red}{add REF}]. Change AUC to AUROC}
+\end{table}
 %</Table:weights-init-method>
 
