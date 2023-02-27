@@ -31,6 +31,34 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \end{table}
 %</Table:chexpert-concurrence-matrix>
 
+%<*Table:dataset-splits>
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l l c c c} 
+    \toprule
+    & & & \multicolumn{3}{c}{Evaluation metrics} \\
+    \cmidrule{4-6}
+    & In-distribution & Out-of-distribution & k-nn accuracy & AUC & AUCPR\\
+    \midrule
+    Setting 1 & No Finding & Cardiomegaly & \xmark  & \cmark & \cmark \\ 
+    & & Fracture & & \\
+    & & Lung Opacity & & \\
+    & & Pleural Effusion & & \\
+    & & Pneumothorax & & \\
+    & & Support Devices & & \\
+    \hline 
+    Setting 2 & Cardiomegaly & Fracture & \cmark  & \cmark & \cmark \\
+    & Pneumothorax &  &  & \\ 
+    \hline
+    Setting 3 & Lung Opacity & Fracture & \cmark  & \cmark & \cmark \\
+    & Pleural Effusion & Pneumonia & \cmark  & \cmark & \cmark \\
+    \bottomrule
+    \end{tabular}
+    \caption{In-distribution and out-of-distribution classes for different settings. 
+    Setting 2 and 3 are based on \citep{Berger2021}.}
+\end{table}
+%</Table:dataset-splits>
+
 %<*Table:normalizations>
 \begin{table}[h]
     \centering
