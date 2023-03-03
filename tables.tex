@@ -31,6 +31,127 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \end{table}
 %</Table:chexpert-concurrence-matrix>
 
+%<*Table:settings-dataset-sizes1>
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l l} 
+    \toprule
+    & & sample sizes \\
+    \midrule
+    \multirow{2}{3pt}{\rotatebox{90}{ID}} & No Finding & $n_{train} = 10856$ \\ 
+    & & $n_{test} = 2714$ \\
+    \hline
+    \multirow{6}{3pt}{\rotatebox{90}{OOD}} & Cardiomegaly & $n_{test} = 2106$ \\ %\rotatebox{90}{OOD}
+    &  Fracture & $n_{test} = 1833$ \\
+    &  Lung Opacity & $n_{test} = 19488$* \\
+    &  Pleural Effusion& $n_{test} = 4975$ \\
+    &  Pneumothorax & $n_{test} = 2630$ \\
+    &  Support Devices & $n_{test} = 6373$ \\
+    \bottomrule
+    \end{tabular}
+    \caption{Dataset sizes for setting 1.
+    $n_{train}$ refers to the number of training images in the in-distribution class and $n_{test}$ is the number of test images.
+    * In setting 1, the super class Lung Opacity ($n_{test}=10880$) contains additional samples of Atelectasis ($n_{test}=2171$), Consolidation ($n_{test}=1327$), Edema ($n_{test}=3364$), Lung Lesion ($n_{test}=1105$) and Pneumonia ($n_{test}=641$).}
+\end{table}
+%</Table:settings-dataset-sizes1>
+
+%<*Table:settings-dataset-sizes2>
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l l} 
+    \toprule
+    & & sample sizes \\
+    \midrule
+    \multirow{2}{3pt}{\rotatebox{90}{ID}} & Cardiomegaly & $n_{train} = 28114$ \\ 
+    & Pneumothorax & $n_{test} = 7200$ \\
+    \hline
+    \noalign{\vskip 1mm}
+    \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture & $n_{test} = 7223$ \\[18pt] %\rotatebox{90}{OOD}
+    \bottomrule
+    \end{tabular}
+    \caption{Dataset sizes for setting 2.
+    $n_{train}$ refers to the number of training images in the in-distribution class and $n_{test}$ is the number of test images.}
+\end{table}
+%</Table:settings-dataset-sizes2>
+
+%<*Table:settings-dataset-sizes3>
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l l} 
+    \toprule
+    & & sample sizes \\
+    \midrule
+    \multirow{2}{3pt}{\rotatebox{90}{ID}} & Lung Opacity & $n_{train} = 62040$ \\ 
+    & Pleural Effusion & $n_{test} = 3150$ \\
+    \hline
+    \noalign{\vskip 1mm}
+    \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture & $n_{test} = 3166$ \\ %\rotatebox{90}{OOD}
+    & Pneumonia &  \\
+    \bottomrule
+    \end{tabular}
+    \caption{Dataset sizes for setting 3.
+    $n_{train}$ refers to the number of training images in the in-distribution class and $n_{test}$ is the number of test images.}
+\end{table}
+%</Table:settings-dataset-sizes3>
+
+%<*Table:settings-dataset-sizes>
+\begin{table}[h]
+	\begin{subtable}[t]{\textwidth}
+        \centering
+		\begin{tabular}[t]{l l l} 
+            \toprule
+            & & Split size \\
+            \midrule
+            \multirow{2}{3pt}{\rotatebox{90}{ID}} & No Finding & $n_{train} = 10856$ \\ 
+            & & $n_{test} = 2714$ \\
+            \hline
+            \multirow{6}{3pt}{\rotatebox{90}{OOD}} & Cardiomegaly & $n_{test} = 2106$ \\ %\rotatebox{90}{OOD}
+            &  Fracture & $n_{test} = 1833$ \\
+            &  Lung Opacity & $n_{test} = 19488$* \\
+            &  Pleural Effusion& $n_{test} = 4975$ \\
+            &  Pneumothorax & $n_{test} = 2630$ \\
+            &  Support Devices & $n_{test} = 6373$ \\
+            \bottomrule
+            \end{tabular}
+		\caption{Setting 1}
+	\end{subtable}
+    \\[10pt]
+	\begin{subtable}[t]{0.5\textwidth}
+		\begin{tabular}[t]{l l l} 
+            \toprule
+            & & Split size \\
+            \midrule
+            \multirow{2}{3pt}{\rotatebox{90}{ID}} & Cardiomegaly & $n_{train} = 28114$ \\ 
+            & Pneumothorax & $n_{test} = 7200$ \\
+            \hline
+            \noalign{\vskip 1mm}
+            \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture & $n_{test} = 7223$ \\[18pt] %\rotatebox{90}{OOD}
+            \bottomrule
+            \end{tabular}
+		\caption{Setting 2}
+	\end{subtable}
+    \begin{subtable}[t]{0.5\textwidth}
+        \begin{tabular}[t]{l l l} 
+        \toprule
+        & & Split size \\
+        \midrule
+        \multirow{2}{3pt}{\rotatebox{90}{ID}} & Lung Opacity & $n_{train} = 62040$ \\ 
+        & Pleural Effusion & $n_{test} = 3150$ \\
+        \hline
+        \noalign{\vskip 1mm}
+        \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture & $n_{test} = 3166$ \\ %\rotatebox{90}{OOD}
+        & Pneumonia &  \\[5pt]
+        \bottomrule
+        \end{tabular}
+    \caption{Setting 3}
+	\end{subtable}
+    \caption{Dataset sizes for settings 1-3.
+    $n_{train}$ refers to the number of training images in the in-distribution class and $n_{test}$ is the number of test images.
+    *:  In setting 1, the super class Lung Opacity ($n_{test}=10880$) contains additional samples of Atelectasis ($n_{test}=2171$), Consolidation ($n_{test}=1327$), Edema ($n_{test}=3364$), Lung Lesion ($n_{test}=1105$) and Pneumonia ($n_{test}=641$).}
+	\label{table:settings-dataset-sizes}
+\end{table}
+%</Table:settings-dataset-sizes>
+
 %<*Table:dataset-splits>
 \begin{table}[h]
     \centering
@@ -107,7 +228,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \centering
     \begin{tabular}{l c c} 
      \hline
-     & ImageNet Initialization & Truncated Normal Distribution Initialization \\
+     & ImageNet initialization & Random initialization \\
      \hline\hline
      k-nn accuracy & - - & - - \\ 
      \hline 

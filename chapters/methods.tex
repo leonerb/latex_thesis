@@ -6,9 +6,15 @@ The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels an
 
 \subsection{Dataset}
 The dataset which is used is the CheXpert dataset \citep{Irvin2019}.
+The following subsections will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
+CheXpert is an extensive collection of frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
 \loadFigure{Figure:multilabel-struc}
 \loadTable{Table:chexpert-concurrence-matrix}
 \loadTable{Table:dataset-splits}
+%\loadTable{Table:settings-dataset-sizes1}
+%\loadTable{Table:settings-dataset-sizes2}
+%\loadTable{Table:settings-dataset-sizes3}
+\loadTable{Table:settings-dataset-sizes}
 \subsection{Out-Of-Distribution Detection}
 xx
 
@@ -19,7 +25,7 @@ Therefore, domain knowledge is advantageous and can result in better performance
 \par
 In this subsection, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
 The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary of the Fleischner Society for thoracic imaging \citep{Hansell2008}.
-\\
+\par
 Cardiomegaly is the first condition of interest. The collective term refers to all sorts of heart enlargements [RADIOPAE.].
 Pneumothorax is another medical condition that will be used as an in-distribution pathology.
 It is associated to the pleural space, which is ... [QUELLE, ergänzen] and is also called pleural cavity.
@@ -113,5 +119,5 @@ The update rule in \ref{methods-momentum-encoder} is the same as a momentum enco
 \loadTable{Table:weights-init-method}
 \loadFigure{Figure:labels-used-AUC-setting1}
 \loadFigure{Figure:labels-used-AUC-setting2}
-\loadFigure{Figure:heatmap-geom}
-\loadFigure{Figure:heatmap-spatial}
+% \loadFigure{Figure:heatmap-geom}
+% \loadFigure{Figure:heatmap-spatial}
