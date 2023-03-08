@@ -3,19 +3,40 @@ Vision Transformers (ViTs) form the backbone of all models that will be trained 
 They were introduced by \citep{Dosovitskiy2020} and transfer the concept of text transformers developed by \citep{Vaswani2017} to the image (classification) domain.
 ViTs will be used in this thesis in conjunction with the DINO model objective, which resembles a paradigm of training SSL models on image data \citep{Caron2021}.
 The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponential moving average of the student's weights \citep{Caron2021}.
-
 \subsection{Dataset}
-The dataset which is used is the CheXpert dataset \citep{Irvin2019}.
+In this thesis, the CheXpert dataset is used as a collection of chest X-ray images developed by \citep{Irvin2019}.
 The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
+Further, the reasoning behind the choice of used dataset splits is explained. 
 CheXpert is an extensive collection of both frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
 The dataset contains labels of 12 common chest- and lung pathologies, the control class "No Finding" and the "Support Devices" class which adds up to 14 total classes \citep{Irvin2019}.
 CheXpert is a multilabel dataset, which means that in each image multiple pathologies may be present.
-For each image, the pathologies are labeled as positive (1), negative (0) or uncertain (-1), where uncertainty labels express both contradictions in the report as well as diagnostic uncertainty of the radiologist \citep{Irvin2019}.
-Labels were extracted automatically from free text radiology reports in three stages.
-In the first step, observations were extracted from the reports with the help of a hand-selected list of common phrases \citep{Irvin2019}. 
+For each image, the pathologies are labelled as positive (1), negative (0) or uncertain (-1), where uncertainty labels express both contradictions in the report and diagnostic uncertainty of the radiologist who has written the report \citep{Irvin2019}.
+\par
+Labels were extracted from free text radiology reports in three stages.
+In the first step, observations were extracted from the reports with the help of a hand-selected list of common phrases, reviewed by different board-certified radiologists \citep{Irvin2019}.
+The extracted observations are then passed to a second stage.
+This stage is split into a three steps pipeline, where observations are matched against pre-negation uncertainty rules first, then against negation rules and finally against post-negation uncertainty rules \citep{Irvin2019}.
+Only if an observation does not match any of the rules, it is assigned a positive label \citep{Irvin2019}.
+Those rules are extracted through NLP techniques and details can be found in \citep{Irvin2019}.
+In the last step, mentions are aggregated into a final label for each image and each class.
+Observations with at least one positively labelled mention are assigned an aggregated positive label and an uncertainty label is selected if there is no positive mention and a minimum of one mention of uncertainty in the observations \citep{Irvin2019}.
+Negative labels are only assigned if at least one mention label is negative \citep{Irvin2019}. 
+If there is overall no mention of an observation, a \textit{blank} label is set as the label of the respective class \citep{Irvin2019}.
+\par
+Both the multilabel structure and the number of different classes of the CheXpert dataset leave room for designing various ID and OOD split settings.
+For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
+In this thesis a total of three settings are used.
+In the first setting, the "No Finding" class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
+Specifically, the model is trained on the "No Finding" class and performance metrics are separately evaluated on each of the six classes.
+The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
+Further, the two different settings of \citep{Berger2021} are used.
+CheXpert labels are structured in a hierarchical way.
+For example, the pathologies Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia can be considered as special cases of the Lung Opacity class [Fleischner ?].
+The label extraction method is summarized in figure \ref{fig:multilabel-struc}.
 \loadFigure{Figure:multilabel-struc}
 \loadTable{Table:chexpert-concurrence-matrix}
 \loadTable{Table:dataset-splits}
+
 %\loadTable{Table:settings-dataset-sizes1}
 %\loadTable{Table:settings-dataset-sizes2}
 %\loadTable{Table:settings-dataset-sizes3}
@@ -118,7 +139,7 @@ The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponenti
 
 A new estimate of $\theta_t$ at iteration $T+1$ is the result of the $\lambda$ weighted convex combination of the current value of $\theta_t$ and $\theta_s$ at time $T$ respectively.
 The update rule in \ref{methods-momentum-encoder} is the same as a momentum encoder \citep{He2019} and $\lambda$ is set according to a cosine schedule \citep{Grill2020}.
-\newpage
+\loadFigure{Figure:simclr-arch}
 \loadTable{Table:dino-head-dim}
 \loadTable{Table:normalizations}
 \loadTable{Table:weights-init-method}

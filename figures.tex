@@ -63,6 +63,18 @@
 \end{figure}
 %</Figure:vit-arch>
 
+%<*Figure:simclr-arch>
+\begin{figure}[ht]
+	\centering
+    \includegraphics[width=3.5cm, height=7cm]{figures/simclr-arch.pdf}
+	\caption{SimCLR architecture, adapted from . 
+	The Chest X-ray image is taken from the CheXpert dataset \citep{Irvin2019}.
+	}
+	\label{fig:simclr-arch}
+\end{figure}
+%</Figure:simclr-arch>
+
+
 %<*Figure:setting1-chexnorm-v-imgnorm>
 \begin{figure}[ht]
 	\centering
@@ -78,9 +90,10 @@
 	\end{subfigure} \\[.5cm]
 		\begin{subtable}[c]{\textwidth}
 			\centering
-			\begin{tabular}{l p{2.1cm} p{2.1cm} p{2.1cm} p{2.1cm}} 
+			\begin{tabular}{l c c c c} 
 			\toprule
 			& \multicolumn{2}{c}{SimCLR} & \multicolumn{2}{c}{DINO}\\
+			\cmidrule(lr){2-3} \cmidrule(lr){4-5}
 			normalization& CheXpert&ImageNet&CheXpert&ImageNet\\
 			\midrule
 			Cardiomegaly&57.81&55.26&\textbf{60.54}&60.33\\
@@ -103,6 +116,23 @@
 	The ID class is No Finding and OOD classes are the ones that are mentioned in the legend.}
 \end{figure}
 %</Figure:setting1-chexnorm-v-imgnorm>
+
+%<*Figure:dino-chexpert-augs-v-default-augs>
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[t]{0.49\textwidth}
+		\includegraphics[width=\textwidth, height=1.1\textwidth]{figures/dino-chexpert-augs-v-default-augs-eval-metrics.pdf}
+		\caption{Evaluation metrics}
+		%\label{fig:setting1-chexnorm-v-imgnorm-simclr}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.49\textwidth}
+		\includegraphics[width=\textwidth, height=1.1\textwidth]{figures/dino-chexpert-augs-v-default-augs-loss.pdf}
+		\caption{Loss}
+		%\label{fig:setting1-chexnorm-v-imgnorm-dino}
+	\end{subfigure}
+\end{figure}
+%</Figure:dino-chexpert-augs-v-default-augs>
+
 
 %<*Figure:labels-used-AUC-setting1>
 \begin{figure}
