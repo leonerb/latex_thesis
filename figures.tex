@@ -3,8 +3,9 @@
 	\centering
     \includegraphics[width=\textwidth]{figures/multilabel-struc.pdf}
     \caption{Hierarchical structure of the CheXpert dataset. 
-	The labels are grouped into 14 categories. Adapted from \citep{Irvin2019}.
-	The dotted arrow from the Support Devices class indicates, that patients with a support device can also be labeled as No Finding, representing the only source of overlap between the No Finding class and other classes.}
+	The labels are grouped into 14 categories.
+	The dotted arrow from the Support Devices class indicates, that patients with a support device can also be labeled as No Finding, representing the only source of overlap between the No Finding class and other classes.
+	Adapted from \citep{Irvin2019}.}
     \label{fig:multilabel-struc}
 \end{figure}
 %</Figure:multilabel-struc>
@@ -66,56 +67,64 @@
 %<*Figure:simclr-arch>
 \begin{figure}[ht]
 	\centering
-    \includegraphics[width=3.5cm, height=7cm]{figures/simclr-arch.pdf}
-	\caption{SimCLR architecture, adapted from . 
+    \includegraphics[width=\textwidth]{figures/simclr-arch.pdf}
+	\caption{SimCLR architecture, adapted from \citep{Chen2020}. 
 	The Chest X-ray image is taken from the CheXpert dataset \citep{Irvin2019}.
 	}
 	\label{fig:simclr-arch}
 \end{figure}
 %</Figure:simclr-arch>
 
-
 %<*Figure:setting1-chexnorm-v-imgnorm>
 \begin{figure}[ht]
+	\begin{subtable}[c]{\textwidth}
+		\centering
+		\begin{tabular}{l c c c c} 
+		\toprule
+		& \multicolumn{2}{c}{SimCLR} & \multicolumn{2}{c}{DINO}\\
+		\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+		normalization& CheXpert&ImageNet&CheXpert&ImageNet\\
+		\midrule
+		Cardiomegaly&57.81&55.26&\textbf{60.54}&60.33\\
+		Fracture&53.43&54.53&\textbf{56.46}&55.69\\
+		Lung Opacity&55.55&55.49&59.97&\textbf{60.30}\\
+		Pleural Effusion&58.48&58.05&\textbf{63.73}&61.56\\
+		Pneumothorax&60.10&60.54&59.35&\textbf{61.23}\\
+		Support Devices&53.58&53.50&56.73&\textbf{57.44}\\
+		\bottomrule
+		\end{tabular}
+		\caption{AUROC 1 values for last epoch}
+		\label{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}
+	\end{subtable}
+	\\[.5cm]
 	\centering
-	\begin{subfigure}[t]{0.49\textwidth}
-		\includegraphics[width=\textwidth, height=1.1\textwidth]{figures/setting1-chexnorm-v-imgnorm-simclr.pdf}
-		\caption{SimCLR}
-		\label{fig:setting1-chexnorm-v-imgnorm-simclr}
+	\begin{subfigure}[t]{\textwidth}
+		\includegraphics[width=\textwidth, height=9cm]{figures/setting1-chexpert-norm-dino-v-simclr-barplot.pdf}
+		\caption{AUROC 1 values for last epoch for CheXpert normalization}
+		\label{fig:setting1-chexnorm-v-imgnorm-dino-barplot}
 	\end{subfigure}
-	\begin{subfigure}[t]{0.49\textwidth}
-		\includegraphics[width=\textwidth, height=1.1\textwidth]{figures/setting1-chexnorm-v-imgnorm-dino.pdf}
-		\caption{DINO}
-		\label{fig:setting1-chexnorm-v-imgnorm-dino}
-	\end{subfigure} \\[.5cm]
-		\begin{subtable}[c]{\textwidth}
-			\centering
-			\begin{tabular}{l c c c c} 
-			\toprule
-			& \multicolumn{2}{c}{SimCLR} & \multicolumn{2}{c}{DINO}\\
-			\cmidrule(lr){2-3} \cmidrule(lr){4-5}
-			normalization& CheXpert&ImageNet&CheXpert&ImageNet\\
-			\midrule
-			Cardiomegaly&57.81&55.26&\textbf{60.54}&60.33\\
-			Fracture&53.43&54.53&\textbf{56.46}&55.69\\
-			Lung Opacity&55.55&55.49&59.97&\textbf{60.30}\\
-			Pleural Effusion&58.48&58.05&\textbf{63.73}&61.56\\
-			Pneumothorax&60.10&60.54&59.35&\textbf{61.23}\\
-			Support Devices&53.58&53.50&56.73&\textbf{57.44}\\
-			\bottomrule
-			\end{tabular}
-			\caption{AUROC 1 values for last epoch}
-			\label{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}
-		\end{subtable}
     \caption{Comparison between Chexpert and ImageNet normalization for the first setting.
-	\ref{fig:setting1-chexnorm-v-imgnorm-simclr} and \ref{fig:setting1-chexnorm-v-imgnorm-dino} show the results for SimCLR and DINO respectively and table \ref{fig:setting1-chexnorm-v-imgnorm-dino} depicts the AUROC 1 values for the final epoch.
+	Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch} shows the results for SimCLR and DINO respectively across both normalizations.
 	Maximum AUROC values are marked in bold.
+	Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} depicts the results for both models restricted to CheXpert normalization only.
+	The dotted line refers to the performance equivalent to the chance level at 50\% AUROC.
 	For the ImageNet normalization, all images were scaled with $\mu=(0.485, 0.456, 0.406)$ and $\sigma=(0.229, 0.224, 0.225)$. 
     The CheXpert normalization stands for a normalization with $\mu=(0.5330, 0.5330, 0.5330)$ and $\sigma=(0.0349, 0.0349, 0.0349)$ \citep[\href{https://github.com/christophbrgr/ood_detection_framework}{\color{Periwinkle}{implementation}}]{Berger2021}.
-	Solid lines represent the Imagenet normalization while dashed and dotted lines refer to the CheXpert normalization.
-	The ID class is No Finding and OOD classes are the ones that are mentioned in the legend.}
+	The ID class is No Finding and OOD classes are the ones that are mentioned in the plot.}
 \end{figure}
 %</Figure:setting1-chexnorm-v-imgnorm>
+
+%<*Figure:auroc-vs-k>
+\begin{figure}[ht]
+	\centering
+    \includegraphics[width=\textwidth]{figures/auroc-vs-k.pdf}
+    \caption{AUROC of settings 1-3 in relation to the number of nearest neighbours used for feature similarity.
+	The values for setting 1 were calculated as a top-3 average of the six OOD pathologies.
+	$N_i$ refers to the length of the in-distribution train dataset of the i-th setting, where $i \in \{1,2,3\}$.
+	The temperature is set to 1 for all values.}
+    \label{fig:auroc-vs-k}
+\end{figure}
+%</Figure:auroc-vs-k>
 
 %<*Figure:dino-chexpert-augs-v-default-augs>
 \begin{figure}[ht]

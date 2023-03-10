@@ -98,48 +98,53 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \begin{table}[h]
 	\begin{subtable}[t]{\textwidth}
         \centering
-		\begin{tabular}[t]{l l l} 
+		\begin{tabular}[t]{l l c c} 
             \toprule
-            & & Split size \\
+            & & \multicolumn{2}{c}{Dataset size}\\
+            \cmidrule(lr){3-4}
+            & & Train &Test  \\
             \midrule
-            \multirow{2}{3pt}{\rotatebox{90}{ID}} & No Finding & $n_{train} = 10856$ \\ 
-            & & $n_{test} = 2714$ \\
+            \rotatebox{90}{ID} & No Finding & 10856 & 2714 \\ 
             \hline
-            \multirow{6}{3pt}{\rotatebox{90}{OOD}} & Cardiomegaly & $n_{test} = 2106$ \\ %\rotatebox{90}{OOD}
-            &  Fracture & $n_{test} = 1833$ \\
-            &  Lung Opacity & $n_{test} = 19488$* \\
-            &  Pleural Effusion& $n_{test} = 4975$ \\
-            &  Pneumothorax & $n_{test} = 2630$ \\
-            &  Support Devices & $n_{test} = 6373$ \\
+            \multirow{6}{3pt}{\rotatebox{90}{OOD}} & Cardiomegaly & & 2106 \\ %\rotatebox{90}{OOD}
+            &  Fracture & & 1833 \\
+            &  Lung Opacity & & 19488* \\
+            &  Pleural Effusion& & 4975 \\
+            &  Pneumothorax & & 2630 \\
+            &  Support Devices & & 6373 \\
             \bottomrule
             \end{tabular}
 		\caption{Setting 1}
 	\end{subtable}
-    \\[10pt]
-	\begin{subtable}[t]{0.5\textwidth}
-		\begin{tabular}[t]{l l l} 
+    \\[15pt]
+	\begin{subtable}[t]{0.45\textwidth}
+		\begin{tabular}[t]{l l c c} 
             \toprule
-            & & Split size \\
+            & & \multicolumn{2}{c}{Dataset size}\\
+            \cmidrule(lr){3-4}
+            & & Train &Test  \\
             \midrule
-            \multirow{2}{3pt}{\rotatebox{90}{ID}} & Cardiomegaly & $n_{train} = 28114$ \\ 
-            & Pneumothorax & $n_{test} = 7200$ \\
+            \multirow{2}{3pt}{\rotatebox{90}{ID}} & Cardiomegaly & 28114 & 7200 \\ 
+            & Pneumothorax & &\\
             \hline
             \noalign{\vskip 1mm}
-            \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture & $n_{test} = 7223$ \\[18pt] %\rotatebox{90}{OOD}
+            \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture &  & 7223 \\[18pt] %\rotatebox{90}{OOD}
             \bottomrule
             \end{tabular}
 		\caption{Setting 2}
 	\end{subtable}
-    \begin{subtable}[t]{0.5\textwidth}
-        \begin{tabular}[t]{l l l} 
+    \begin{subtable}[t]{0.45\textwidth}
+        \begin{tabular}[t]{l l c c} 
         \toprule
-        & & Split size \\
+        & & \multicolumn{2}{c}{Dataset size}\\
+        \cmidrule(lr){3-4}
+        & & Train &Test  \\
         \midrule
-        \multirow{2}{3pt}{\rotatebox{90}{ID}} & Lung Opacity & $n_{train} = 62040$ \\ 
-        & Pleural Effusion & $n_{test} = 3150$ \\
+        \multirow{2}{3pt}{\rotatebox{90}{ID}} & Lung Opacity & 62040 & 3150 \\ 
+        & Pleural Effusion & & \\
         \hline
         \noalign{\vskip 1mm}
-        \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture & $n_{test} = 3166$ \\ %\rotatebox{90}{OOD}
+        \multirow{2}{3pt}{\rotatebox{90}{OOD}} & Fracture &  & 3166 \\ %\rotatebox{90}{OOD}
         & Pneumonia &  \\[5pt]
         \bottomrule
         \end{tabular}
@@ -147,7 +152,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 	\end{subtable}
     \caption{Dataset sizes for settings 1-3.
     $n_{train}$ refers to the number of training images in the in-distribution class and $n_{test}$ is the number of test images.
-    *:  In setting 1, the super class Lung Opacity ($n_{test}=10880$) contains additional samples of Atelectasis ($n_{test}=2171$), Consolidation ($n_{test}=1327$), Edema ($n_{test}=3364$), Lung Lesion ($n_{test}=1105$) and Pneumonia ($n_{test}=641$).}
+    *:  In setting 1, the super class Lung Opacity ($n_{test}=10880$) additional samples of Atelectasis ($n_{test}=2171$), Consolidation ($n_{test}=1327$), Edema ($n_{test}=3364$), Lung Lesion ($n_{test}=1105$) and Pneumonia ($n_{test}=641$) were added.}
 	\label{table:settings-dataset-sizes}
 \end{table}
 %</Table:settings-dataset-sizes>
