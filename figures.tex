@@ -85,28 +85,28 @@
 		\cmidrule(lr){2-3} \cmidrule(lr){4-5}
 		normalization& CheXpert&ImageNet&CheXpert&ImageNet\\
 		\midrule
-		Cardiomegaly&57.81&55.26&\textbf{60.54}&60.33\\
-		Fracture&53.43&54.53&\textbf{56.46}&55.69\\
-		Lung Opacity&55.55&55.49&59.97&\textbf{60.30}\\
-		Pleural Effusion&58.48&58.05&\textbf{63.73}&61.56\\
-		Pneumothorax&60.10&60.54&59.35&\textbf{61.23}\\
-		Support Devices&53.58&53.50&56.73&\textbf{57.44}\\
+		Cardiomegaly&57.81&55.26&58.24&\textbf{60.33}\\
+		Fracture&53.43&54.53&\textbf{56.43}&55.69\\
+		Lung Opacity&55.55&55.49&59.10&\textbf{60.30}\\
+		Pleural Effusion&58.48&58.05&\textbf{64.33}&61.56\\
+		Pneumothorax&60.10&60.54&57.51&\textbf{61.23}\\
+		Support Devices&53.58&53.50&56.97&\textbf{57.44}\\
 		\bottomrule
 		\end{tabular}
 		\caption{AUROC 1 values for last epoch}
 		\label{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}
 	\end{subtable}
-	\\[.5cm]
-	\centering
+	\\[.2cm]
 	\begin{subfigure}[t]{\textwidth}
-		\includegraphics[width=\textwidth, height=9cm]{figures/setting1-chexpert-norm-dino-v-simclr-barplot.pdf}
-		\caption{AUROC 1 values for last epoch for CheXpert normalization}
+		\centering
+		\includegraphics{figures/setting1-imagenet-norm-dino-v-simclr-barplot-new.pdf}
+		\caption{AUROC 1 values for last epoch for ImageNet normalization}
 		\label{fig:setting1-chexnorm-v-imgnorm-dino-barplot}
 	\end{subfigure}
     \caption{Comparison between Chexpert and ImageNet normalization for the first setting.
 	Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch} shows the results for SimCLR and DINO respectively across both normalizations.
 	Maximum AUROC values are marked in bold.
-	Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} depicts the results for both models restricted to CheXpert normalization only.
+	Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} depicts the results for both models restricted to ImageNet normalization only.
 	The dotted line refers to the performance equivalent to the chance level at 50\% AUROC.
 	For the ImageNet normalization, all images were scaled with $\mu=(0.485, 0.456, 0.406)$ and $\sigma=(0.229, 0.224, 0.225)$. 
     The CheXpert normalization stands for a normalization with $\mu=(0.5330, 0.5330, 0.5330)$ and $\sigma=(0.0349, 0.0349, 0.0349)$ \citep[\href{https://github.com/christophbrgr/ood_detection_framework}{\color{Periwinkle}{implementation}}]{Berger2021}.
@@ -116,16 +116,16 @@
 
 %<*Figure:auroc-vs-k-and-temp>
 \begin{figure}[ht]
-	\begin{subfigure}[t]{0.5\textwidth}
+	\begin{subfigure}[t]{\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{figures/auroc-vs-k.pdf}
+		\includegraphics{figures/auroc-vs-k.pdf}
 		\caption{}
 		%AUROC in relation to the number of nearest neighbours used for feature similarity.
 		\label{fig:auroc-vs-k}
 	\end{subfigure}
-	\begin{subfigure}[t]{0.5\textwidth}
+	\begin{subfigure}[t]{\textwidth}
 		\centering
-		\includegraphics[width=\textwidth, height=7.9cm]{figures/auroc-vs-temp.pdf}
+		\includegraphics{figures/auroc-vs-temp.pdf}
 		\caption{}
 		%AUROC of settings 1-3 compared to the temperature.
 		\label{fig:auroc-vs-temp}
@@ -136,21 +136,12 @@
 \end{figure}
 %</Figure:auroc-vs-k-and-temp>
 
-%<*Figure:dino-chexpert-augs-v-default-augs>
+%<*Figure:dino-rotate-augs-v-default-augs>
 \begin{figure}[ht]
 	\centering
-	\begin{subfigure}[t]{0.49\textwidth}
-		\includegraphics[width=\textwidth, height=1.1\textwidth]{figures/dino-chexpert-augs-v-default-augs-eval-metrics.pdf}
-		\caption{Evaluation metrics}
-		%\label{fig:setting1-chexnorm-v-imgnorm-simclr}
-	\end{subfigure}
-	\begin{subfigure}[t]{0.49\textwidth}
-		\includegraphics[width=\textwidth, height=1.1\textwidth]{figures/dino-chexpert-augs-v-default-augs-loss.pdf}
-		\caption{Loss}
-		%\label{fig:setting1-chexnorm-v-imgnorm-dino}
-	\end{subfigure}
+	\includegraphics{figures/dino-rotate-augs-vs-default-augs-new.pdf}
 \end{figure}
-%</Figure:dino-chexpert-augs-v-default-augs>
+%</Figure:dino-rotate-augs-v-default-augs>
 
 
 %<*Figure:labels-used-AUC-setting1>
