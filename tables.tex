@@ -185,6 +185,31 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \end{table}
 %</Table:dataset-splits>
 
+%<*Table:attention-maps>
+\begin{table}[!htbp]
+    \centering
+    \begin{tabular}{l m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth}}
+    %& Image & $\text{head}_0$ & $\text{head}_1$ & $\text{head}_2$ & $\text{head}_3$ & $\text{head}_4$ & $\text{head}_5$ \\
+    Class& \multicolumn{1}{c}{Image} & \multicolumn{1}{c}{$\text{head}_0$} & \multicolumn{1}{c}{$\text{head}_1$} & \multicolumn{1}{c}{$\text{head}_2$} & \multicolumn{1}{c}{$\text{head}_3$} & \multicolumn{1}{c}{$\text{head}_4$} & \multicolumn{1}{c}{$\text{head}_5$} \\
+    \toprule
+    Cardiomegaly& \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head5.png} \\
+    \hline
+    \\[-0.3cm] 
+    Lung Opacity& \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head5.png} \\
+    \hline
+    \\[-0.3cm]
+    No Finding & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head5.png} \\
+    \hline
+    \\[-0.3cm]
+    Pleural Effusion & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head5.png} \\
+    \hline
+    \\[-0.3cm]
+    Pneumothorax & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head5.png} \\
+\end{tabular}
+\caption{Attention maps of the different in-distribution classes. The second column depicts the reference image while the other columns show the self-attention maps of the ViT encoder.}
+\end{table}
+%</Table:attention-maps>
+
 %<*Table:normalizations>
 \begin{table}[h]
     \centering
@@ -250,3 +275,57 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \end{table}
 %</Table:weights-init-method>
 
+%<*Table:finetuning-supervised>
+\begin{table}[h]
+    \centering
+    \begin{tabular}{p{2cm} p{0.8cm} p{0.8cm} p{0.8cm} p{0.8cm} p{0.8cm} p{0.8cm}}
+    & \multicolumn{2}{c}{AUROC} &  & \multicolumn{2}{c}{AUCPR} \\
+    \cmidrule{2-3} \cmidrule{5-6}
+    Init. &  Maha. & MCP & Train acc & Maha. & MCP & Train acc \\
+    \toprule
+    DINO CheXpert & 63.41& 65.48& 0.5 & 0.5 & 0.5 & 0.5 \\
+    ImageNet DINO & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 \\
+    Random Weights & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Setting 2 with vit small backbone}
+\end{table}
+%</Table:finetuning-supervised>
+
+%<*Table:finetuning-supervised-2>
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{0.1cm} p{1.1cm} p{1.1cm} p{1.1cm} p{1.1cm}}
+    & & \multicolumn{4}{c}{Setting 2} &  & \multicolumn{4}{c}{Setting 3} \\
+    \cmidrule{3-6} \cmidrule{8-11}
+    & & DINO CheX & Image\-Net DINO & Rand. Weights  & Baseline \citep{Berger2021} & & DINO CheX & Image\-Net DINO & Rand. Weights & Baseline \citep{Berger2021}\\
+    \bottomrule
+    \multirow{2}{1cm}{AUROC}& Mahal. & \textbf{63.4} & 63.3 & 56.7 & 58.0 & & \textbf{53.6 }& 48.3 & 51.3 & 52.6 \\
+    & MCP & 65.5 & 65.9 & 53.5 & \textbf{67.8} & & 46.3 & \textbf{50.1} & 37.6 & 45.8 \\
+    \hline
+    \multirow{2}{1cm}{AUCPR} & Mahal. & 64.5 & 64.4 & 56.1 & \textbf{69.5} & &53.3 & 49.1 & 50.5 & \textbf{60.1} \\
+    & MCP & \textbf{67.7} & 66.8 & 54.2 & 58.0 & & 50.4 & 53.3 & 40.8 & \textbf{58.6} \\
+    \hline
+    Train acc.& & 83.8 & \textbf{94.6} & 65.6 & 88.8 & & 76.1 & \textbf{83.9} & 58.0 & 75.8 \\
+    \end{tabular}
+    \caption{Supervised results with vit small backbone.}
+\end{table}
+%</Table:finetuning-supervised-2>
+
+%<*Table:finetuning-supervised-3>
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l l c c c c c c c c}
+    \bottomrule
+    % \multirow{2}{1cm}{AUROC}& Maha & 63.41 & 0.5 & 0.5 & 0.5 \\
+    % & MCP & 0.5 & 0.5 & 0.5 & 0.5\\
+    % \hline
+    % \multirow{2}{1cm}{AUCPR} & Maha & 0.5 & 0.5 & 0.5 & 0.5 \\
+    % & MCP & 0.5 & 0.5 & 0.5 & 0.5 \\
+    % \hline
+    % Train acc & & 0.5 & 0.5 & 0.5 & 0.5 \\
+    % \end{tabular}
+    % %\multirow
+    % \caption{Setting 2 with vit small backbone}
+\end{table}
+%</Table:finetuning-supervised-3>
