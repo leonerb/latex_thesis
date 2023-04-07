@@ -9,10 +9,11 @@ The following subsection will describe the dataset and summarize the label extra
 Further, the reasoning behind the choice of used dataset splits is explained. 
 CheXpert is an extensive collection of both frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
 The dataset contains labels of 12 common chest- and lung pathologies, the control class "No Finding" and the "Support Devices" class which adds up to 14 total classes \citep{Irvin2019}.
+The 14 classes of the dataset were selected due to both common occurrence in the radiologic reports and clinical importance \citep{Irvin2019} and refer to the definitions in the glossary of terms for thoracic imaging \citep{Hansell2008}.   
 CheXpert is a multilabel dataset, which means that in each image multiple pathologies may be present.
-For each image, the pathologies are labelled as positive (1), negative (0) or uncertain (-1), where uncertainty labels express both contradictions in the report and diagnostic uncertainty of the radiologist who has written the report \citep{Irvin2019}.
+For each image, the pathologies are labelled as positive (1), negative (0) or uncertain (-1), where uncertainty labels express both contradictions in the report and also diagnostic uncertainty of the radiologist who has written the report \citep{Irvin2019}.
 \par
-Labels were extracted from free text radiology reports in three stages.
+Labels were extracted from free text radiology reports in three stages (see figure \ref{fig:multilabel-struc}).
 In the first step, observations were extracted from the reports with the help of a hand-selected list of common phrases, reviewed by different board-certified radiologists \citep{Irvin2019}.
 The extracted observations are then passed to a second stage.
 This stage is split into a three steps pipeline, where observations are matched against pre-negation uncertainty rules first, then against negation rules and finally against post-negation uncertainty rules \citep{Irvin2019}.
@@ -22,47 +23,52 @@ In the last step, mentions are aggregated into a final label for each image and 
 Observations with at least one positively labelled mention are assigned an aggregated positive label and an uncertainty label is selected if there is no positive mention and a minimum of one mention of uncertainty in the observations \citep{Irvin2019}.
 Negative labels are only assigned if at least one mention label is negative \citep{Irvin2019}. 
 If there is overall no mention of an observation, a \textit{blank} label is set as the label of the respective class \citep{Irvin2019}.
-\par
-Both the multilabel structure and the number of different classes of the CheXpert dataset leave room for designing various ID and OOD split settings.
-For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
-In this thesis a total of three settings are used.
-In the first setting, the "No Finding" class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
-Specifically, the model is trained on the "No Finding" class and performance metrics are separately evaluated on each of the six classes.
-The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
-Further, the two different settings of \citep{Berger2021} are used.
-CheXpert labels are structured in a hierarchical way.
-For example, the pathologies Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia can be considered as special cases of the Lung Opacity class [Fleischner ?].
-The label extraction method is summarized in figure \ref{fig:multilabel-struc}.
 \loadFigure{Figure:multilabel-struc}
-\loadTable{Table:chexpert-concurrence-matrix}
-\loadTable{Table:dataset-splits}
-
-%\loadTable{Table:settings-dataset-sizes1}
-%\loadTable{Table:settings-dataset-sizes2}
-%\loadTable{Table:settings-dataset-sizes3}
+\par
+Both the multilabel structure and the number of different classes of the CheXpert dataset leave room for designing different ID and OOD split settings.
+For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
+\par
+In this thesis different settings are evaluated.
+In the first setting, the No Finding class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
+Specifically, the model is trained on the No Finding class and performance metrics are separately evaluated on each of the six classes.
+The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
+Because CheXpert labels are hierarchically structured \cite{Irvin2019}, the pathologies Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia can be considered as subcases of Lung Opacity \textcolor{red}{\citep{Hansell2008}}.
+Therefore, in the first setting, that contrasts the No Finding class with the mentioned out-of-distribution classes, images of Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia were also added to the Lung Opacity class.
+Subsequently, the model performance evaluated on Lung Opacity is an average over five subclasses and one superclass.
+Further, the two different settings of \citep{Berger2021} are used.
+The first one defines Cardiomegaly and Pneumothorax as in-distribution pathologies and Fracture as out-of-distribution class.
+The other setting consists of the two in-distribution classes Lung Opacity and Pleural Effusion, which are evaluated against two out-of-distribution pathologies Fracture and Pneumonia.
+Settings and dataset sizes are summarized in table \ref{table:settings-dataset-sizes}.
 \loadTable{Table:settings-dataset-sizes}
+\par
+Medical imaging datasets differ from commonly used computer vision benchmarks like CIFAR-10 \citep{Krizhevsky2009a}, CIFAR-100 \citep{Krizhevsky2009b} or ImageNet \citep{Deng2009} in terms of appearance and variability of input images.
+Chest-X-ray images for example are greyscale by default and as only the upper body part is included there is only low input variability.
+Further, classifying the underlying pathologies is even challenging for certified board radiologists and also dependent on the class.
+On the CheXpert dataset, the miss rate (False Negative Rate) for classifying Consolidation can range from 55\% to 52\% or 37\% depending on the human radiologist assessing the Xray-image \citep{Irvin2019}, where lower values indicate better performance.
+On the Atelectasis class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance.
+In addition to that, studies have also shown that performance on the same pathology can also vary in-between X-ray datasets \textcolor{red}{\citep{Majkowska2020}}.
+\par
+Due to the differences between CheXpert and the frequently used benchmarks, medical domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations for specialized medical imaging datasets.
+In the following paragraph, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
+The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary \citep{Hansell2008} if mentioned there.
+Sample images of the conditions are depicted in figure \ref{fig:pathologies}.
+\loadFigure{Figure:pathologies} 
+\par
+Cardiomegaly is the first condition of interest.
+It is a general term for heart enlargements, where the cardiothoracic ratio is often used as a measurement of the severity of size increase.
+In \citep{Dahnert2011} the ratio is defined as the ratio between the heart size and the thorax width. 
+Values between 0.45 - 0.55 are marked as mild cardiomegaly and values above 0.55 are considered to be severe cases of cardiomegaly [ibid.]. 
+Pneumothorax is another medical condition related to the lung (pleura) and will be used as an in-distribution pathology.
+It is associated to the pleural space, which is the space between the pulmonary pleura and the costal pleura and is also called pleural cavity \citep{Charalampidis2015}.
+Pneumothorax is the medical term for a pleural space that is filled with gas (often air) \citep{Dahnert2011,Hansell2008}.
+If the mentioned pleural space is filled with an aggregation of fluid, the condition is referred to as a pleural effusion \citep{Karkhanis2012}.
+Lung opacity is a collective term and refers to lung areas which appears more opaque than the surrounding area \citep{Hansell2008}.
+Because the lung appears dark on x-ray images, opaque areas are white in contrast to the lung appearance.
+It should be emphasized that the term is unspecific and is not descriptive in terms of neither the extent nor the origin of the pathology \citep{Hansell2008}.
+Pneumonia is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue, which also appears as a lung opacity on chest x-rays [ibid.].
+A rib fracture is the term for a broken rib bone.
 \subsection{Out-Of-Distribution Detection}
 xx
-
-\subsection{Pathologies}
-Medical Imaging datasets are very different to standard benchmark imaging datasets like CIFAR-10.
-In particular, classifying the underlying labels is challenging for non-experts [QUELLE], while classifying (coarse) labels for datasets like CIFAR-10 is often considered to be "easy" [QUELLE].
-Therefore, domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations and can result in better performance.
-\par
-In this subsection, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
-The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary of the Fleischner Society for thoracic imaging \citep{Hansell2008}.
-\par
-Cardiomegaly is the first condition of interest. The collective term refers to all sorts of heart enlargements [RADIOPAE.].
-Pneumothorax is another medical condition that will be used as an in-distribution pathology.
-It is associated to the pleural space, which is ... [QUELLE, ergänzen] and is also called pleural cavity.
-If the pleural space is filled with gas (frequently air) [RADIOPAE.] the medical term is Pneumothorax.
-Rib fractures refer to a broken rib bone [QUELLE, wird oft übersehen ergänzen].
-A Pleural Effusion is the medical expression for an irregular fluid conglomeration in the pleural cavity [RADIOPAE.].
-Lung Opacity describes .. \\
-Pneumonia is another lung disease and refers as a broad term to an infection within a lung [RADIOPAE.]. 
-%Figure of pathologies
-\loadFigure{Figure:pathologies}
-
 \subsection{Vision Transformers}
 Vision Transformers are based on the transformer architecture and reformulate the attention mechanism designed in \cite{Vaswani2017} to images.
 Whereas text transformer split a sequence of natural language into tokens, Vision Transformers split images into a fixed number of image patches \citep{Dosovitskiy2020}.
@@ -140,10 +146,10 @@ The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponenti
 A new estimate of $\theta_t$ at iteration $T+1$ is the result of the $\lambda$ weighted convex combination of the current value of $\theta_t$ and $\theta_s$ at time $T$ respectively.
 The update rule in \ref{methods-momentum-encoder} is the same as a momentum encoder \citep{He2019} and $\lambda$ is set according to a cosine schedule \citep{Grill2020}.
 \loadFigure{Figure:simclr-arch}
-\loadTable{Table:dino-head-dim}
-\loadTable{Table:normalizations}
-\loadTable{Table:weights-init-method}
-\loadFigure{Figure:labels-used-AUC-setting1}
-\loadFigure{Figure:labels-used-AUC-setting2}
+% \loadTable{Table:dino-head-dim}
+% \loadTable{Table:normalizations}
+% \loadTable{Table:weights-init-method}
+% \loadFigure{Figure:labels-used-AUC-setting1}
+% \loadFigure{Figure:labels-used-AUC-setting2}
 % \loadFigure{Figure:heatmap-geom}
 % \loadFigure{Figure:heatmap-spatial}
