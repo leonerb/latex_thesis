@@ -37,3 +37,4 @@
 *blx.bib 
 *.run.xml
 *.pgf
+/figures/*

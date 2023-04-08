@@ -8,6 +8,7 @@ In this thesis, the CheXpert dataset is used as a collection of chest X-ray imag
 The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
 Further, the reasoning behind the choice of used dataset splits is explained. 
 CheXpert is an extensive collection of both frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
+\par
 The dataset contains labels of 12 common chest- and lung pathologies, the control class "No Finding" and the "Support Devices" class which adds up to 14 total classes \citep{Irvin2019}.
 The 14 classes of the dataset were selected due to both common occurrence in the radiologic reports and clinical importance \citep{Irvin2019} and refer to the definitions in the glossary of terms for thoracic imaging \citep{Hansell2008}.   
 CheXpert is a multilabel dataset, which means that in each image multiple pathologies may be present.
@@ -45,8 +46,8 @@ Medical imaging datasets differ from commonly used computer vision benchmarks li
 Chest-X-ray images for example are greyscale by default and as only the upper body part is included there is only low input variability.
 Further, classifying the underlying pathologies is even challenging for certified board radiologists and also dependent on the class.
 On the CheXpert dataset, the miss rate (False Negative Rate) for classifying Consolidation can range from 55\% to 52\% or 37\% depending on the human radiologist assessing the Xray-image \citep{Irvin2019}, where lower values indicate better performance.
-On the Atelectasis class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance.
-In addition to that, studies have also shown that performance on the same pathology can also vary in-between X-ray datasets \textcolor{red}{\citep{Majkowska2020}}.
+On the Atelectasis class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance [ibid.].
+In addition to that, a study has shown that performance on the same pathology can also vary in-between X-ray datasets \textcolor{red}{\citep{Majkowska2020}}.
 \par
 Due to the differences between CheXpert and the frequently used benchmarks, medical domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations for specialized medical imaging datasets.
 In the following paragraph, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
@@ -57,9 +58,10 @@ Sample images of the conditions are depicted in figure \ref{fig:pathologies}.
 Cardiomegaly is the first condition of interest.
 It is a general term for heart enlargements, where the cardiothoracic ratio is often used as a measurement of the severity of size increase.
 In \citep{Dahnert2011} the ratio is defined as the ratio between the heart size and the thorax width. 
-Values between 0.45 - 0.55 are marked as mild cardiomegaly and values above 0.55 are considered to be severe cases of cardiomegaly [ibid.]. 
-Pneumothorax is another medical condition related to the lung (pleura) and will be used as an in-distribution pathology.
-It is associated to the pleural space, which is the space between the pulmonary pleura and the costal pleura and is also called pleural cavity \citep{Charalampidis2015}.
+Values between 0.45 - 0.55 are marked as mild cardiomegaly and values above 0.55 are considered to be severe cases of cardiomegaly [ibid.].
+\par 
+Pneumothorax is a medical condition related to the lung (pleura) and will be used as an in-distribution pathology.
+It is associated to the pleural space, which is the space between the pulmonary pleura and the costal pleura and is also called the pleural cavity \citep{Charalampidis2015}.
 Pneumothorax is the medical term for a pleural space that is filled with gas (often air) \citep{Dahnert2011,Hansell2008}.
 If the mentioned pleural space is filled with an aggregation of fluid, the condition is referred to as a pleural effusion \citep{Karkhanis2012}.
 Lung opacity is a collective term and refers to lung areas which appears more opaque than the surrounding area \citep{Hansell2008}.
@@ -70,26 +72,68 @@ A rib fracture is the term for a broken rib bone.
 \subsection{Out-Of-Distribution Detection}
 xx
 \subsection{Vision Transformers}
-Vision Transformers are based on the transformer architecture and reformulate the attention mechanism designed in \cite{Vaswani2017} to images.
-Whereas text transformer split a sequence of natural language into tokens, Vision Transformers split images into a fixed number of image patches \citep{Dosovitskiy2020}.
-\\
-The flattened image patches represent the token sequence which is passed to the transformer encoder architecture.
-The encoder itself consists of a number of stacked transformer blocks, where each block contains linear layers, normalization layers and attention \citep{Vaswani2017,Dosovitskiy2020}.
-\\
-These patches are fed into a neural network architecture that consists of a number of stacked transformer blocks, where each block contains linear layers, normalization layers and attention \textcolor{red}{?}
-By design, the original patch order does not matter, which means that positional encodings need to be added to establish an order \citep{Dosovitskiy2020,Vaswani2017}.
-\loadFigure{Figure:vit-arch}
-\\
-Attention is implemented by the following formula \citep{Vaswani2017}:
-\begin{align}
-    \text{attention}(Q,K,V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V
-\end{align}
-The three matrices $Q,K,V$ are called query, keys and values respectively.
-To understand what it is really doing it helps to look at the two components.
-In a first step, the inner product between all queries $Q$ and all keys $K$ is considered.
-This is rescaled with $\sqrt{d_k}$ and applying the softmax function consecutively results in a probability distribution over the elements.
-The resulting matrix acts as an attending algorithm and can be thought of as a covariance matrix, where higher values in $(i,j)$ should indicate that the architecture should attend to the $j$-th token, when processing token $i$ \citep{Vaswani2017} \textcolor{red}{???}.    
+Vision Transformers (ViTs) are the reformulation of the Transformer architecture \cite{Vaswani2017} to images.
+Originally, sequences of natural language are split into tokens and then processed by the text Transformer [ibid.].  
+Similarly, ViTs process images as a fixed number of flattened image patches \citep{Dosovitskiy2020}.
+Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced with an emphasis on the encoder part in this thesis in the first part of the section as only the encoder is used within the ViT architecture.
+Then, minor adjustments that are needed to accept images rather than text as inputs are discussed.
+The following part is fully based on \cite{Vaswani2017,Dosovitskiy2020}.
 \par
+The input sequence is assumed to be a sequence $(x_1,\dots,x_n)$, which is mapped to a continuous representation $z=(z_1,\dots,z_n)$ by the Encoder.
+The Encoder is an Encoder \textbf{stack} and consists of a stack of $L$ layers.
+The outputs of each layer in the encoder (including the embedding layers) are of size $d_{model}$ \citep{Vaswani2017}.
+At the bottom of the Encoder, the input is embedded into a $d_{model}$ dimensional embedding space and then positional encodings are added.
+As neither recurrent connections nor convolution is part of the Transformer architecture, positional encodings are necessary to constrain the model into learning about relative and absolute locational information within the sequence \citep{Vaswani2017}.
+The authors experimented with learning positional encodings \citep{Gehring2018}, but decided to stay with sinusoidal positional encodings, as it theoretically allows the model to generalize to larger, unseen sequence lengths not seen in training \citep{Vaswani2017}.
+The positional encodings depend on both the position $pos$ of the element within the sequence \textbf{and} on the parity of the dimension $i$ of the i-th component of the embedding vector.
+So, depending on if $i$ is an odd or even number, the following functions are applied to retrieve a positional encoding \citep{Vaswani2017}:
+\begin{equation}
+	PE(pos, i) = 
+	\begin{cases}
+		sin(\frac{pos}{10000^{2i / d_{model}}}), i \text{ is even} \\
+		cos(\frac{pos}{10000^{2i / d_{model}}}), \text{ else}
+	\end{cases}
+\end{equation}
+\par
+The input (embedding + positional encoding) is further processed by two sublayers and each sublayer is wrapped with a residual connection \citep{He2016}, which is subsequently transformed by a layer normalization \citep{Ba2016}.
+This means that the normalization is applied on x + Sublayer(x), where Sublayer(x) is the output of the respective sublayer \citep{Vaswani2017}.
+Specifically, applying a normalization layer to a vector $u\in \mathbb{R}^d$ corresponds to the following computation \citep{Ba2016,Xiong2020}:
+\begin{align}
+	\text{LayerNorm}(u) = \gamma \frac{u-\mu}{\sigma}+\beta,\\
+	\mu = \frac{1}{d}\sum_{k=1}^{d}u_k, \sigma^2 = \frac{1}{d}\sum_{k=1}^{d}(u_k - \mu)^2
+\end{align}
+The mean and standard deviation is denoted as $\mu$ and $\sigma$, $\gamma$ is a scale parameter and $\beta$ is a bias vector \citep{Xiong2020}.
+\par
+The first sublayer of the encoder architecture is a multi-head attention layer.   
+Multi-head attention layers are one of the main components of the Transformer architecture and prerequire the concept of attention \citep{Vaswani2017}.
+Attention mechanisms are functions, which map three input vectors $q,k,v$ called query, keys and values to an output \citep{Vaswani2017}.
+This output is a linear combination of the values $v$ where the specific weights for each component $v_i$ are obtained by a similarity function between the query and the corresponding keys \citep{Vaswani2017}.
+The specific attention function which is used is named "Scaled Dot-Product Attention" and implemented by the following formula \citep{Vaswani2017}:
+\begin{align}
+    \text{Attention}(Q,K,V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V
+	\label{equation:attention}
+\end{align}
+The three matrices $Q,K,V$ consist of the stack of vectors which are processed together and are called queries, keys and values, which is similar to before.
+Each vector component of $Q$ and $K$ is $d_k$ dimensional and the matrix $V$ is a stack of $d_v$ dimensional vectors.
+Equation \ref{equation:attention} is a specific adaption of dot-product attention with a scaling factor that is the reciprocal of the square-root of the dimension $d_k$, which helps to mitigate the risk of vanishing softmax gradients for larger values of $d_k$, according to \citep{Vaswani2017}.
+The dot-product is realized through the matrix multiplication $QK^T$.
+A multi-head attention layer now builds upon the mentioned attention mechanism by concatenating the output of $h$ different attention functions.
+Queries, keys and values are mapped onto $h$ distinct subspaces with weight matrices $W_i^Q$, $W_i^K$, $W_i^V$ where $i=1,\dots,h$ \citep{Vaswani2017}.
+This enables the model to mutually attend to the knowledge of various representation subspaces at different positions \citep{Vaswani2017}:
+\begin{align}
+	\text{MultiHead}(Q,K,V) &= \text{Concat}(\text{head}_1,\dots,\text{head}_h)W^O, \\
+	\text{head}_i & = \text{Attention}(QW_i^Q,KW_i^K,VW_i^V) \\
+	& W_{i}^{Q}, W_{i}^{k} \in \mathbb{R}^{d_{model}\times d_k} , W_i^V \in \mathbb{R}^{d_{model} \times d_v}	
+\end{align}
+After concatenating the attention of each head, the outputs are projected back onto the model dimension $d_{model}$ with the matrix $W^O \in \mathbb{R}^{hd_v \times d_{model}}$ and passed to the second sublayer of the Transformer encoder block.
+\par
+The second sublayer is a fully connected neural network with two linear layers, that are separated by a ReLU activation \citep{Vaswani2017} and the output of this feed forward network is also wrapped by a residual connection, followed by layer normalization as explained before.
+Both in- and output dimension are set to $d_{model}$ and the inner dimension (output dimension of the first layer and in dimension of the second layer) is set to $d_{ff}$ [ibid.].
+Thus, the second sublayer can be described by the following formula:
+\begin{equation}
+	\text{FFN}(x) = \max(0, xW_1 + b_1)W_2+b_2 
+\end{equation}
+\loadFigure{Figure:vit-arch}
 \subsection{Model Architecture}
 A DINO head will be used to obtain weights for the ViT backbone.
 The notation and terminology in the following subsection are adapted from \citep{Caron2021}.
@@ -108,7 +152,7 @@ Note, that the exact number of dimensions $K$ is unknown, as no label knowledge 
 In the experiments $K$ will be set to \dots
 \\
 Let $H(p_1,p_2)$ denote the cross entropy of two probability distributions $p_1$, $p_2$, i.e. $H(p_1,p_2)=-p_1 \log p_2$.
-Further assume a fixed teacher network parametrized by $\theta_t$.
+Further, assume a fixed teacher network parametrized by $\theta_t$.
 Matching the output of the student network to the output of the teacher network can be reformulated as minimizing the cross-entropy of the teacher- and student distributions w.r.t. $P_s$:
 
 \begin{align}
