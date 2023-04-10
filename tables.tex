@@ -185,13 +185,30 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \end{table}
 %</Table:dataset-splits>
 
+%<*Table:vit-model-variants>
+\begin{table}
+\centering
+    \begin{tabular}{l c c c c c}
+        \toprule
+        Model name & Layers & $d_{model}$ & $d_{ff}$ & \#heads & \#parameters \\
+        \midrule
+        ViT-S \citep{Touvron2020} & 12 & 384 & 1536 & 12 & 22M \\
+        ViT-B \citep{Dosovitskiy2020} & 12 & 768 & 3072 & 12 & 86M \\
+        \bottomrule    
+    \end{tabular}
+    \caption{ViT model variants used in this thesis. Adapted from \citep{Dosovitskiy2020,Touvron2020}.}
+    \label{table:vit-model-variants}
+\end{table}
+%</Table:vit-model-variants>
+
 %<*Table:attention-maps>
 \begin{table}[!htbp]
     \centering
     \begin{tabular}{l m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth}}
     %& Image & $\text{head}_0$ & $\text{head}_1$ & $\text{head}_2$ & $\text{head}_3$ & $\text{head}_4$ & $\text{head}_5$ \\
-    Class& \multicolumn{1}{c}{Image} & \multicolumn{1}{c}{$\text{head}_0$} & \multicolumn{1}{c}{$\text{head}_1$} & \multicolumn{1}{c}{$\text{head}_2$} & \multicolumn{1}{c}{$\text{head}_3$} & \multicolumn{1}{c}{$\text{head}_4$} & \multicolumn{1}{c}{$\text{head}_5$} \\
     \toprule
+    Class& \multicolumn{1}{c}{Image} & \multicolumn{1}{c}{$\text{head}_0$} & \multicolumn{1}{c}{$\text{head}_1$} & \multicolumn{1}{c}{$\text{head}_2$} & \multicolumn{1}{c}{$\text{head}_3$} & \multicolumn{1}{c}{$\text{head}_4$} & \multicolumn{1}{c}{$\text{head}_5$} \\
+    \midrule
     Cardiomegaly& \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head5.png} \\
     \hline
     \\[-0.3cm] 

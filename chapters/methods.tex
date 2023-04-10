@@ -72,27 +72,26 @@ A rib fracture is the term for a broken rib bone.
 \subsection{Out-Of-Distribution Detection}
 xx
 \subsection{Vision Transformers}
+\label{section: Vision Transformers}
 Vision Transformers (ViTs) are the reformulation of the Transformer architecture \cite{Vaswani2017} to images.
 Originally, sequences of natural language are split into tokens and then processed by the text Transformer [ibid.].  
 Similarly, ViTs process images as a fixed number of flattened image patches \citep{Dosovitskiy2020}.
 Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced with an emphasis on the encoder part in this thesis in the first part of the section as only the encoder is used within the ViT architecture.
 Then, minor adjustments that are needed to accept images rather than text as inputs are discussed.
-The following part is fully based on \cite{Vaswani2017,Dosovitskiy2020}.
 \par
-The input sequence is assumed to be a sequence $(x_1,\dots,x_n)$, which is mapped to a continuous representation $z=(z_1,\dots,z_n)$ by the Encoder.
-The Encoder is an Encoder \textbf{stack} and consists of a stack of $L$ layers.
-The outputs of each layer in the encoder (including the embedding layers) are of size $d_{model}$ \citep{Vaswani2017}.
-At the bottom of the Encoder, the input is embedded into a $d_{model}$ dimensional embedding space and then positional encodings are added.
+The input is assumed to be a sequence $(x_1,\dots,x_n)$, which is mapped to a continuous representation $z=(z_1,\dots,z_n)$ by the Encoder\citep{Vaswani2017}.
+The Encoder is an Encoder \textbf{stack} and consists of a stack of $L$ layers [ibid.].
+The outputs of each layer in the encoder (including the embedding layers) are of size $d_{model}$ and at the bottom of the Encoder, the input is embedded into a $d_{model}$ dimensional embedding space and then positional encodings are added. \citep{Vaswani2017}.
 As neither recurrent connections nor convolution is part of the Transformer architecture, positional encodings are necessary to constrain the model into learning about relative and absolute locational information within the sequence \citep{Vaswani2017}.
 The authors experimented with learning positional encodings \citep{Gehring2018}, but decided to stay with sinusoidal positional encodings, as it theoretically allows the model to generalize to larger, unseen sequence lengths not seen in training \citep{Vaswani2017}.
-The positional encodings depend on both the position $pos$ of the element within the sequence \textbf{and} on the parity of the dimension $i$ of the i-th component of the embedding vector.
-So, depending on if $i$ is an odd or even number, the following functions are applied to retrieve a positional encoding \citep{Vaswani2017}:
+The positional encodings depend on both the position $pos$ of the element within the sequence \textbf{and} on the parity of the dimension $i$ of the i-th component of the embedding vector, which means, that depending on if $i$ is an odd or even number, the following functions are applied to retrieve a positional encoding \citep{Vaswani2017}:
 \begin{equation}
 	PE(pos, i) = 
 	\begin{cases}
 		sin(\frac{pos}{10000^{2i / d_{model}}}), i \text{ is even} \\
 		cos(\frac{pos}{10000^{2i / d_{model}}}), \text{ else}
 	\end{cases}
+	\label{equation:positional-encoding}
 \end{equation}
 \par
 The input (embedding + positional encoding) is further processed by two sublayers and each sublayer is wrapped with a residual connection \citep{He2016}, which is subsequently transformed by a layer normalization \citep{Ba2016}.
@@ -114,8 +113,8 @@ The specific attention function which is used is named "Scaled Dot-Product Atten
 	\label{equation:attention}
 \end{align}
 The three matrices $Q,K,V$ consist of the stack of vectors which are processed together and are called queries, keys and values, which is similar to before.
-Each vector component of $Q$ and $K$ is $d_k$ dimensional and the matrix $V$ is a stack of $d_v$ dimensional vectors.
-Equation \ref{equation:attention} is a specific adaption of dot-product attention with a scaling factor that is the reciprocal of the square-root of the dimension $d_k$, which helps to mitigate the risk of vanishing softmax gradients for larger values of $d_k$, according to \citep{Vaswani2017}.
+Each vector component of $Q$ and $K$ is $d_k$ dimensional and the matrix $V$ is a stack of $d_v$ dimensional vectors \citep{Vaswani2017}.
+Equation \ref{equation:attention} is a specific adaption of dot-product attention with a scaling factor that is the reciprocal of the square-root of the dimension $d_k$, which helps to mitigate the risk of vanishing softmax gradients for larger values of $d_k$ [ibid.].
 The dot-product is realized through the matrix multiplication $QK^T$.
 A multi-head attention layer now builds upon the mentioned attention mechanism by concatenating the output of $h$ different attention functions.
 Queries, keys and values are mapped onto $h$ distinct subspaces with weight matrices $W_i^Q$, $W_i^K$, $W_i^V$ where $i=1,\dots,h$ \citep{Vaswani2017}.
@@ -125,28 +124,95 @@ This enables the model to mutually attend to the knowledge of various representa
 	\text{head}_i & = \text{Attention}(QW_i^Q,KW_i^K,VW_i^V) \\
 	& W_{i}^{Q}, W_{i}^{k} \in \mathbb{R}^{d_{model}\times d_k} , W_i^V \in \mathbb{R}^{d_{model} \times d_v}	
 \end{align}
-After concatenating the attention of each head, the outputs are projected back onto the model dimension $d_{model}$ with the matrix $W^O \in \mathbb{R}^{hd_v \times d_{model}}$ and passed to the second sublayer of the Transformer encoder block.
+After concatenating the attention of each head, the outputs are projected back onto the model dimension $d_{model}$ with the matrix $W^O \in \mathbb{R}^{hd_v \times d_{model}}$ and passed to the second sublayer of the Transformer encoder block [ibid.].
 \par
 The second sublayer is a fully connected neural network with two linear layers, that are separated by a ReLU activation \citep{Vaswani2017} and the output of this feed forward network is also wrapped by a residual connection, followed by layer normalization as explained before.
 Both in- and output dimension are set to $d_{model}$ and the inner dimension (output dimension of the first layer and in dimension of the second layer) is set to $d_{ff}$ [ibid.].
 Thus, the second sublayer can be described by the following formula:
 \begin{equation}
 	\text{FFN}(x) = \max(0, xW_1 + b_1)W_2+b_2 
+	\label{equation:FFN}
 \end{equation}
+In previous paragraphs the input sequence of the Transformer was assumed to be a one dimensional text sequence (e.g. a sentence).
+Now, necessary architectural modifications are introduced to also allow 2D images as inputs \citep{Dosovitskiy2020}.
+\par
+First, assume a 2D image $x\in \mathbb{R}^{H\times W \times C }$, where $(H, W)$ is the shape (height x width) and C is the number of (color) channels of the image expressed as a 3D tensor [ibid.].
+The image is now subdivided into image patches of size $(P, P)$ and the input tensor $x$ is flattened into a sequence of two-dimensional patches $x_p \in \mathbb{R}^{N \times (P^2C)}$ where the number of input patches is calculated as $N = HW/P^2$ and each patch is spatially flattened and concatenated across the color channels \citep{Dosovitskiy2020}.
+The sequence of flattened image patches is projected to the constant model dimension $d_{model}$ with a linear trainable patch embedding \citep{Dosovitskiy2020,Vaswani2017}.
+Further, a trainable \texttt{[class]} token is inserted at the first position of the sequence of the embedded patches, whose state at the last layer $L$ of the Transformer architecture is the representation of the image $y$ \citep{Dosovitskiy2020}.
+This approach is based on the BERT \texttt{[CLS]} token \citep{Devlin2018} and the output $y$ will serve as the feature vectors (representations) in this thesis.
+\par
+ViTs also use positional encodings similar to the standard Transformer architecture.
+In contrast to the fixed sinusoidal positional encodings mentioned in equation \ref{equation:positional-encoding}, \citep{Dosovitskiy2020} use trainable parameters to encode position into the image patch.
+The authors hypothesize, that because ViTs work with image patches rather than processing the information pixel-wise, the differences on how to enforce spatial information are minor [ibid.].
+After adding the positional encoding, the sequence is fed into the Transformer encoder.
+The architecture of the ViT is depicted in figure \ref{fig:vit-arch}.
 \loadFigure{Figure:vit-arch}
+\par
+Depending on the number of layers $L$, the hidden model size $d_{model}$, the inner dimension $d_{ff}$ of the FFN network \ref{equation:FFN} and the number of heads $h$, \citep{Dosovitskiy2020} define the three model variants ViT-Base (ViT-B), ViT-Large (ViT-L) and ViT-Huge (ViT-H), which were inspired by \citep{Devlin2018}.
+The authors in \citep{Touvron2020} introduced a smaller variant DeiT-S with a smaller number of heads, but with the same dimension \textit{per} head compared to the ViT-B.
+In the thesis, the smaller variant DeiT-S \citep{Touvron2020} and the base configuration ViT-B with patch size 16 are used.
+As in \citep{Caron2021} the smaller variant will be referred to as ViT-S/16 or simply ViT-S.
+Parameter configurations of ViT-S and ViT-B are detailed in table \ref{table:vit-model-variants}.
+\loadTable{Table:vit-model-variants}
+\par
+While Vision Transformers serve as the backbone model, different projection heads will be trained on top of the backbone. 
+After training, the projection head is discarded and features of the ViT will be used for detecting the OOD classes.
+The projection heads which are used, are detailed in the next section.
 \subsection{Model Architecture}
+\subsubsection{Self-supervised Learning?}
+\subsubsection{SimCLR}
+SimCLR is a training schema for learning contrastive visual representations \citep{Chen2020}.
+Contrastive learning is a learning objective that encourages augmented versions of the same training samples to be close together in an embedding space whilst simultaneously repelling those embeddings from different samples \citep{Jaiswal2020}.
+SimCLR is self-supervised which means that no label knowledge is assumed \citep{Chen2020}.
+The framework consists of four main parts, that will be adjusted to fit to our use case [ibid.].
+The notation of the original paper is adapted.
+\par
+The first component consists of applying data augmentation to the input image, which results in two randomly altered image views $\tilde{x}_i$ and $\tilde{x}_j$ that form a positive pair (i.e. an instance of the same class) and which are fed to the base encoder \citep{Chen2020}.
+The original SimCLR image augmentations \texttt{random resized crop}, \texttt{random color distortions} and \texttt{random Gaussian blur} are slightly altered.
+Gaussian blur is \textbf{not} used as local textures and important pathology areas might become not well-defined if applied \citep{Azizi2021}.
+Further, saturation and hue are also set to zero for the \texttt{random color distortions}, as hue and saturation are not meaningful for greyscale images with only one color channel.
+\loadFigure{Figure:simclr-arch}
+\par
+Both views $\tilde{x}_i$ and $\tilde{x}_j$ are passed to an encoder network $f(\cdot)$ that returns two representations $h_i$ and $h_j$ \citep{Chen2020}.
+The choice of the network is flexible and in this thesis a ViT encoder is used as encoder network.
+Specifically, applying the ViT to the augmented view $\tilde{x}_i$ results in $h_i = f(\tilde{x}_i) = \text{ViT}(\tilde{x}_i)$ with $h_i \in \mathbb{R}^{d_{model}}$ being the output of layer $L$ restricted to the \texttt{[class]} token (see \ref{section: Vision Transformers}) \citep{Chen2020}.
+\par
+Subsequently, both representations are projected with a feed-forward network from the embedding space $\mathbb{R}^{d_{model}}$ to a space where the loss is applied \citep{Chen2020}.
+Similar to before, this projection head $g(\cdot)$ consists of a two layer neural network with output dimension 128 and with a ReLU activation in-between \citep{Chen2020} and yields a projected vector $z_i = \max(0, h_iW_1 + b_1)W_2+b_2, z_i \in \mathbb{R}^{128}$.
+\par 
+The last component of the SimCLR module is a contrastive loss function that is applied on the output of the projection head.
+Assume $S=\{{\tilde{x_k}}\}$ and positive pairs $\tilde{x_i}, \tilde{x_j} \in S$ \citep{Chen2020}.
+The contrastive prediction task is defined as determining the correct $\tilde{x_j}$ in $S\setminus \tilde{x_i}$ for a given $\tilde{x_i}$ [ibid.].
+The loss is applied to a batch of images in the following way \citep{Chen2020}:
+If $N$ is the size of the batch, two augmented views are generated for each image which leads to $2N$ total views \citep{Chen2020}.
+The authors then contrast a positive pair against all the other $2N-2$ augmented batch elements [ibid.].
+Specifically all other augmented views are interpreted as negative pairs, which is similar to some previous work [ibid.].
+The resulting loss function has also been included in prior works by \citep{Sohn2016,Wu2018,Oord2018}, is defined for a positive pair $(i,j)$ of augmented examples and was termed \textit{NT-Xent} by \citep{Chen2017}:
+\begin{align}
+	\ell_{i,j} = -\log\frac{\exp(\text{sim}(z_i,z_j)/\tau)}{\sum_{k=1}^{2N} \mathbbm{1}_{[k \neq i]}\exp(\text{sim}(z_i,z_k)/\tau)},\\
+	\text{sim}(u,v) = \frac{u\cdot v}{\Vert u \Vert \Vert v \Vert} \\
+	\mathbbm{1}_{[k \neq i]} = \begin{cases}
+		1, \text{ if } k \neq i \\
+		0, \text{ else}
+	\end{cases}
+\end{align}
+The parameter $\tau$ refers to the temperature and the similarity function which is used, is the cosine similarity \citep{Chen2020}.
+The terminal loss is calculated over all positive tuples $(i,j)$ and also $(j,i)$ [ibid.].
+In this thesis the SimCLR models are trained with a batch size of 256, a learning rate that is set to $0.0003$, an image size of 96x96 and five gradient accumulation steps.
+Gradient accumulation is applied, because the models profit from a higher batch size \citep{Chen2020}.
+In addition to that, the temperature $\tau$ is adjusted to 0.5. 
+\subsubsection{DINO}
 A DINO head will be used to obtain weights for the ViT backbone.
-The notation and terminology in the following subsection are adapted from \citep{Caron2021}.
+The notation and terminology in the following subsection are adapted from \citep{Caron2021}. 
 As discussed by the authors in \citep{Caron2021}, the DINO head is essentially a teacher-student network.
 Both teacher network and student network are parametrized by a weight vector $\theta_t$ and $\theta_s$ respectively.
 The output $g_{\theta_s}$ of the student network is trained to equal the output $g_{\theta_t}$ of the teacher network, which is described as "SSL with Knowledge Distillation" by the authors \citep{Caron2021}.
 An input image $x$ is passed through each network, resulting in the output which is used to calculate probability distributions $P_s$ and $P_t$ over $K$ variables for both networks, where the probability distributions are calculated as the normalized output of $g_{\theta_s}$ and of $g_{\theta_t}$:
-
 \begin{align}
 	P_s(x)^i = \frac{\exp(g_{\theta_s}(x)^i/\tau_s)}{\sum_{k=1}^{k=K}\exp(g_{\theta_s}(x)^k/\tau_s)}, \hspace{8pt} i=1,\dots,K
 	\label{methods-softmax}
 \end{align}
-
 The normalization that is used is the softmax function (see \ref{methods-softmax}) and the $\tau_s > 0$ is a temperature parameter which influences the shape of the output distribution by manipulating the confidence of the predictions [QUELLE einfügen und mehr erläutern].
 Note, that the exact number of dimensions $K$ is unknown, as no label knowledge is directly incorporated.
 In the experiments $K$ will be set to \dots
@@ -154,7 +220,7 @@ In the experiments $K$ will be set to \dots
 Let $H(p_1,p_2)$ denote the cross entropy of two probability distributions $p_1$, $p_2$, i.e. $H(p_1,p_2)=-p_1 \log p_2$.
 Further, assume a fixed teacher network parametrized by $\theta_t$.
 Matching the output of the student network to the output of the teacher network can be reformulated as minimizing the cross-entropy of the teacher- and student distributions w.r.t. $P_s$:
-
+  
 \begin{align}
 	\hat{\theta}_s = \min_{\theta_s}H(P_t(x),P_s(x))
 \end{align}
@@ -189,7 +255,6 @@ The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponenti
 
 A new estimate of $\theta_t$ at iteration $T+1$ is the result of the $\lambda$ weighted convex combination of the current value of $\theta_t$ and $\theta_s$ at time $T$ respectively.
 The update rule in \ref{methods-momentum-encoder} is the same as a momentum encoder \citep{He2019} and $\lambda$ is set according to a cosine schedule \citep{Grill2020}.
-\loadFigure{Figure:simclr-arch}
 % \loadTable{Table:dino-head-dim}
 % \loadTable{Table:normalizations}
 % \loadTable{Table:weights-init-method}
