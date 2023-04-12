@@ -162,6 +162,7 @@ The projection heads which are used, are detailed in the next section.
 \subsection{Model Architecture}
 \subsubsection{Self-supervised Learning?}
 \subsubsection{SimCLR}
+\label{section: SimCLR}
 SimCLR is a training schema for learning contrastive visual representations \citep{Chen2020}.
 Contrastive learning is a learning objective that encourages augmented versions of the same training samples to be close together in an embedding space whilst simultaneously repelling those embeddings from different samples \citep{Jaiswal2020}.
 SimCLR is self-supervised which means that no label knowledge is assumed \citep{Chen2020}.
@@ -179,7 +180,7 @@ The choice of the network is flexible and in this thesis a ViT encoder is used a
 Specifically, applying the ViT to the augmented view $\tilde{x}_i$ results in $h_i = f(\tilde{x}_i) = \text{ViT}(\tilde{x}_i)$ with $h_i \in \mathbb{R}^{d_{model}}$ being the output of layer $L$ restricted to the \texttt{[class]} token (see \ref{section: Vision Transformers}) \citep{Chen2020}.
 \par
 Subsequently, both representations are projected with a feed-forward network from the embedding space $\mathbb{R}^{d_{model}}$ to a space where the loss is applied \citep{Chen2020}.
-Similar to before, this projection head $g(\cdot)$ consists of a two layer neural network with output dimension 128 and with a ReLU activation in-between \citep{Chen2020} and yields a projected vector $z_i = \max(0, h_iW_1 + b_1)W_2+b_2, z_i \in \mathbb{R}^{128}$.
+Similar to before, this projection head $g(\cdot)$ consists of a two layer neural network with inner dimensions that equal the embedding size (e.g. for ViT-S $d=384$), output dimension of 128 and with a ReLU activation in-between \citep{Chen2020} and yields a projected vector $z_i = \max(0, h_iW_1 + b_1)W_2+b_2, z_i \in \mathbb{R}^{128}$.
 \par 
 The last component of the SimCLR module is a contrastive loss function that is applied on the output of the projection head.
 Assume $S=\{{\tilde{x_k}}\}$ and positive pairs $\tilde{x_i}, \tilde{x_j} \in S$ \citep{Chen2020}.
@@ -201,60 +202,104 @@ The parameter $\tau$ refers to the temperature and the similarity function which
 The terminal loss is calculated over all positive tuples $(i,j)$ and also $(j,i)$ [ibid.].
 In this thesis the SimCLR models are trained with a batch size of 256, a learning rate that is set to $0.0003$, an image size of 96x96 and five gradient accumulation steps.
 Gradient accumulation is applied, because the models profit from a higher batch size \citep{Chen2020}.
-In addition to that, the temperature $\tau$ is adjusted to 0.5. 
+In addition to that, the temperature $\tau$ is adjusted to 0.5.
+%% new subsubsection
 \subsubsection{DINO}
-A DINO head will be used to obtain weights for the ViT backbone.
-The notation and terminology in the following subsection are adapted from \citep{Caron2021}. 
-As discussed by the authors in \citep{Caron2021}, the DINO head is essentially a teacher-student network.
+A DINO \citep{Caron2021} head is also used as a projection network, which is trained on top of the ViT backbone.
+Both notation and terminology of the following subsection are adapted from \citep{Caron2021}.
+The authors base their training method on knowledge distillation (KD).
+KD was introduced in \citep{Hinton2015} and refers to transferring the prediction capabilities from a large model to a smaller (compressed) one.
+The authors assume a large model, which is potentially trained on an extensive amount of data and inject knowledge into the smaller model, which is enforced to replicate the output of the larger model \citep{Hinton2015,Caron2021}.
+Often one refers to the large model as a teacher network while the smaller model is called the student network \citep{Caron2021}. 
+One major difference of the DINO paradigm to the original KD concept is, that no pretrained teacher network is assumed [ibid.].
 Both teacher network and student network are parametrized by a weight vector $\theta_t$ and $\theta_s$ respectively.
-The output $g_{\theta_s}$ of the student network is trained to equal the output $g_{\theta_t}$ of the teacher network, which is described as "SSL with Knowledge Distillation" by the authors \citep{Caron2021}.
-An input image $x$ is passed through each network, resulting in the output which is used to calculate probability distributions $P_s$ and $P_t$ over $K$ variables for both networks, where the probability distributions are calculated as the normalized output of $g_{\theta_s}$ and of $g_{\theta_t}$:
+The output $g_{\theta_s}$ of the student network is trained to equal the output $g_{\theta_t}$ of the teacher network \citep{Caron2021}.
+\par
+An input image $x$ is passed through each network, given both student and teacher network.
+The architectural choice of both networks is discussed after giving an overview of the training objective.
+The output of both teacher- and student network is normalized with a softmax function, which results in two $K$-dimensional probability distributions $P_s$ and $P_t$ \citep{Caron2021}:
 \begin{align}
-	P_s(x)^i = \frac{\exp(g_{\theta_s}(x)^i/\tau_s)}{\sum_{k=1}^{k=K}\exp(g_{\theta_s}(x)^k/\tau_s)}, \hspace{8pt} i=1,\dots,K
-	\label{methods-softmax}
+	P_{s}(x)^i = \frac{\exp(g_{\theta_{s}}(x)^i/\tau_{s})}{\sum_{k=1}^{k=K}\exp(g_{\theta_{s}}(x)^k/\tau_{s})}, \hspace{8pt} i=1,\dots,K, \\
+	P_{t}(x)^i = \frac{\exp(g_{\theta_{t}}(x)^i/\tau_{t})}{\sum_{k=1}^{k=K}\exp(g_{\theta_{t}}(x)^k/\tau_{t})}, \hspace{8pt} i=1,\dots,K,
+	\label{equation:dino-softmax}
 \end{align}
-The normalization that is used is the softmax function (see \ref{methods-softmax}) and the $\tau_s > 0$ is a temperature parameter which influences the shape of the output distribution by manipulating the confidence of the predictions [QUELLE einfügen und mehr erläutern].
-Note, that the exact number of dimensions $K$ is unknown, as no label knowledge is directly incorporated.
-In the experiments $K$ will be set to \dots
-\\
-Let $H(p_1,p_2)$ denote the cross entropy of two probability distributions $p_1$, $p_2$, i.e. $H(p_1,p_2)=-p_1 \log p_2$.
-Further, assume a fixed teacher network parametrized by $\theta_t$.
-Matching the output of the student network to the output of the teacher network can be reformulated as minimizing the cross-entropy of the teacher- and student distributions w.r.t. $P_s$:
-  
+The temperature $\tau$ controls the smoothness of the output distribution \citep{Caron2021} and larger values for $\tau$ tend to produce smoother distributions \textcolor{red}{\citep{Hinton2015}}
+The exact number of dimensions $K$ is unknown, as no direct label knowledge is incorporated.
+If not mentioned otherwise, the dimension is set to $K=12000$ \textcolor{red}{?} in this thesis.
+\par
+The normalized output $P_s$ and $P_t$ are now matched with the cross-entropy.
+Let $H(a,b)$ denote the cross entropy of two probability vectors $a$, $b$, i.e. $H(a,b)=-a \log b$ and further, assume a fixed teacher network parametrized by $\theta_t$ \textcolor{red}{\citep{Caron2021}, ergänzen!}.
+Both distribution are aligned by minimizing the cross-entropy of the fixed teacher distribution and the student distribution with regard to $P_s$ [ibid.]: 
 \begin{align}
 	\hat{\theta}_s = \min_{\theta_s}H(P_t(x),P_s(x))
+	\label{equation:ce-student-teacher}	
 \end{align}
+Equation \ref{equation:ce-student-teacher} is used as a base for the training loss and further self-supervised learning techniques are adopted to boost model performance \citep{Caron2021}.
+Analogous to the SimCLR architecture, different augmented views of the same image are generated and passes to the model.
+While in the standard SimCLR setting two views are created \citep{Chen2020}, the DINO head uses a \textit{set} $V$ of several views, that typically encompasses more than two views \citep{Caron2021}.
+\par
+In particular, they use a multi-crop augmentation strategy, that creates two global views of full resolution and a number of local views of lower resolution \citep{Caron2020, Caron2021}. 
+The full resolution views embody large parts (e.g. more than 50\%) of the original image at resolution $224^2$ (e.g. more than 50\%) and the local views of resolution $96^2$ are cropped to a smaller size (e.g. maximum 50\% of the original image) \citep{Caron2021}.
+If not mentioned otherwise, global crops scale and local crops scale are adapted from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
+Depending on the type of view, the crop is then passed to the student or the teacher network.
 
-The authors integrate SSL by adopting a multi-crop strategy [QUELLE].
-Given the original input image $x$, several views of the same image are generated by applying augmentations to $x$.
-The images of the set of augmentations called $V$ represent manipulated views of $x$, while global and local views correspond to views that enclose larger parts (e.g. >50\% receptive field(?)) and smaller parts (e.g. <50\% receptive field(?)) respectively [QUELLE].
-
+While the student network receives all crops (global and local), the teacher network produces outputs for global views only \citep{Caron2021}.
+According to the authors this should enforce the model to gather information from small image patches (local information) and connect them to its global image interpretation \textcolor{red}{\citep{Caron2021}, Ursprung "global to local"}.
+Now, given the set of views $V$, the following, adapted training loss is minimized \citep{Caron2021}:
 \begin{align}
-	\min_{\theta_s}\sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x'\in V, \\ x\neq x'}} H(P_t(x),P_s(x'))
-	\label{methods-training-obj}
+	\min_{\theta_s}\sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x\prime \in V, \\ x\neq x\prime}} H(P_t(x),P_s(x\prime))
+	\label{equation:dino-training-objective}
 \end{align}
-
-Equation \ref{methods-training-obj} is the training objective of the DINO head, which also reveals the setup of the feed-forward pass:
-The outer sum collects all global views $x$, while the inner sum goes over all local views $x'\neq x$.
-The global views are only passed to the teacher network and the local views are passed to the student network.
-From these global-to-local correspondence [QUELLE, mehr zu cross entropy ergänzen] the teacher and student distribution should be as close as possible (entropy-wise).
-\\
-In this thesis, the number of global views is restricted to two and several local views are assumed, which adheres to the logic of the authors in \citep{Caron2021}. 
-The parameter weights of the student network $\theta_s$ are updated by stochastic gradient descent with learning rate $\eta$ and fixed teacher network, i.e. [QUELLE]:
-
+The outer sum collects both global views $x_i^g, i\in\{1,2\}$ that are passed to the teacher network and the inner sum ranges over all local views $x\prime \neq x, x \prime \in V $ that are passed to the student network \citep{Caron2021}.
+Given a fixed teacher distribution, the student distribution that minimizes the loss, minimizes the sum of the cross-entropies between all views seen by the student and two global views processed by the teacher network.
+So essentially all views are processed by the student network and are aligned to both global views.
+\par
+As explained before, both probability distributions $P_s$ and $P_t$ are the normalized output of network architectures $g_{\theta_s}$ and $g_{\theta_t}$ and share the same underlying architecture \citep{Caron2021}.
+The networks $g$ are the composition of a backbone network $f$ with an MLP projection head $h$ \citep{Caron2021}.
+The MLP projection head is comparable to the head that is used in \citep{Caron2020}, which is based on the SimCLR projection head described in section \ref{section: SimCLR}.
+The choice of the backbone network is flexible, but the authors primarily use a ViT architecture \citep{Dosovitskiy2020}, which is also the architectural choice in this thesis.
+First, the backbone $f$ is applied, and the resulting features are passed to the first two layers of the projection head with an output dimension of 2048 and a gaussian error linear units (GELU) activation in-between \citep{Hendrycks2016}:
+\begin{equation}
+\text{GELU}(x) = x \Phi(x)
+\end{equation}
+The cumulative distribution $\Phi(x)$ of the standard normal probability mass functions is used inside the GELU function, which is applied after each of the first two layers \citep{Hendrycks2016}.
+The last layer of the projection head does \textit{not} use a GELU activation and projects the features to a bottleneck dimension of 256d \citep{Caron2021}.
+Then, the output is $\ell_2$-normalized ($x \leftarrow x/\Vert x \Vert_2$) so that each vector has unit norm \citep{Caron2021}.
+Finally, the output is passed to a fully connected layer of dimension $K$ with weight normalization.
+Weight normalization speeds-up convergence by reformulating the weight vectors in a neural net with different parameters and was proposed by \citep{Salimans2016}.
+The weights $w$ of a neural net are reparametrized with reference to a new parameter vector $v$ of the same dimension as $w$ and with a scalar parameter $g$ \citep{Salimans2016}:
+\begin{equation}
+	w = g \frac{v}{\Vert v \Vert}
+\end{equation}
+Both parameters are trainable and optimization is performed on $g$ and $v$ and not on $w$ \citep{Salimans2016}.
+\par
+While both networks share the same architecture, student- and teacher network are updated differently. 
+The parameter weights of the student network $\theta_s$ are updated by stochastic gradient descent with learning rate $\eta$ and fixed teacher network $\bar{P}_t$, i.e. \citep{Caron2021}:
 \begin{align}
-	\theta_s \leftarrow \theta_s - \eta \nabla H(\bar{P}_t(x),P_s(x))
+	\mathcal{L} &= \sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x\prime \in V, \\ x\neq x\prime}} H(\bar P_t(x),P_s(x\prime)), \\ 
+	\theta_s &\leftarrow \theta_s - \eta \nabla_{\theta_s} \mathcal{L}
 \end{align}
-
+New parameter weights of the teacher network are obtained by adding the weighted convex combination $(1-\lambda)\theta_s$ to the current value $\lambda\theta_t$.
+This technique is known as exponential moving average (EMA) on the students weights and is also referred to as a momentum encoder \citep{He2019,Caron2021}.
 The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponential moving average \citep{Grill2020,Caron2021}: 
-
 \begin{align}
-	\theta_t(T+1) \leftarrow \lambda \theta_t(T) + (1-\lambda) \theta_s(T).
-	\label{methods-momentum-encoder}
+	\theta_t \leftarrow \lambda \theta_t + (1-\lambda) \theta_s
+	\label{equation:dino-momentum-encoder}
 \end{align}
-
-A new estimate of $\theta_t$ at iteration $T+1$ is the result of the $\lambda$ weighted convex combination of the current value of $\theta_t$ and $\theta_s$ at time $T$ respectively.
-The update rule in \ref{methods-momentum-encoder} is the same as a momentum encoder \citep{He2019} and $\lambda$ is set according to a cosine schedule \citep{Grill2020}.
+According to \citep{Caron2021}, the teacher is more performant than the student at training time which helps the student to attach to higher quality features, that are focused by the teacher \textcolor{red}{??} and the $\lambda$ in equation \ref{equation:dino-momentum-encoder} is set with a cosine schedule \citep{Grill2020}.
+To mitigate the risk of a complete model collapse, which essentialy means that all feature vectors are mapped to a constant point \citep{Jing2022}, the authors also apply centering and sharpening on the output of the teacher network \citep{Caron2021}.
+They validate by experiments, that the centering technique is necessary to avoid that one dimension dominates the output \citep{Caron2021}.
+Centering is achieved by adding a bias term $c$ to the output of the teacher network and $c$ is improved by an exponential moving average with a parameter $m$ that averages between the prior $c$ and the average teacher output over the current batch with batch size $B$ \citep{Caron2021}:
+\begin{align}
+	c & \leftarrow mc + (1-m) \frac{1}{B}\sum_{i=1}^B g_{\theta_t}(x_i), \\
+	& g_t(x) \leftarrow g_{\theta_t}(x) + c
+	\label{equation:dino-centering}
+\end{align}
+To counteract the effect of centering, which can lead to a collapse to a uniform distribution \textcolor{red}{?}, the authors apply sharpening on the teacher output \textcolor{red}{\citep{Caron2021}}.
+Sharpening of the teacher output is achieved by using a low value for the temperature parameter $\tau_t$, when applying the softmax normalization in equation \ref{equation:dino-softmax} \citep{Caron2021}.
+As already mentioned, lower temperature values tend to sharpen the probability distribution \textcolor{red}{\citep{Hinton2015}}.
+The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
+\loadFigure{Figure:dino-arch}
 % \loadTable{Table:dino-head-dim}
 % \loadTable{Table:normalizations}
 % \loadTable{Table:weights-init-method}
