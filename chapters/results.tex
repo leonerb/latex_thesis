@@ -1,9 +1,50 @@
 \section{Results}
-% \loadFigure{Figure:setting1-chexnorm-v-imgnorm-simclr}
-% \loadFigure{Figure:setting1-chexnorm-v-imgnorm-dino}
+This section investigates the OOD detection performance of the aforementioned models.
+In the first part, models are pretrained on setting 1-3 and self-supervised results are presented with no label knowledge.
+After establishing an unsupervised baseline, the pretrained models are finetuned and supervised results are discussed.
+\par
+First, different training architectures and model configurations are evaluated on the setting 1 dataset split (see table \ref{table:settings-dataset-sizes}).
+As this split contains six different OOD pathologies, including the ones from the other settings, the best configuration found for setting 1 was then applied to the other two settings.
+In the first experiment, two different image normalizations were compared for SimCLR and DINO.
+The first normalization is adapted from \citep{Berger2021} and consists of both CheXpert dataset mean and standard deviation.
+This normalization will be referred to as the \textit{CheXpert} normalization and the other normalization is the \textit{ImageNet} normalization of the ImageNet dataset \citep{Deng2009}.
+Figure \ref{fig:setting1-chexnorm-v-imgnorm} summarizes the results.
+If averaged across the OOD pathologies, the CheXpert normalization is 0.26 percentage points higher for SimCLR, which is interpreted as both normalizations being on par.
+The features of the discarded DINO projection head outperform the features of the SimCLR architecture for each of the six OOD pathologies.
+On average, the ImageNet normalization applied to DINO leads to a slight performance increase of 0.66 percentage points over the CheXpert normalization.
+Further, the low standard deviation of the CheXpert images of $\sigma=0.0349$, leads to a normalized input range of approximately [-17,17] and because neural nets with high input values tend to show convergence problems \textcolor{red}{QUELLE}, all following results use the ImageNet dataset statistics as a normalization.
+In addition to that, additional experiments with the SimCLR architecture are omitted due to the outperformance of the DINO model.
+\par
 \loadFigure{Figure:setting1-chexnorm-v-imgnorm}
+Next, DINO models are pretrained on setting 2 and setting 3.
+Then, the OOD score consistency of temperature scaled feature similarity was analysed for all three settings.
+Specifically, the pretrained model checkpoints were evaluated both on a set of nearest neighbour values $K$ (while keeping the temperature at $\tau=1.0$) and on different values for $\tau$ (while keeping $K$ fixed).
+The results are summarized in figure \ref{fig:auroc-vs-k-and-temp} and reveal the following findings:
+While the performance worsens for the first two settings with an increased value of $K$, the performance on setting 3 increases, when more neighbours are used for the feature similarity.
+In addition to that, setting 1 and setting 2 are not sensitive to temperature values, which is in contrast to setting 3 with an optimal $\tau$ value of 1.
+Therefore, no clear consistency across the settings can be observed and the temperature for all following experiments is set to $\tau=1$ for setting 1-3.
+Further, the number of neighbours $K$ is set to 1 when evaluating setting 1 and 2 and $K=N_3$ for setting 3, where $N_3$ is the length of the respective ID training set.
 \loadFigure{Figure:auroc-vs-k-and-temp}
+In another experiment, the impact of image augmentations is evaluated.
+The performance comparison between the adapted DINO augmentation and the Rotation augmentations used in \citep{Azizi2021} is depicted in figure \ref{fig:dino-rotate-augs-v-default-augs}.
+For unsupervised OOD detection, the DINO augmentations outperform the Rotation augmentations across all settings.
+The k-nn mean accuracy however is higher, if rotated augmentations are applied to the CheXpert images.
 \loadFigure{Figure:dino-rotate-augs-v-default-augs}
+In addition to evaluating the performance of the models that were pretrained on setting 1-3, it is often insightful to visualize the self-attention maps of the ViT encoder.
+For each of the in-distribution pathologies, an input image of the respective class is fed to the ViT encoder and pixel regions are marked with respect to attention values.
+In our case, blue colormap values correspond to regions of the lowest attention, while yellow values indicate the regions of interest of the ViT encoder with higher attention values.
+Results for all six attention heads are summarized in \ref{table:attention-maps}.
+The results show, that while some basic properties of chest x-rays are expressed through higher attention values, most heads do not attend to the region of interest.
+The ViT encoder attends for example only to random pixel regions for the "No Finding" class.
+In contrast to that, $\text{head}_5$ seems to attach to some lung parts for the Lung Opacity pathology.
+There is no evidence, that the DINO models pretrained on setting 1-3 show segmentation capabilities.
 \loadTable{Table:attention-maps}
-\loadTable{Table:finetuning-supervised-2}
+\par
+In the former part, the unsupervised performance of the pretrained models was investigated.
+It is now analysed how well the pretrained models perform, if labels are available.
+To that end, another DINO model was pretrained on the whole CheXpert dataset to see how far the performance can be pushed.
+The pretrained model weights are used as initializations for finetuning a cross-entropy based classifier on top of the ViT encoder.
+%\loadTable{Table:finetuning-supervised-2}
+\loadTable{Table:finetuning-supervised-new}
 \loadFigure{Figure:supervised-vs-unsupervised}
+\loadTable{Table:supcon-results}

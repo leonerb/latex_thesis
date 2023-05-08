@@ -90,6 +90,7 @@
 %<*Figure:setting1-chexnorm-v-imgnorm>
 \begin{figure}[ht]
 	\begin{subtable}[c]{\textwidth}
+		\renewcommand{\arraystretch}{1.5}
 		\centering
 		\begin{tabular}{l c c c c} 
 		\toprule
@@ -123,6 +124,7 @@
 	For the ImageNet normalization, all images were scaled with $\mu=(0.485, 0.456, 0.406)$ and $\sigma=(0.229, 0.224, 0.225)$. 
     The CheXpert normalization stands for a normalization with $\mu=(0.5330, 0.5330, 0.5330)$ and $\sigma=(0.0349, 0.0349, 0.0349)$ \citep[\href{https://github.com/christophbrgr/ood_detection_framework}{\color{Periwinkle}{implementation}}]{Berger2021}.
 	The ID class is No Finding and OOD classes are the ones that are mentioned in the plot.}
+	\label{fig:setting1-chexnorm-v-imgnorm}
 \end{figure}
 %</Figure:setting1-chexnorm-v-imgnorm>
 
@@ -145,6 +147,7 @@
 	\caption{The values for setting 1 were calculated as a top-3 average of the six OOD pathologies.
 	$N_i$ refers to the length of the in-distribution train dataset of the i-th setting, where $i \in \{1,2,3\}$.
 	The temperature is set to 1 for all values in figure \ref{fig:auroc-vs-k}.}
+	\label{fig:auroc-vs-k-and-temp}
 \end{figure}
 %</Figure:auroc-vs-k-and-temp>
 
@@ -152,8 +155,9 @@
 \begin{figure}[ht]
 	\centering
 	\input{figures/dino-rotate-augs-vs-default-augs-new.pgf}
-	\caption{Comparison of the adjusted DINO augmentations and the Rotation augmentations used by [cite google paper].
+	\caption{Comparison of the adjusted DINO augmentations and the adapted Rotation augmentations used by \citep{Azizi2021}.
 	\textcolor{red}{Setting 3 neu machen}}
+	\label{fig:dino-rotate-augs-v-default-augs}
 \end{figure}
 %</Figure:dino-rotate-augs-v-default-augs>
 
@@ -161,7 +165,7 @@
 \begin{figure}[ht]
 	\centering
 	\input{figures/supervised-vs-unsupervised.pgf}
-	\caption{Impact of model size on supervised ViT with ImageNet initialization and performance of supervised ($\circ$) and unsupervised (\rlap{+}{\texttimes}) methods.}
+	\caption{Comparison of supervised and unsupervised models for setting 2 and setting 3.}
 \end{figure}
 %</Figure:supervised-vs-unsupervised>
 

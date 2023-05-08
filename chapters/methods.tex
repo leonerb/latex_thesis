@@ -3,6 +3,7 @@ Vision Transformers (ViTs) form the backbone of all models that will be trained 
 They were introduced by \citep{Dosovitskiy2020} and transfer the concept of text transformers developed by \citep{Vaswani2017} to the image (classification) domain.
 ViTs will be used in this thesis in conjunction with the DINO model objective, which resembles a paradigm of training SSL models on image data \citep{Caron2021}.
 The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponential moving average of the student's weights \citep{Caron2021}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dataset}
 In this thesis, the CheXpert dataset is used as a collection of chest X-ray images developed by \citep{Irvin2019}.
 The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
@@ -69,8 +70,10 @@ Because the lung appears dark on x-ray images, opaque areas are white in contras
 It should be emphasized that the term is unspecific and is not descriptive in terms of neither the extent nor the origin of the pathology \citep{Hansell2008}.
 Pneumonia is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue, which also appears as a lung opacity on chest x-rays [ibid.].
 A rib fracture is the term for a broken rib bone.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Out-Of-Distribution Detection}
 xx
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Vision Transformers}
 \label{section: Vision Transformers}
 Vision Transformers (ViTs) are the reformulation of the Transformer architecture \cite{Vaswani2017} to images.
@@ -159,8 +162,10 @@ Parameter configurations of ViT-S and ViT-B are detailed in table \ref{table:vit
 While Vision Transformers serve as the backbone model, different projection heads will be trained on top of the backbone. 
 After training, the projection head is discarded and features of the ViT will be used for detecting the OOD classes.
 The projection heads which are used, are detailed in the next section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Model Architecture}
 \subsubsection{Self-supervised Learning?}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{SimCLR}
 \label{section: SimCLR}
 SimCLR is a training schema for learning contrastive visual representations \citep{Chen2020}.
@@ -191,7 +196,7 @@ The authors then contrast a positive pair against all the other $2N-2$ augmented
 Specifically all other augmented views are interpreted as negative pairs, which is similar to some previous work [ibid.].
 The resulting loss function has also been included in prior works by \citep{Sohn2016,Wu2018,Oord2018}, is defined for a positive pair $(i,j)$ of augmented examples and was termed \textit{NT-Xent} by \citep{Chen2017}:
 \begin{align}
-	\ell_{i,j} = -\log\frac{\exp(\text{sim}(z_i,z_j)/\tau)}{\sum_{k=1}^{2N} \mathbbm{1}_{[k \neq i]}\exp(\text{sim}(z_i,z_k)/\tau)},\\
+	\ell_{i,j} = -\log\frac{\exp(\text{sim}(z_i,z_j)/\tau)}{\sum_{k=1}^{2N} \mathbbm{1}_{[k \neq i]}\exp(\text{sim}(z_i,z_k)/\tau)}, \tag{NT-Xent}\\
 	\text{sim}(u,v) = \frac{u\cdot v}{\Vert u \Vert \Vert v \Vert} \\
 	\mathbbm{1}_{[k \neq i]} = \begin{cases}
 		1, \text{ if } k \neq i \\
@@ -203,7 +208,7 @@ The terminal loss is calculated over all positive tuples $(i,j)$ and also $(j,i)
 In this thesis the SimCLR models are trained with a batch size of 256, a learning rate that is set to $0.0003$, an image size of 96x96 and five gradient accumulation steps.
 Gradient accumulation is applied, because the models profit from a higher batch size \citep{Chen2020}.
 In addition to that, the temperature $\tau$ is adjusted to 0.5.
-%% new subsubsection
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{DINO}
 A DINO \citep{Caron2021} head is also used as a projection network, which is trained on top of the ViT backbone.
 Both notation and terminology of the following subsection are adapted from \citep{Caron2021}.
@@ -242,7 +247,6 @@ In particular, they use a multi-crop augmentation strategy, that creates two glo
 The full resolution views embody large parts (e.g. more than 50\%) of the original image at resolution $224^2$ (e.g. more than 50\%) and the local views of resolution $96^2$ are cropped to a smaller size (e.g. maximum 50\% of the original image) \citep{Caron2021}.
 If not mentioned otherwise, global crops scale and local crops scale are adapted from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
 Depending on the type of view, the crop is then passed to the student or the teacher network.
-
 While the student network receives all crops (global and local), the teacher network produces outputs for global views only \citep{Caron2021}.
 According to the authors this should enforce the model to gather information from small image patches (local information) and connect them to its global image interpretation \textcolor{red}{\citep{Caron2021}, Ursprung "global to local"}.
 Now, given the set of views $V$, the following, adapted training loss is minimized \citep{Caron2021}:
@@ -295,15 +299,45 @@ Centering is achieved by adding a bias term $c$ to the output of the teacher net
 	& g_t(x) \leftarrow g_{\theta_t}(x) + c
 	\label{equation:dino-centering}
 \end{align}
-To counteract the effect of centering, which can lead to a collapse to a uniform distribution \textcolor{red}{?}, the authors apply sharpening on the teacher output \textcolor{red}{\citep{Caron2021}}.
+To counteract the effect of centering, that can lead to a collapse to a uniform distribution \textcolor{red}{?}, the authors apply sharpening on the teacher output \textcolor{red}{\citep{Caron2021}}.
 Sharpening of the teacher output is achieved by using a low value for the temperature parameter $\tau_t$, when applying the softmax normalization in equation \ref{equation:dino-softmax} \citep{Caron2021}.
 As already mentioned, lower temperature values tend to sharpen the probability distribution \textcolor{red}{\citep{Hinton2015}}.
 The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 \loadFigure{Figure:dino-arch}
-% \loadTable{Table:dino-head-dim}
-% \loadTable{Table:normalizations}
-% \loadTable{Table:weights-init-method}
-% \loadFigure{Figure:labels-used-AUC-setting1}
-% \loadFigure{Figure:labels-used-AUC-setting2}
-% \loadFigure{Figure:heatmap-geom}
-% \loadFigure{Figure:heatmap-spatial}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Supervised Contrastive Learning}
+\label{section: supervised-contrastive-learning}
+Previously explained projection heads did \textit{not} assume any label information and were therefore self-supervised.
+The projection head, that is applied in supervised contrastive learning assumes label knowledge and therefore embeddings of the same class may be pushed closer together in the embedding space \citep{Khosla2020}.
+Similar to the prior described architectures, the authors apply data augmentation, an encoder network (backbone) and a contrastive head that integrates supervision into the loss function \citep{Khosla2020}.
+At inference time the projection network is removed, and the features are used for downstream tasks \citep{Khosla2020}, which resembles the typical pattern that is used throughout this thesis.
+\par
+As data augmentation module, the authors ablate four different augmentation strategies including RandAugment \citep{Cubuk2019a}, AutoAugment \citep{Cubuk2019b}, SimAugment \citep{Chen2020} and Stacked RandAugment \citep{Tian2020}.
+SimAugment refers to an augmentation strategy which takes the SimCLR augmentations and adds image warping before the Gaussian Blur which boosts performance \citep{Khosla2020}
+While there are observed differences in performance between the different augmentation strategies \citep{Khosla2020}, the results refer to the accuracy on ImageNet \citep{Deng2009}, and it is not clear how well they generalize to medical images, let alone chest-X-rays.
+In this thesis, the adapted SimCLR augmentations described in \ref{section: SimCLR} are used for simplicity and to ensure consistency when comparing results.
+In addition to that, image warping is also omitted, as this may lead to a misinterpretation of the model due to unnatural pathology dimensions.
+For example, the heart could be warped to an unnatural size and lead to false positive classifications of cardiomegaly.
+\par
+Identical to before we will use a ViT as the backbone network.
+Two augmented samples are fed into the encoder network and the features are then $\ell_2$ normalized \citep{Khosla2020}.
+The features are passed to an MLP projection network.
+First, the features are passed through a fully connected layer with a hidden dimension of $d_{model}$ and a ReLU activation function and then, the output is linearly projected into a 128d space where the loss is applied \citep{Khosla2020}.
+\par
+Now the loss function is introduced.
+Notations and definitions are taken from \citep{Khosla2020}.
+Let $N$ be the batch size.
+As a starting point, consider $2N$ augmented image samples $\tilde{x}_l$ and their corresponding class labels $\tilde{y}_l$, which together form a set of $2N$ pairs $\tilde{X} = \{\tilde{x}_l, \tilde{y}_l\}_{l=1,\dots,2N}$ \citep{Khosla2020}.
+Let $i \in I:=\{1,\dots,2N\}$ denote the random index of a pair in $\tilde{X}$ and let $A(i):=I\setminus \{i\}$ \citep{Khosla2020}.
+Further, consider $P(i):=\{p\in A(i): \tilde{y}_p = \tilde{y}_i\}$ to be the set of all pairs that have the same class label (positives) as the pair at index $i$ \citep{Khosla2020}.
+Note that $i \not \in P(i)$ as $p$ needs to be an element of $A(i)$.   
+In addition, with $z_{l} := Projection(Encoder(\tilde{x}_l)) \in \mathbb{R}^{128}$, the authors define a suitable loss function $\mathcal{L}_{out}^{sup}$, that incorporates label information \citep{Khosla2020}:
+\begin{align}
+	\mathcal{L}_{out}^{sup} &= \sum_{i\in I} -\frac{1}{\vert P(i) \vert} \sum_{p\in P(i)} \log \frac{\exp(z_i \cdot z_p/\tau)}{\sum_{a \in A(i)}\exp(z_i \cdot z_a/\tau)}
+	\label{equation: superv-contrastive-loss}
+\end{align}
+The \textit{out} subscript indicates, that the summation over all positive examples in $P(i)$ is performed \textit{outside} the log function \citep{Khosla2020}.
+One can also define the loss function $\mathcal{L}_{in}^{sup}$, which is similar to the previously described loss in equation \ref{equation: superv-contrastive-loss}, but now the summation over positives is with\textit{in} the logarithmic function \citep{Khosla2020}.
+A comparison of the properties can be found in \citep{Khosla2020}, but for the purpose of this thesis, the higher performant loss function in equation \ref{equation: superv-contrastive-loss} is used as recommended by the authors.
+
+

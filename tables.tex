@@ -203,6 +203,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 
 %<*Table:attention-maps>
 \begin{table}[!htbp]
+    \renewcommand{\arraystretch}{1.2}
     \centering
     \begin{tabular}{l m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth}}
     %& Image & $\text{head}_0$ & $\text{head}_1$ & $\text{head}_2$ & $\text{head}_3$ & $\text{head}_4$ & $\text{head}_5$ \\
@@ -223,7 +224,8 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \\[-0.3cm]
     Pneumothorax & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head5.png} \\
 \end{tabular}
-\caption{Attention maps of the different in-distribution classes. The second column depicts the reference image while the other columns show the self-attention maps of the ViT encoder.}
+\caption{Self-attention maps of the different in-distribution classes. The second column depicts the reference image while the other columns show the self-attention maps of the ViT encoder.}
+\label{table:attention-maps}
 \end{table}
 %</Table:attention-maps>
 
@@ -318,16 +320,66 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     & & DINO CheX & Image\-Net DINO & Rand. Weights  & Baseline \citep{Berger2021} & & DINO CheX & Image\-Net DINO & Rand. Weights & Baseline \citep{Berger2021}\\
     \bottomrule
     \multirow{2}{1cm}{AUROC}& Mahal. & \textbf{63.4} & 63.3 & 56.7 & 58.0 & & \textbf{53.6 }& 48.3 & 51.3 & 52.6 \\
-    & MCP & 65.5 & 65.9 & 53.5 & \textbf{67.8} & & 46.3 & \textbf{50.1} & 37.6 & 45.8 \\
+    & MSP & 65.5 & 65.9 & 53.5 & \textbf{67.8} & & 46.3 & \textbf{50.1} & 37.6 & 45.8 \\
     \hline
     \multirow{2}{1cm}{AUCPR} & Mahal. & 64.5 & 64.4 & 56.1 & \textbf{69.5} & &53.3 & 49.1 & 50.5 & \textbf{60.1} \\
-    & MCP & \textbf{67.7} & 66.8 & 54.2 & 58.0 & & 50.4 & 53.3 & 40.8 & \textbf{58.6} \\
+    & MSP & \textbf{67.7} & 66.8 & 54.2 & 58.0 & & 50.4 & 53.3 & 40.8 & \textbf{58.6} \\
     \hline
     Train acc.& & 83.8 & \textbf{94.6} & 65.6 & 88.8 & & 76.1 & \textbf{83.9} & 58.0 & 75.8 \\
     \end{tabular}
     \caption{Supervised results with vit small backbone.}
 \end{table}
 %</Table:finetuning-supervised-2>
+
+%<*Table:finetuning-supervised-new>
+\begin{table}[h]
+    \renewcommand{\arraystretch}{1.5}
+    \centering
+    \begin{tabular}{l l c c c c c c}
+    \toprule
+    & & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUCPR \%} &  \multicolumn{2}{c}{ID}\\
+    \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+    Eval& Initialization & MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
+    \hline
+    %\multirow{5}{3pt}{\rotatebox{90}{Setting 2}} 
+    \multicolumn{1}{c|}{\multirow{5}{3pt}{\rotatebox{90}{Setting 2}} } & $\text{CheXpert}_{\text{setting 2}}$* & 65.5 & 63.4 (56.3) & 67.7 & 64.5 (54.2) & 83.8 & 83.4 \\
+    \multicolumn{1}{c|}{}& $\text{CheXpert}_{\text{all}}$* & \textbf{69.5} & \textbf{70.8} (70.7) & \textbf{68.6} & 71.6 (\textbf{72.1}) & \textbf{99.7} & 87.9 \\
+    \multicolumn{1}{c|}{}& ImageNet* & 65.9 & 63.3 (59.7) & 66.8 & 64.4 (60.3) & 94.6 & 83.1 \\
+    \multicolumn{1}{c|}{}& Random & 53.5 & 56.7 (56.1) & 54.2 & 56.1 (55.0) & 65.6 & 64.5 \\
+    \multicolumn{1}{c|}{}& Sup. Baseline \citep{Berger2021} & 67.8 & 58.0 & 58.0 & 69.5 & - & \textbf{88.8} \\
+    \hhline{========}
+    \multicolumn{1}{c|}{\multirow{5}{3pt}{\rotatebox{90}{Setting 3}}} & $\text{CheXpert}_{\text{setting 3}}* $ & 46.3 & \textbf{53.6} (53.0) & 50.4 & 53.3 (50.3) & 76.1 & \textbf{74.9} \\
+    \multicolumn{1}{c|}{}& $\text{CheXpert}_{\text{all}}$* & \textbf{54.2} & 52.9 (53.4) & \textbf{54.4} & 56.5 (57.1) & \textbf{99.0} & 73.3 \\
+    \multicolumn{1}{c|}{}& ImageNet* & 50.1 & 48.3 (47.1) & 53.3 & 49.1 (47.5) & 83.9 & 72.1 \\
+    \multicolumn{1}{c|}{}& Random & 37.6 & 51.3 (52.5) & 40.8 & 50.5 (51.6) & 58.0 & 57.2 \\
+    \multicolumn{1}{c|}{}& Sup. Baseline \citep{Berger2021} & 45.8 & 52.6 & 58.6 & \textbf{60.1} & - & 75.8 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Supervised results with ViT-s backbone and Cross Entropy. Rows marked with a * are DINO weights which were pretrained on the respective dataset are DINO weights. 
+    The Mahahalanobis distance was calculated in the feature space of the ViT encoder as well as in the penultimate layer of the projection with Cross Entropy on top. 
+    The values that correspond to the ViT encoder are in brackets.
+    Bold values depict the best column values.
+    The supervised baseline in \citep{Berger2021} is used for a comparison}
+\end{table}
+%</Table:finetuning-supervised-new>
+
+%<*Table:supcon-results>
+\begin{table}[h]
+    \renewcommand{\arraystretch}{1.5}
+    \centering
+    \begin{tabular}{l c c c c c c}
+    \toprule
+    & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUCPR \%} &  \multicolumn{2}{c}{ID}\\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    Initialization & Mahal. & Feat. Sim. & Mahal. & Feat. Sim. & Train acc & Test acc\\
+    \hline
+    $\text{CheXpert}_{\text{all}}$* & 63.1 & 64.8 & 58.6 & 62.0 & \textbf{99.9} & \textbf{85.8} \\
+    ImageNet* & \textbf{67.2} & \textbf{67.2} & \textbf{67.5} & \textbf{67.7} & 99.5 & 84.0 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Supervised Contrastive Learning results for setting 2. Rows marked with a * are DINO weights which were pretrained on the respective dataset.}
+\end{table}
+%</Table:supcon-results>
 
 %<*Table:finetuning-supervised-3>
 \begin{table}[h]
