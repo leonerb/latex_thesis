@@ -88,7 +88,7 @@
 %</Figure:dino-arch>
 
 %<*Figure:setting1-chexnorm-v-imgnorm>
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 	\begin{subtable}[c]{\textwidth}
 		\renewcommand{\arraystretch}{1.5}
 		\centering
@@ -129,7 +129,7 @@
 %</Figure:setting1-chexnorm-v-imgnorm>
 
 %<*Figure:auroc-vs-k-and-temp>
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 	\begin{subfigure}[t]{\textwidth}
 		\centering
 		\input{figures/auroc-vs-k.pgf}
@@ -234,6 +234,28 @@
     \label{fig:heatmap-ood-auc}
 \end{figure}
 %</Figure:heatmap-ood-auc>
+
+%<*Figure:custom-augs-bbox>
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figures/custom_augs_bbox.pdf}
+	\caption{Bounding boxes of the custom augmentations.
+	The green bounding boxes represent border values, where possible slices are sampled on which the augmentations are applied. 
+	The red bounding boxes represent those slices}
+	\label{fig:custom-augs-bbox}
+\end{figure}
+%</Figure:custom-augs-bbox>
+
+%<*Figure:custom-augs-applied>
+\begin{figure}[!htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figures/custom_augs_applied.pdf}
+	\caption{Custom augmentations applied to a frontal chest-xray image.
+	The simulated rib fracture is in the upper part of the right image side (left side of the patient).}
+	\label{fig:custom-augs-applied}
+\end{figure}
+%</Figure:custom-augs-applied>
+
 
 
 

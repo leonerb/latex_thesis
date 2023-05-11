@@ -203,7 +203,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 
 %<*Table:attention-maps>
 \begin{table}[!htbp]
-    \renewcommand{\arraystretch}{1.2}
+    %\renewcommand{\arraystretch}{1.2}
     \centering
     \begin{tabular}{l m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth}}
     %& Image & $\text{head}_0$ & $\text{head}_1$ & $\text{head}_2$ & $\text{head}_3$ & $\text{head}_4$ & $\text{head}_5$ \\
@@ -224,7 +224,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \\[-0.3cm]
     Pneumothorax & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head5.png} \\
 \end{tabular}
-\caption{Self-attention maps of the different in-distribution classes. The second column depicts the reference image while the other columns show the self-attention maps of the ViT encoder.}
+\caption{Self-attention maps of the different in-distribution classes. \textcolor{red}{[EXPLAIN self-attention?]} The second column depicts the reference image while the other columns show the self-attention maps of the ViT encoder.}
 \label{table:attention-maps}
 \end{table}
 %</Table:attention-maps>
@@ -332,7 +332,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 %</Table:finetuning-supervised-2>
 
 %<*Table:finetuning-supervised-new>
-\begin{table}[h]
+\begin{table}[!htbp]
     \renewcommand{\arraystretch}{1.5}
     \centering
     \begin{tabular}{l l c c c c c c}
@@ -360,11 +360,12 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     The values that correspond to the ViT encoder are in brackets.
     Bold values depict the best column values.
     The supervised baseline in \citep{Berger2021} is used for a comparison}
+    \label{table:finetuning-supervised-new}
 \end{table}
 %</Table:finetuning-supervised-new>
 
 %<*Table:supcon-results>
-\begin{table}[h]
+\begin{table}[!htbp]
     \renewcommand{\arraystretch}{1.5}
     \centering
     \begin{tabular}{l c c c c c c}
@@ -378,8 +379,31 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \bottomrule
     \end{tabular}
     \caption{Supervised Contrastive Learning results for setting 2. Rows marked with a * are DINO weights which were pretrained on the respective dataset.}
+    \label{table:supcon-results}
 \end{table}
 %</Table:supcon-results>
+
+%<*Table:custom-augs-fracture-results>
+\begin{table}[!htbp]
+    \renewcommand{\arraystretch}{1.5}
+    \centering
+    \begin{tabular}{l c c}
+    \toprule
+    & AUROC (\%) & AUCPR (\%) \\
+    %\cmidrule(lr){2-3}  
+    Initialization & MSP & MSP \\
+    \hline
+    $\text{CheXpert}_{\text{all}}$* & 52.2 & 52.9 \\
+    $\text{CheXpert}_{\text{Setting 1}}$* & 53.6 & 53.2\\
+    Random & 53.5 & 54.1\\
+    \bottomrule
+    \end{tabular}
+    \caption{Results if custom augmentations are applied to the control class. 
+    Rows marked with a * are DINO weights which were pretrained on the respective dataset.
+    Values are reported only for the Fracture OOD class.}
+    \label{table:custom-augs-fracture-results}
+\end{table}
+%</Table:custom-augs-fracture-results>
 
 %<*Table:finetuning-supervised-3>
 \begin{table}[h]

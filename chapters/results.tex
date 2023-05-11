@@ -11,7 +11,7 @@ This normalization will be referred to as the \textit{CheXpert} normalization an
 Figure \ref{fig:setting1-chexnorm-v-imgnorm} summarizes the results.
 If averaged across the OOD pathologies, the CheXpert normalization is 0.26 percentage points higher for SimCLR, which is interpreted as both normalizations being on par.
 The features of the discarded DINO projection head outperform the features of the SimCLR architecture for each of the six OOD pathologies.
-On average, the ImageNet normalization applied to DINO leads to a slight performance increase of 0.66 percentage points over the CheXpert normalization.
+On average, the ImageNet normalization applied to DINO leads to a slight performance increase of 0.66 percentage points over the CheXpert normalization and all AUROC values are slightly above chance level.
 Further, the low standard deviation of the CheXpert images of $\sigma=0.0349$, leads to a normalized input range of approximately [-17,17] and because neural nets with high input values tend to show convergence problems \textcolor{red}{QUELLE}, all following results use the ImageNet dataset statistics as a normalization.
 In addition to that, additional experiments with the SimCLR architecture are omitted due to the outperformance of the DINO model.
 \par
@@ -25,11 +25,14 @@ In addition to that, setting 1 and setting 2 are not sensitive to temperature va
 Therefore, no clear consistency across the settings can be observed and the temperature for all following experiments is set to $\tau=1$ for setting 1-3.
 Further, the number of neighbours $K$ is set to 1 when evaluating setting 1 and 2 and $K=N_3$ for setting 3, where $N_3$ is the length of the respective ID training set.
 \loadFigure{Figure:auroc-vs-k-and-temp}
+\par
 In another experiment, the impact of image augmentations is evaluated.
 The performance comparison between the adapted DINO augmentation and the Rotation augmentations used in \citep{Azizi2021} is depicted in figure \ref{fig:dino-rotate-augs-v-default-augs}.
 For unsupervised OOD detection, the DINO augmentations outperform the Rotation augmentations across all settings.
 The k-nn mean accuracy however is higher, if rotated augmentations are applied to the CheXpert images.
+
 \loadFigure{Figure:dino-rotate-augs-v-default-augs}
+\par
 In addition to evaluating the performance of the models that were pretrained on setting 1-3, it is often insightful to visualize the self-attention maps of the ViT encoder.
 For each of the in-distribution pathologies, an input image of the respective class is fed to the ViT encoder and pixel regions are marked with respect to attention values.
 In our case, blue colormap values correspond to regions of the lowest attention, while yellow values indicate the regions of interest of the ViT encoder with higher attention values.
@@ -44,7 +47,67 @@ In the former part, the unsupervised performance of the pretrained models was in
 It is now analysed how well the pretrained models perform, if labels are available.
 To that end, another DINO model was pretrained on the whole CheXpert dataset to see how far the performance can be pushed.
 The pretrained model weights are used as initializations for finetuning a cross-entropy based classifier on top of the ViT encoder.
-%\loadTable{Table:finetuning-supervised-2}
+In this case, the performance is only evaluated on settings 2-3 in the first part, because setting 1 contains only 1 ID class and therefore no direct supervised classifier can be trained without modifications.
+Setting 1 will be revisited later and the performance of a supervised classifier on this setting is evaluated if custom augmentations are applied (thereby creating a second class next to the "No Finding" class) or if fractions of the OOD dataset are made available.
+\par
+With label access to the ID training set, supervised OOD detection is evaluated with MSP and Mahahalanobis distance as OOD score (see \ref{section: Out-Of-Distribution Detection}).
+The Mahahalanobis distance was calculated in the feature space of the ViT encoder and in the penultimate layer of the classifier as suggested by \citep{Lee2018}.
+The results are summarized in table \ref{table:finetuning-supervised-new}.
+For setting 2, the CheXpert model that was pretrained on the whole dataset outperforms the other models, reaching up to 70.8\% AUROC and 71.6\% AUCPR.
+The supervised baseline in \citep{Berger2021} performs worse with 58 \% AUROC and 69.5 \% AUCPR respectively, but the authors report a higher test accuracy of 88.8 \% against 87.9 \% in our case.
+The DINO model that was pretrained on the smaller setting 2 dataset only reaches 63.4 \% AUROC and 64.5 \% AUCPR if the Mahahalanobis distance is used as the OOD score.
+This performance is comparable to finetuning DINO model weights that were pretrained on the ImageNet dataset, suggesting that pretraining on the settings leads to no measurable performance increase against using ImageNet weights.
+Finetuning the supervised classifier from random weights leads to the worst performance of 56.7 \% AUROC and 56.1 \% AUCPR.
+If restricted to our best performing model, a clear difference between applying the Mahahalanobis distance in the feature space of the ViT encoder and in the penultimate layer of the classifier is not observable.
+The Mahahalanobis distance is therefore only calculated for the feature space in the following experiments.
+\par
+Similar results hold for setting 3. However, the supervised baseline outperforms the DINO model that was pretrained on the whole CheXpert dataset if the AUCPR is used as a performance metric (60.1 \% vs. 56.5\%).
+AUROC values are higher for the DINO model (54.2 \% vs. 45.8 \%), if the MSP is used as an OOD score.
+The performance on setting 3 is worse than on setting 2 and most AUROC- and AUCPR values are close to random guessing of 50\%.
+Finetuning on setting 2 increased the performance, while finetuning on setting 3 decreased the performance.
+This is because the OOD class Pneumonia used in setting 3 is a subclass of the ID pathology Lung Opacity (see figure \ref{fig:multilabel-struc}) and although no OOD labels were exposed to the classifier during training, the OOD detection performance might decrease with increasing accuracy, as the model does not distinguish between both classes.
+Therefore, the following experiments will be carried out only on setting 1 and setting 2.
 \loadTable{Table:finetuning-supervised-new}
-\loadFigure{Figure:supervised-vs-unsupervised}
+\par 
+The outperformance of the $\text{CheXpert}_\text{all}$ initialization does not hold if Supervised Contrastive Learning is applied as a learning objective.
+As depicted in table \ref{table:supcon-results}, the OOD detection performance on setting 2 reaches up to 64.8 \% AUROC and 62.0 \% AUCPR which is less than the performance for a cross-entropy based classifier trained on top of the ViT encoder.
+In particular, if ImageNet weights are used for initialization, the performance is higher than for the $\text{CheXpert}_\text{all}$ initialization with 67.2 \% AUROC and 67.7 \% AUCPR.
 \loadTable{Table:supcon-results}
+\loadFigure{Figure:supervised-vs-unsupervised}
+\par
+After evaluating the supervised performance of setting 2 and setting 3 in the first part, setting 1 is revisited and the performance of a supervised classifier is evaluated.
+Because the setting 1 only contains healthy patient images as in-distribution class, a supervised classifier is not directly applicable to this setting.
+To address this issue, the supervised classifier is trained on top of the ViT encoder using custom image augmentations, that should sensitize the classifier to the appearance of fractures in the images.
+In particular, the healthy patients are assigned a class label of 0 and the images with custom augmentations applied are assigned a class label of 1.
+This should enable the supervised classifier to distinguish between the two classes.
+Designing the custom augmentations requires the knowledge of fracture appearance in chest x-rays and also presumes, that one wants to filter out images with fractures.
+Therefore, this represents a relaxation of the OOD detection problem.
+\par
+It is important to note, that x-ray images are mirrored.
+So if a pathology is present on the left side of the patient, this corresponds to the right side of the image and vice versa.
+To circumvent any confusion, we will refer to the image side as left and right side.
+The custom augmentations are applied to frontal images within bounding boxes depicted in figure \ref{fig:custom-augs-bbox} and assume, that the thorax is centered.
+The bounding boxes should heuristically cover large parts of the lung and the rib cage and are applied with a probability of 0.5 to either the left side of the image or to the right side.
+In figure \ref{fig:custom-augs-bbox}, the green bounding boxes correspond to the borders of possible image slices, where the image corruption is applied, while the red bounding boxes correspond to samples of image slices.
+Augmentations were designed for an image size of $224\times224$ pixels but with adjustments, any square size should be applicable.
+\par
+First, a probability p is sampled, which decides on which side of the image the augmentation is applied.
+Then, a horizontal starting pixel of the red slice is drawn from pixel values ranging from 50 to 100 on the left side and 134 to 184 on the right side and a vertical starting pixel of the red slice is sample from a pixel range of 45 to 80 (approx. 20\% - 36\% of the total height).
+Subsequently, a vertical ending point of the red slice is sampled from pixel values ranging from 125 to 160 (approx. 56\% - 72\% of the total height).
+Then, the horizontal width of the red bounding box is chosen as a uniform value between 2 pixels and 6 pixels.
+Finally, a vertical offset value between 1 and 3 pixels is sampled, and the whole vertical slice represented by the red bounding boxes is shifted by this value.
+\loadFigure{Figure:custom-augs-bbox}
+The impact of the described image corruptions is visualized in figure \ref{fig:custom-augs-applied}.
+The applied colormap is not part of the augmentations and should just help to visualize the effect of the augmentations.
+The width of the simulated upper rib fracture (patient's left side, image right side) is 6 pixel values, while the vertical offset is 2 pixel values.
+Although the resolution is quite low, one can see the simulated fracture in the image by visual inspection.
+\loadFigure{Figure:custom-augs-applied}
+This however does not translate into a good OOD detection performance.
+As depicted in table \ref{table:custom-augs-fracture-results} with different initializations, the performance is slightly worse than the prior performance of 55.69 \% AUROC  and 55.0 \% AUCPR.
+If pretrained on $\text{CheXpert}_\text{all}$, the AUROC and AUCPR values are 52.2 \% and 52.9 \%, respectively and even pretraining on $\text{CheXpert}_\text{Setting 1}$ which in-distribution consists of healthy patients leads to a performance that is close to a random guess.
+The same holds for random initializations.
+\loadTable{Table:custom-augs-fracture-results}
+Although technically the described augmentations can also be generalized to other pathologies, further experiments are omitted.
+No performance increase is observed and manually designing augmentations for each pathology is cumbersome.
+\par
+The attention in the last experiments is now shifted towards outlier exposure, where the assumption is made, that a small subsample of OOD images is available during training \textcolor{red}{[QUELLE?]}.
