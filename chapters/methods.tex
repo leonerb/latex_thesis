@@ -4,6 +4,7 @@ They were introduced by \citep{Dosovitskiy2020} and transfer the concept of text
 ViTs will be used in this thesis in conjunction with the DINO model objective, which resembles a paradigm of training SSL models on image data \citep{Caron2021}.
 The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponential moving average of the student's weights \citep{Caron2021}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dataset}
 In this thesis, the CheXpert dataset is used as a collection of chest X-ray images developed by \citep{Irvin2019}.
 The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
@@ -71,8 +72,6 @@ It should be emphasized that the term is unspecific and is not descriptive in te
 Pneumonia is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue, which also appears as a lung opacity on chest x-rays [ibid.].
 A rib fracture is the term for a broken rib bone.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Out-Of-Distribution Detection}
-\label{section: Out-Of-Distribution Detection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Vision Transformers}
 \label{section: Vision Transformers}
@@ -163,8 +162,10 @@ While Vision Transformers serve as the backbone model, different projection head
 After training, the projection head is discarded and features of the ViT will be used for detecting the OOD classes.
 The projection heads which are used, are detailed in the next section.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Model Architecture}
-\subsubsection{Self-supervised Learning?}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Learning Objectives}
+Some introductory stuff about SSL.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{SimCLR}
 \label{section: SimCLR}
@@ -208,6 +209,7 @@ The terminal loss is calculated over all positive tuples $(i,j)$ and also $(j,i)
 In this thesis the SimCLR models are trained with a batch size of 256, a learning rate that is set to $0.0003$, an image size of 96x96 and five gradient accumulation steps.
 Gradient accumulation is applied, because the models profit from a higher batch size \citep{Chen2020}.
 In addition to that, the temperature $\tau$ is adjusted to 0.5.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{DINO}
 A DINO \citep{Caron2021} head is also used as a projection network, which is trained on top of the ViT backbone.
@@ -291,7 +293,7 @@ The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponenti
 	\label{equation:dino-momentum-encoder}
 \end{align}
 According to \citep{Caron2021}, the teacher is more performant than the student at training time which helps the student to attach to higher quality features, that are focused by the teacher \textcolor{red}{??} and the $\lambda$ in equation \ref{equation:dino-momentum-encoder} is set with a cosine schedule \citep{Grill2020}.
-To mitigate the risk of a complete model collapse, which essentialy means that all feature vectors are mapped to a constant point \citep{Jing2022}, the authors also apply centering and sharpening on the output of the teacher network \citep{Caron2021}.
+To mitigate the risk of a complete model collapse, which essentially means that all feature vectors are mapped to a constant point \citep{Jing2022}, the authors also apply centering and sharpening on the output of the teacher network \citep{Caron2021}.
 They validate by experiments, that the centering technique is necessary to avoid that one dimension dominates the output \citep{Caron2021}.
 Centering is achieved by adding a bias term $c$ to the output of the teacher network and $c$ is improved by an exponential moving average with a parameter $m$ that averages between the prior $c$ and the average teacher output over the current batch with batch size $B$ \citep{Caron2021}:
 \begin{align}
@@ -304,6 +306,7 @@ Sharpening of the teacher output is achieved by using a low value for the temper
 As already mentioned, lower temperature values tend to sharpen the probability distribution \textcolor{red}{\citep{Hinton2015}}.
 The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 \loadFigure{Figure:dino-arch}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Supervised Contrastive Learning}
 \label{section: supervised-contrastive-learning}
@@ -339,5 +342,15 @@ In addition, with $z_{l} := Projection(Encoder(\tilde{x}_l)) \in \mathbb{R}^{128
 The \textit{out} subscript indicates, that the summation over all positive examples in $P(i)$ is performed \textit{outside} the log function \citep{Khosla2020}.
 One can also define the loss function $\mathcal{L}_{in}^{sup}$, which is similar to the previously described loss in equation \ref{equation: superv-contrastive-loss}, but now the summation over positives is with\textit{in} the logarithmic function \citep{Khosla2020}.
 A comparison of the properties can be found in \citep{Khosla2020}, but for the purpose of this thesis, the higher performant loss function in equation \ref{equation: superv-contrastive-loss} is used as recommended by the authors.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Out-Of-Distribution Detection}
+\label{section: Out-Of-Distribution Detection}
+\subsubsection{Unsupervised}
+\subsubsection{Supervised}
+\subsubsection{Outlier Exposure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experimental Setup}
 
 
