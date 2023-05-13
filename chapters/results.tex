@@ -53,25 +53,25 @@ Setting 1 will be revisited later and the performance of a supervised classifier
 With label access to the ID training set, supervised OOD detection is evaluated with MSP and Mahahalanobis distance as OOD score (see \ref{section: Out-Of-Distribution Detection}).
 The Mahahalanobis distance was calculated in the feature space of the ViT encoder and in the penultimate layer of the classifier as suggested by \citep{Lee2018}.
 The results are summarized in table \ref{table:finetuning-supervised-new}.
-For setting 2, the CheXpert model that was pretrained on the whole dataset outperforms the other models, reaching up to 70.8\% AUROC and 71.6\% AUCPR.
-The supervised baseline in \citep{Berger2021} performs worse with 58 \% AUROC and 69.5 \% AUCPR respectively, but the authors report a higher test accuracy of 88.8 \% against 87.9 \% in our case.
-The DINO model that was pretrained on the smaller setting 2 dataset only reaches 63.4 \% AUROC and 64.5 \% AUCPR if the Mahahalanobis distance is used as the OOD score.
+For setting 2, the CheXpert model that was pretrained on the whole dataset outperforms the other models, reaching up to 70.8\% AUROC and 71.6\% AUPRC.
+The supervised baseline in \citep{Berger2021} performs worse with 58 \% AUROC and 69.5 \% AUPRC respectively, but the authors report a higher test accuracy of 88.8 \% against 87.9 \% in our case.
+The DINO model that was pretrained on the smaller setting 2 dataset only reaches 63.4 \% AUROC and 64.5 \% AUPRC if the Mahahalanobis distance is used as the OOD score.
 This performance is comparable to finetuning DINO model weights that were pretrained on the ImageNet dataset, suggesting that pretraining on the settings leads to no measurable performance increase against using ImageNet weights.
-Finetuning the supervised classifier from random weights leads to the worst performance of 56.7 \% AUROC and 56.1 \% AUCPR.
+Finetuning the supervised classifier from random weights leads to the worst performance of 56.7 \% AUROC and 56.1 \% AUPRC.
 If restricted to our best performing model, a clear difference between applying the Mahahalanobis distance in the feature space of the ViT encoder and in the penultimate layer of the classifier is not observable.
 The Mahahalanobis distance is therefore only calculated for the feature space in the following experiments.
 \par
-Similar results hold for setting 3. However, the supervised baseline outperforms the DINO model that was pretrained on the whole CheXpert dataset if the AUCPR is used as a performance metric (60.1 \% vs. 56.5\%).
+Similar results hold for setting 3. However, the supervised baseline outperforms the DINO model that was pretrained on the whole CheXpert dataset if the AUPRC is used as a performance metric (60.1 \% vs. 56.5\%).
 AUROC values are higher for the DINO model (54.2 \% vs. 45.8 \%), if the MSP is used as an OOD score.
-The performance on setting 3 is worse than on setting 2 and most AUROC- and AUCPR values are close to random guessing of 50\%.
+The performance on setting 3 is worse than on setting 2 and most AUROC- and AUPRC values are close to random guessing of 50\%.
 Finetuning on setting 2 increased the performance, while finetuning on setting 3 decreased the performance.
 This is because the OOD class Pneumonia used in setting 3 is a subclass of the ID pathology Lung Opacity (see figure \ref{fig:multilabel-struc}) and although no OOD labels were exposed to the classifier during training, the OOD detection performance might decrease with increasing accuracy, as the model does not distinguish between both classes.
 Therefore, the following experiments will be carried out only on setting 1 and setting 2.
 \loadTable{Table:finetuning-supervised-new}
 \par 
 The outperformance of the $\text{CheXpert}_\text{all}$ initialization does not hold if Supervised Contrastive Learning is applied as a learning objective.
-As depicted in table \ref{table:supcon-results}, the OOD detection performance on setting 2 reaches up to 64.8 \% AUROC and 62.0 \% AUCPR which is less than the performance for a cross-entropy based classifier trained on top of the ViT encoder.
-In particular, if ImageNet weights are used for initialization, the performance is higher than for the $\text{CheXpert}_\text{all}$ initialization with 67.2 \% AUROC and 67.7 \% AUCPR.
+As depicted in table \ref{table:supcon-results}, the OOD detection performance on setting 2 reaches up to 64.8 \% AUROC and 62.0 \% AUPRC which is less than the performance for a cross-entropy based classifier trained on top of the ViT encoder.
+In particular, if ImageNet weights are used for initialization, the performance is higher than for the $\text{CheXpert}_\text{all}$ initialization with 67.2 \% AUROC and 67.7 \% AUPRC.
 \loadTable{Table:supcon-results}
 \loadFigure{Figure:supervised-vs-unsupervised}
 \par
@@ -103,8 +103,8 @@ The width of the simulated upper rib fracture (patient's left side, image right 
 Although the resolution is quite low, one can see the simulated fracture in the image by visual inspection.
 \loadFigure{Figure:custom-augs-applied}
 This however does not translate into a good OOD detection performance.
-As depicted in table \ref{table:custom-augs-fracture-results} with different initializations, the performance is slightly worse than the prior performance of 55.69 \% AUROC  and 55.0 \% AUCPR.
-If pretrained on $\text{CheXpert}_\text{all}$, the AUROC and AUCPR values are 52.2 \% and 52.9 \%, respectively and even pretraining on $\text{CheXpert}_\text{Setting 1}$ which in-distribution consists of healthy patients leads to a performance that is close to a random guess.
+As depicted in table \ref{table:custom-augs-fracture-results} with different initializations, the performance is slightly worse than the prior performance of 55.69 \% AUROC  and 55.0 \% AUPRC.
+If pretrained on $\text{CheXpert}_\text{all}$, the AUROC and AUPRC values are 52.2 \% and 52.9 \%, respectively and even pretraining on $\text{CheXpert}_\text{Setting 1}$ which in-distribution consists of healthy patients leads to a performance that is close to a random guess.
 The same holds for random initializations.
 \loadTable{Table:custom-augs-fracture-results}
 Although technically the described augmentations can also be generalized to other pathologies, further experiments are omitted.

@@ -164,7 +164,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \toprule
     & & & \multicolumn{3}{c}{Evaluation metrics} \\
     \cmidrule{4-6}
-    & In-distribution & Out-of-distribution & k-nn accuracy & AUC & AUCPR\\
+    & In-distribution & Out-of-distribution & k-nn accuracy & AUC & AUPRC\\
     \midrule
     Setting 1 & No Finding & Cardiomegaly & \xmark  & \cmark & \cmark \\ 
     & & Fracture & & \\
@@ -240,10 +240,10 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
      \hline 
      AUC OOD & - - & - - \\
      \hline
-     AUCPR OOD & - - & - - \\
+     AUPRC OOD & - - & - - \\
      \bottomrule
     \end{tabular}
-    \caption{Classification accuracies, AUC and AUCPR of OOD detection for two different normalizations.
+    \caption{Classification accuracies, AUC and AUPRC of OOD detection for two different normalizations.
     For the ImageNet normalization, all images were scaled with $\mu=(0.485, 0.456, 0.406)$ and $\sigma=(0.229, 0.224, 0.225)$. 
     The CheXpert normalization stands for a normalization with $\mu=(0.5330, 0.5330, 0.5330)$ and $\sigma=(0.0349, 0.0349, 0.0349)$ \citep[\href{https://github.com/christophbrgr/ood_detection_framework}{\color{Periwinkle}{implementation}}]{Berger2021}. 
     All metrics are averaged across both settings. 
@@ -263,10 +263,10 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \hline 
     AUC OOD & - - & - - & - - & - -\\
     \hline
-    AUCPR OOD & - - & - - & - - & - -\\
+    AUPRC OOD & - - & - - & - - & - -\\
     \hline
     \end{tabular}
-    \caption{Classification accuracies, AUC and AUCPR of OOD detection for varying sizes of the DINO head. 
+    \caption{Classification accuracies, AUC and AUPRC of OOD detection for varying sizes of the DINO head. 
     All metrics are averaged across both settings. 
     Separated metrics for both settings are available in the appendix [\textcolor{red}{add REF}].}
 \end{table}
@@ -283,10 +283,10 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
      \hline 
      AUC OOD & - - & - - \\
      \hline
-     AUCPR OOD & - - & - - \\
+     AUPRC OOD & - - & - - \\
      \hline
     \end{tabular}
-    \caption{Classification accuracies, AUC and AUCPR of OOD detection for two different initialization methods. 
+    \caption{Classification accuracies, AUC and AUPRC of OOD detection for two different initialization methods. 
     A DINO model pretrained on ImageNet was used as ImageNet initialization \citep[\href{https://github.com/facebookresearch/dino}{\color{Periwinkle}{implementation}}]{Caron2021}. 
     The truncated normal distribution initialization is based on \citep{Burkardt2014}.
     All metrics are averaged across both settings. 
@@ -298,7 +298,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \begin{table}[h]
     \centering
     \begin{tabular}{p{2cm} p{0.8cm} p{0.8cm} p{0.8cm} p{0.8cm} p{0.8cm} p{0.8cm}}
-    & \multicolumn{2}{c}{AUROC} &  & \multicolumn{2}{c}{AUCPR} \\
+    & \multicolumn{2}{c}{AUROC} &  & \multicolumn{2}{c}{AUPRC} \\
     \cmidrule{2-3} \cmidrule{5-6}
     Init. &  Maha. & MCP & Train acc & Maha. & MCP & Train acc \\
     \toprule
@@ -322,7 +322,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \multirow{2}{1cm}{AUROC}& Mahal. & \textbf{63.4} & 63.3 & 56.7 & 58.0 & & \textbf{53.6 }& 48.3 & 51.3 & 52.6 \\
     & MSP & 65.5 & 65.9 & 53.5 & \textbf{67.8} & & 46.3 & \textbf{50.1} & 37.6 & 45.8 \\
     \hline
-    \multirow{2}{1cm}{AUCPR} & Mahal. & 64.5 & 64.4 & 56.1 & \textbf{69.5} & &53.3 & 49.1 & 50.5 & \textbf{60.1} \\
+    \multirow{2}{1cm}{AUPRC} & Mahal. & 64.5 & 64.4 & 56.1 & \textbf{69.5} & &53.3 & 49.1 & 50.5 & \textbf{60.1} \\
     & MSP & \textbf{67.7} & 66.8 & 54.2 & 58.0 & & 50.4 & 53.3 & 40.8 & \textbf{58.6} \\
     \hline
     Train acc.& & 83.8 & \textbf{94.6} & 65.6 & 88.8 & & 76.1 & \textbf{83.9} & 58.0 & 75.8 \\
@@ -337,7 +337,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \centering
     \begin{tabular}{l l c c c c c c}
     \toprule
-    & & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUCPR \%} &  \multicolumn{2}{c}{ID}\\
+    & & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
     \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
     Eval& Initialization & MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
     \hline
@@ -370,7 +370,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \centering
     \begin{tabular}{l c c c c c c}
     \toprule
-    & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUCPR \%} &  \multicolumn{2}{c}{ID}\\
+    & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
     \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
     Initialization & Mahal. & Feat. Sim. & Mahal. & Feat. Sim. & Train acc & Test acc\\
     \hline
@@ -389,7 +389,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \centering
     \begin{tabular}{l c c}
     \toprule
-    & AUROC (\%) & AUCPR (\%) \\
+    & AUROC (\%) & AUPRC (\%) \\
     %\cmidrule(lr){2-3}  
     Initialization & MSP & MSP \\
     \hline
@@ -413,7 +413,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     % \multirow{2}{1cm}{AUROC}& Maha & 63.41 & 0.5 & 0.5 & 0.5 \\
     % & MCP & 0.5 & 0.5 & 0.5 & 0.5\\
     % \hline
-    % \multirow{2}{1cm}{AUCPR} & Maha & 0.5 & 0.5 & 0.5 & 0.5 \\
+    % \multirow{2}{1cm}{AUPRC} & Maha & 0.5 & 0.5 & 0.5 & 0.5 \\
     % & MCP & 0.5 & 0.5 & 0.5 & 0.5 \\
     % \hline
     % Train acc & & 0.5 & 0.5 & 0.5 & 0.5 \\

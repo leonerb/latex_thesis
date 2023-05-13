@@ -6,6 +6,7 @@ The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels an
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dataset}
+\label{section: dataset}
 In this thesis, the CheXpert dataset is used as a collection of chest X-ray images developed by \citep{Irvin2019}.
 The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
 Further, the reasoning behind the choice of used dataset splits is explained. 
@@ -176,9 +177,7 @@ The framework consists of four main parts, that will be adjusted to fit to our u
 The notation of the original paper is adapted.
 \par
 The first component consists of applying data augmentation to the input image, which results in two randomly altered image views $\tilde{x}_i$ and $\tilde{x}_j$ that form a positive pair (i.e. an instance of the same class) and which are fed to the base encoder \citep{Chen2020}.
-The original SimCLR image augmentations \texttt{random resized crop}, \texttt{random color distortions} and \texttt{random Gaussian blur} are slightly altered.
-Gaussian blur is \textbf{not} used as local textures and important pathology areas might become not well-defined if applied \citep{Azizi2021}.
-Further, saturation and hue are also set to zero for the \texttt{random color distortions}, as hue and saturation are not meaningful for greyscale images with only one color channel.
+The original SimCLR image augmentations consist of \texttt{random resized crop}, \texttt{random color distortions} and \texttt{random Gaussian blur} \citep{Chen2020}.
 \loadFigure{Figure:simclr-arch}
 \par
 Both views $\tilde{x}_i$ and $\tilde{x}_j$ are passed to an encoder network $f(\cdot)$ that returns two representations $h_i$ and $h_j$ \citep{Chen2020}.
@@ -247,7 +246,6 @@ While in the standard SimCLR setting two views are created \citep{Chen2020}, the
 \par
 In particular, they use a multi-crop augmentation strategy, that creates two global views of full resolution and a number of local views of lower resolution \citep{Caron2020, Caron2021}. 
 The full resolution views embody large parts (e.g. more than 50\%) of the original image at resolution $224^2$ (e.g. more than 50\%) and the local views of resolution $96^2$ are cropped to a smaller size (e.g. maximum 50\% of the original image) \citep{Caron2021}.
-If not mentioned otherwise, global crops scale and local crops scale are adapted from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
 Depending on the type of view, the crop is then passed to the student or the teacher network.
 While the student network receives all crops (global and local), the teacher network produces outputs for global views only \citep{Caron2021}.
 According to the authors this should enforce the model to gather information from small image patches (local information) and connect them to its global image interpretation \textcolor{red}{\citep{Caron2021}, Ursprung "global to local"}.
@@ -352,5 +350,53 @@ A comparison of the properties can be found in \citep{Khosla2020}, but for the p
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experimental Setup}
+\begin{itemize}
+	\item Dataset: Whole CheXpert dataset \citep{Irvin2019} and CheXpert restricted to settings 1-3 as described in \ref{section: dataset}\\
+	\item Pretraining: Pretraining SimCLR and DINO on setting 1-3 and for a comparison on the whole CheXpert dataset.\\ 
+	\item Fine-tuning: After finishing SSL, the projection head is removed and the pretrained ViT encoder is used as a backbone for fine-tuning.
+	Fine-tuning is performed on setting 1-3 and either an MLP head with cross-entropy is trained on top [specify+SOURCE] or Supervised Contrastive Learning is used as described in \ref{section: supervised-contrastive-learning}.
+	The former is referred to as "Sup ViT" and the latter will be called "SupCon ViT".\\
+	\item Hyperparameters: 
+		\begin{itemize}
+			\item SimCLR: trained for 150 epochs with a batch size of 256 per GPU, learning rate of 3.0e-04 with a linear warmup of 10 epochs [QUELLE] and 5 gradient accumulation steps [QUELLE], weight decay of 1.0e-06 and a temperature of 0.5. 
+			As an optimizer, Adam [QUELLE] with a weight decay of 1.0e-06 was used.
+		\end{itemize}
+		\begin{itemize}
+			\item DINO: trained for 100 epochs on setting 1-3 with a batch size of 32 per GPU, learning rate of 0.0015 with a cosine schedule [QUELLE] and with 10 warmup epochs.
+			For the teacher network, a momentum of 0.996 is used and the teacher temperature $\tau_t$ is set to 0.04 using a linearly increasing schedule from 0.02 over 30 epochs.
+			The number of local crops is set to 10 and the number of global crops equals 2. 
+			Optimizer was set to AdamW [QUELLE] with a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
+			When training on $\text{CheXpert}_\text{all}$, $\tau_t$ is set to 0.07 and the maximum weight decay is replaced with 0.5.
+		\end{itemize}
+		\begin{itemize}
+			\item SupCon ViT: trained for 100 epochs with a batch size of 32 per GPU, learning rate of 0.00625 that was linearly warmed up from 0 over 10 epochs.
+			The temperature $\tau$ of the loss function is set to 0.03 and SGD [QUELLE] is used as the optimizer.
+		\end{itemize}
+		\begin{itemize}
+			\item Sup ViT: trained for 100 epochs with a batch size of 64 per GPU and a learning rate of 3.0e-04. SGD with a momentum of 0.9 and a weight decay of 0.0001 is used as the optimizer.
+		\end{itemize}
+			\item Augmentations: For SimCLR and SupCon ViT, the original SimCLR augmentations \texttt{random resized crop}, \texttt{random horizontal flip} and \texttt{random color distortions}
+			and \texttt{random Gaussian blur} are slightly altered.
+			Gaussian blur is not used as local textures and important pathology areas might become not well-defined if applied \citep{Azizi2021}.
+			Further, saturation and hue are also set to zero for the random color distortions, as hue and saturation are not meaningful for greyscale images with only one color channel. 
+			For training with the DINO objective, the original augmentations of \citep{Caron2021} are modified in the same way.
+			Additionally, the used augmentations for DINO are also expanded by a random rotation of 20 degrees and referred to as \texttt{Rotate augmentations}. 
+			This modification is adapted from \citep{Azizi2021} and will be compared to the mentioned augmentation from before.
+			If not mentioned otherwise, global crops scale and local crops scale are adapted from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
+			For fine-tuning the Sup ViT, \texttt{random resized crop}, \texttt{random horizontal flip}, \texttt{random color distortions} and \texttt{random rotation} are used as augmentations and the crop scale is set to [0.8, 1].
+	\item Evaluation: 
+	\begin{itemize}
+		\item during training: evaluate accuracy of 1-knn classifier [QUELLE] on top of the ViT features [QUELLE].
+	\end{itemize}
+	\begin{itemize}
+		\item after pretraining: temperature scaled feature similarity ($\tau=1$) as unsupervised OOD score on test set
+		\item evaluate after fine-tuning: 
+		\begin{itemize}
+			\item Sup ViT OOD score MSP and Mahalanobis distance
+			\item SupCon ViT OOD score Mahalanobis
+		\end{itemize}
+	\end{itemize}
+	Similar to \citep{Berger2021, Cao2020}, performance of OOD score is measured with Area under the ROC curve (AUROC) [QUELLE] and Area under the Precision-Recall curve (AUPRC) [QUELLE].
+\end{itemize}
 
 
