@@ -1,8 +1,12 @@
 \section{Methods}
 Vision Transformers (ViTs) form the backbone of all models that will be trained in this thesis.
-They were introduced by \citep{Dosovitskiy2020} and transfer the concept of text transformers developed by \citep{Vaswani2017} to the image (classification) domain.
-ViTs will be used in this thesis in conjunction with the DINO model objective, which resembles a paradigm of training SSL models on image data \citep{Caron2021}.
-The name DINO stands for \textbf{di}stilled knowledge with \textbf{no} labels and consists of a student and a teacher network, where the teacher network is updated by the exponential moving average of the student's weights \citep{Caron2021}.
+They transfer the concept of text transformers to the image domain.
+SimCLR and DINO are SSL learning objectives to extract ViT-representations used for further downstream tasks, including out-of-distribution detection [SOURCE].
+The features are used for score based OOD detection methods. 
+We can use the features only for unsupervised ood detection and if label knowledge and further fine-tuning is assumed supervised ood detection methods can be applied.
+We can also inject further ood samples (Outlier exposure) if only one in-distribution class is available. 
+Custom augmentations are also applied to simulate certain pathology characteristics that are ood-samples. 
+\textcolor{red}{[SOURCES]}  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dataset}
@@ -306,40 +310,39 @@ The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 \loadFigure{Figure:dino-arch}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Supervised Contrastive Learning}
-\label{section: supervised-contrastive-learning}
-Previously explained projection heads did \textit{not} assume any label information and were therefore self-supervised.
-The projection head, that is applied in supervised contrastive learning assumes label knowledge and therefore embeddings of the same class may be pushed closer together in the embedding space \citep{Khosla2020}.
-Similar to the prior described architectures, the authors apply data augmentation, an encoder network (backbone) and a contrastive head that integrates supervision into the loss function \citep{Khosla2020}.
-At inference time the projection network is removed, and the features are used for downstream tasks \citep{Khosla2020}, which resembles the typical pattern that is used throughout this thesis.
-\par
-As data augmentation module, the authors ablate four different augmentation strategies including RandAugment \citep{Cubuk2019a}, AutoAugment \citep{Cubuk2019b}, SimAugment \citep{Chen2020} and Stacked RandAugment \citep{Tian2020}.
-SimAugment refers to an augmentation strategy which takes the SimCLR augmentations and adds image warping before the Gaussian Blur which boosts performance \citep{Khosla2020}
-While there are observed differences in performance between the different augmentation strategies \citep{Khosla2020}, the results refer to the accuracy on ImageNet \citep{Deng2009}, and it is not clear how well they generalize to medical images, let alone chest-X-rays.
-In this thesis, the adapted SimCLR augmentations described in \ref{section: SimCLR} are used for simplicity and to ensure consistency when comparing results.
-In addition to that, image warping is also omitted, as this may lead to a misinterpretation of the model due to unnatural pathology dimensions.
-For example, the heart could be warped to an unnatural size and lead to false positive classifications of cardiomegaly.
-\par
-Identical to before we will use a ViT as the backbone network.
-Two augmented samples are fed into the encoder network and the features are then $\ell_2$ normalized \citep{Khosla2020}.
-The features are passed to an MLP projection network.
-First, the features are passed through a fully connected layer with a hidden dimension of $d_{model}$ and a ReLU activation function and then, the output is linearly projected into a 128d space where the loss is applied \citep{Khosla2020}.
-\par
-Now the loss function is introduced.
-Notations and definitions are taken from \citep{Khosla2020}.
-Let $N$ be the batch size.
-As a starting point, consider $2N$ augmented image samples $\tilde{x}_l$ and their corresponding class labels $\tilde{y}_l$, which together form a set of $2N$ pairs $\tilde{X} = \{\tilde{x}_l, \tilde{y}_l\}_{l=1,\dots,2N}$ \citep{Khosla2020}.
-Let $i \in I:=\{1,\dots,2N\}$ denote the random index of a pair in $\tilde{X}$ and let $A(i):=I\setminus \{i\}$ \citep{Khosla2020}.
-Further, consider $P(i):=\{p\in A(i): \tilde{y}_p = \tilde{y}_i\}$ to be the set of all pairs that have the same class label (positives) as the pair at index $i$ \citep{Khosla2020}.
-Note that $i \not \in P(i)$ as $p$ needs to be an element of $A(i)$.   
-In addition, with $z_{l} := Projection(Encoder(\tilde{x}_l)) \in \mathbb{R}^{128}$, the authors define a suitable loss function $\mathcal{L}_{out}^{sup}$, that incorporates label information \citep{Khosla2020}:
-\begin{align}
-	\mathcal{L}_{out}^{sup} &= \sum_{i\in I} -\frac{1}{\vert P(i) \vert} \sum_{p\in P(i)} \log \frac{\exp(z_i \cdot z_p/\tau)}{\sum_{a \in A(i)}\exp(z_i \cdot z_a/\tau)}
-	\label{equation: superv-contrastive-loss}
-\end{align}
-The \textit{out} subscript indicates, that the summation over all positive examples in $P(i)$ is performed \textit{outside} the log function \citep{Khosla2020}.
-One can also define the loss function $\mathcal{L}_{in}^{sup}$, which is similar to the previously described loss in equation \ref{equation: superv-contrastive-loss}, but now the summation over positives is with\textit{in} the logarithmic function \citep{Khosla2020}.
-A comparison of the properties can be found in \citep{Khosla2020}, but for the purpose of this thesis, the higher performant loss function in equation \ref{equation: superv-contrastive-loss} is used as recommended by the authors.
+% \subsubsection{Supervised Contrastive Learning}
+% \label{section: supervised-contrastive-learning}
+% Previously explained projection heads did \textit{not} assume any label information and were therefore self-supervised.
+% The projection head, that is applied in supervised contrastive learning assumes label knowledge and therefore embeddings of the same class may be pushed closer together in the embedding space \citep{Khosla2020}.
+% Similar to the prior described architectures, the authors apply data augmentation, an encoder network (backbone) and a contrastive head that integrates supervision into the loss function \citep{Khosla2020}.
+% \par
+% As data augmentation module, the authors ablate four different augmentation strategies including RandAugment \citep{Cubuk2019a}, AutoAugment \citep{Cubuk2019b}, SimAugment \citep{Chen2020} and Stacked RandAugment \citep{Tian2020}.
+% SimAugment refers to an augmentation strategy which takes the SimCLR augmentations and adds image warping before the Gaussian Blur which boosts performance \citep{Khosla2020}
+% While there are observed differences in performance between the different augmentation strategies \citep{Khosla2020}, the results refer to the accuracy on ImageNet \citep{Deng2009}, and it is not clear how well they generalize to medical images, let alone chest-X-rays.
+% In this thesis, the adapted SimCLR augmentations described in \ref{section: SimCLR} are used for simplicity and to ensure consistency when comparing results.
+% In addition to that, image warping is also omitted, as this may lead to a misinterpretation of the model due to unnatural pathology dimensions.
+% For example, the heart could be warped to an unnatural size and lead to false positive classifications of cardiomegaly.
+% \par
+% Identical to before we will use a ViT as the backbone network.
+% Two augmented samples are fed into the encoder network and the features are then $\ell_2$ normalized \citep{Khosla2020}.
+% The features are passed to an MLP projection network.
+% First, the features are passed through a fully connected layer with a hidden dimension of $d_{model}$ and a ReLU activation function and then, the output is linearly projected into a 128d space where the loss is applied \citep{Khosla2020}.
+% \par
+% Now the loss function is introduced.
+% Notations and definitions are taken from \citep{Khosla2020}.
+% Let $N$ be the batch size.
+% As a starting point, consider $2N$ augmented image samples $\tilde{x}_l$ and their corresponding class labels $\tilde{y}_l$, which together form a set of $2N$ pairs $\tilde{X} = \{\tilde{x}_l, \tilde{y}_l\}_{l=1,\dots,2N}$ \citep{Khosla2020}.
+% Let $i \in I:=\{1,\dots,2N\}$ denote the random index of a pair in $\tilde{X}$ and let $A(i):=I\setminus \{i\}$ \citep{Khosla2020}.
+% Further, consider $P(i):=\{p\in A(i): \tilde{y}_p = \tilde{y}_i\}$ to be the set of all pairs that have the same class label (positives) as the pair at index $i$ \citep{Khosla2020}.
+% Note that $i \not \in P(i)$ as $p$ needs to be an element of $A(i)$.   
+% In addition, with $z_{l} := Projection(Encoder(\tilde{x}_l)) \in \mathbb{R}^{128}$, the authors define a suitable loss function $\mathcal{L}_{out}^{sup}$, that incorporates label information \citep{Khosla2020}:
+% \begin{align}
+% 	\mathcal{L}_{out}^{sup} &= \sum_{i\in I} -\frac{1}{\vert P(i) \vert} \sum_{p\in P(i)} \log \frac{\exp(z_i \cdot z_p/\tau)}{\sum_{a \in A(i)}\exp(z_i \cdot z_a/\tau)}
+% 	\label{equation: superv-contrastive-loss}
+% \end{align}
+% The \textit{out} subscript indicates, that the summation over all positive examples in $P(i)$ is performed \textit{outside} the log function \citep{Khosla2020}.
+% One can also define the loss function $\mathcal{L}_{in}^{sup}$, which is similar to the previously described loss in equation \ref{equation: superv-contrastive-loss}, but now the summation over positives is with\textit{in} the logarithmic function \citep{Khosla2020}.
+% A comparison of the properties can be found in \citep{Khosla2020}, but for the purpose of this thesis, the higher performant loss function in equation \ref{equation: superv-contrastive-loss} is used as recommended by the authors.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Out-Of-Distribution Detection}
