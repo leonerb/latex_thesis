@@ -4,33 +4,35 @@ Most Machine Learning (ML) applications operate under closed-world assumptions.
 Models are trained on the \textit{train set}, while the true performance is evaluated on a held-out \textit{test set}, which was not seen in the training process.
 It is implicitly assumed, that the \textit{test set} serves as a proxy for the true performance which would be encountered, when models are deployed in real-world applications.
 \par
-Recent works question the generalization performance of ML models trained under closed-world assumptions.
-The worse performance is often a result from unsuitable input data, where incoming data is shifted due to a covariate shift or a semantic shift.
-The latter shift describes the case that the new input data is sampled from (semantically) different classes, while the former describes the case where received data differs due do the domain (e.g. classifier trained on real world images receives synthetic input of the same classes).
+Recent works question the generalization performance of ML models trained under closed-world assumptions \textcolor{red}{[SOURCES]}.
+The worse performance is often a result from unsuitable input data.
+In general the data which is known to the classifier (train and validation set) is described as \textit{in-distribution} (ID) while new, often unknown data represents samples from \textit{out-of-distribution} (OOD).
+The task of out-of-distribution detection (OoDD) is to find inputs deviating from the training distribution.
+Therefore, a reliable model output cannot be guaranteed, and a separate consideration may be reasonable.
 \par
-In general the data which is known to the classifier (train and validation set) is described as \textit{in-distribution} (ID) while new, unknown data subject to semantic- and covariate shift represent samples from \textit{out-of-distribution} (OOD).
-The task of out-of-distribution detection (OoDD) is to find inputs that are so far away from the training distribution that a reliable model output cannot be guaranteed.
+These detection tasks are especially important in high-risk-environments such as medicine, where human intervention is required.
+X-rays are a relevant imaging technique in medicine and frequently used as a diagnostic tool.
 \par
-Those detection tasks are important for high-risk environments like medicine, where mistakes can cost human lives and human intervention is often needed.
-A good detector should confidently reject OD samples while minimizing false negatives \textcolor{red}{?}, as neural networks often overstate their prediction confidence.
-In the literature one can often find a distinction between far OoDD and near OoDD, where far OoDD contains problems where images from in-distribution and out-of-distribution are visibly different from each other and where detection is thought to be easier.
-Near OoDD is magnitudes harder because samples from both distributions tend to be very close together, making it even hard for human eyes to distinguish from (e.g. CIFAR100 (ID) vs. CIFAR10 (OOD)).
-There are potential use-cases for xray-images in both near and far detection.
-According to [] one can generally distinguish 3 different use-cases.
-In the first use-case, images that are obviously unrelated to xray-images should be filtered out.
-In the second use-case the OoDD images are xray-images, however they are acquired in a wrong way and image characteristics might be flawed (e.g. high contrast, rotation etc.).
-
-In this thesis, the focus is mainly on the third use case, which can be considered as the hardest OoDD problem of the described use-cases and which is unsolved to a large extent for xray-images.
-Within this problem setting, x-ray images that were collected under a selection bias should be rejected.
-This selection bias might be e.g. an unseen pathology or \textcolor{red}{...}
+According to \citep{Cao2020} one can generally distinguish three different use-cases.
+In the first use-case, images that are obviously unrelated to x-ray-images should be filtered out.
+In the second use-case the OOD images are x-ray-images, but they are acquired incorrectly and the image characteristics might be flawed (e.g. high contrast, rotation etc.).
+The third use-case considers x-ray images of unseen or novel pathologies as OOD samples.
+In this thesis, the focus is mainly on the third use case, which is unsolved to a large extent for x-ray-images.
+As a collection of chest-x-ray images, the CheXpert dataset is used \citep{Irvin2019} and the ID-OOD splits are adapted from \citep{Berger2021}.
 \par
-While there has been some research in detecting OOD samples for xray-images, a lot of authors leverage supervised learning methods.
-A clear disadvantage of those methods is the fact, that an extensive amount of labels is required.
-In medical context it is often costly to obtain manually annotated datasets of a decent quality.
-The focus in this master thesis is on using self-supervised-learning (SSL) which does not require manually annotated labels but rather constructs labels by itself. 
-In particular SSL models learn a semantic representation of different image classes.
-Semantic representations are obtained by applying the learned model to the images.
-The SSL architectures that will be used are DINO models with a Vision Transformers backbone.
-The semantic representation is taken from the last backbone layer and is often called feature vector, where each numeric feature vector encodes semantic properties of an image.
-Features can then be used as the basis for various downstream tasks, including k-nn classification, linear classification or even few-shot predictions.
-It is investigated how well the features of x-ray images that were obtained by SSL learning objectives, work in the context of out-of-distribution detection.
+For example, the OOD detection of novel diseases only scores close to a random guess of 50\% AUROC across a large sample of unsupervised and supervised methods \citep{Cao2020}.
+However, the authors of \citep{Berger2021} achieve better performance using a comparable but different data set, proving that increases above chance level are technically possible.
+But, these improvements are based on supervised classifiers leading to limitations in the real world, because the acquisition of labels often has high costs. 
+\par
+Self-supervised learning (SSL) does not assume prior label knowledge and learning objectives such as DINO \citep{Caron2021} or SimCLR \citep{Chen2020} show impressive results in the field of computer vision [SOURCES].
+Vision Transformers (ViTs) are used as the backbone architecture of the SSL methods.
+Features of the input images are extracted and performance is typically evaluated in downstream tasks.
+\par
+The performance of SSL methods on out-of-distribution detection for chest-x-ray images is examined and compared to supervised methods.
+If applicable, what are the necessary changes to apply SSL methods to chest-x-ray images?
+It can be a limitation in the clinical context, if for example healthy control patients should represent the in-distribution class and patients with pathologies are considered as OOD samples.
+In this case, supervised classifier assume the presence of at least two in-distribution classes.
+A setting that simulates this scenario is developed. 
+A second class can be for example constructed by simulating a pathology through image distortions.
+Another approach could be to reveal a certain percentage of OOD samples that would then represent at least one additional class (outlier exposure).
+Both options are evaluated.

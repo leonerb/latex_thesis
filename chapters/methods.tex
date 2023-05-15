@@ -37,6 +37,7 @@ Both the multilabel structure and the number of different classes of the CheXper
 For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
 \par
 In this thesis different settings are evaluated.
+[no ID label overlap assumed ergänzen]
 In the first setting, the No Finding class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
 Specifically, the model is trained on the No Finding class and performance metrics are separately evaluated on each of the six classes.
 The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
@@ -284,7 +285,7 @@ Both parameters are trainable and optimization is performed on $g$ and $v$ and n
 While both networks share the same architecture, student- and teacher network are updated differently. 
 The parameter weights of the student network $\theta_s$ are updated by stochastic gradient descent with learning rate $\eta$ and fixed teacher network $\bar{P}_t$, i.e. \citep{Caron2021}:
 \begin{align}
-	\mathcal{L} &= \sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x\prime \in V, \\ x\neq x\prime}} H(\bar P_t(x),P_s(x\prime)), \\ 
+	\mathcal{L}  &= \sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x\prime \in V, \\ x\neq x\prime}} H(\bar P_t(x),P_s(x\prime)), \\ 
 	\theta_s &\leftarrow \theta_s - \eta \nabla_{\theta_s} \mathcal{L}
 \end{align}
 New parameter weights of the teacher network are obtained by adding the weighted convex combination $(1-\lambda)\theta_s$ to the current value $\lambda\theta_t$.

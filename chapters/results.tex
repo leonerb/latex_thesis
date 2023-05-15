@@ -5,6 +5,7 @@ After establishing an unsupervised baseline, the pretrained models are finetuned
 \par
 First, different training architectures and model configurations are evaluated on the setting 1 dataset split (see table \ref{table:settings-dataset-sizes}).
 As this split contains six different OOD pathologies, including the ones from the other settings, the best configuration found for setting 1 was then applied to the other two settings.
+\par
 In the first experiment, two different image normalizations were compared for SimCLR and DINO.
 The first normalization is adapted from \citep{Berger2021} and consists of both CheXpert dataset mean and standard deviation.
 This normalization will be referred to as the \textit{CheXpert} normalization and the other normalization is the \textit{ImageNet} normalization of the ImageNet dataset \citep{Deng2009}.
