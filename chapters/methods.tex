@@ -6,7 +6,8 @@ The features are used for score based OOD detection methods.
 We can use the features only for unsupervised ood detection and if label knowledge and further fine-tuning is assumed supervised ood detection methods can be applied.
 We can also inject further ood samples (Outlier exposure) if only one in-distribution class is available. 
 Custom augmentations are also applied to simulate certain pathology characteristics that are ood-samples.
-\section{Out-of-Distribution Detection}
+\subsection{Out-of-Distribution Detection}
+\label{section: Out-of-Distribution Detection}
 Out-of-distribution detection is a method to filter inputs not part of the training distribution (in-distribution) [SOURCES].
 The unknown test inputs represent samples of the out-of-distribution and a reliable detection of such samples is indispensable for safety reasons [SOURCES].
 Many machine learning models produce overconfident prediction and calibration is needed to mitigate potential failures [SOURCES].
@@ -60,6 +61,7 @@ The training embeddings are denoted as $\{g(x_1),\dots,g(x_N)\}$ and the set of 
 For a test sample $x'$ the OOD score is calculated as follows \citep{Michels2023,Sun2022}:
 \begin{align}
 	S_{nn}(x',K) = \frac{1}{K}\sum_{i=1}^K \text{sim}(x',N_{x'}(i))
+	\label{equation:knn-score}
 \end{align}
 where $sim(x,y) = \frac{x\cdot y}{\Vert x \Vert \Vert y \Vert}$ denotes the cosine similarity and in the case of k=1, the score is equivalent to the cosine similarity between the test sample and its nearest neighbour \citep{Michels2023}.
 \subsubsection*{Outlier Exposure}
@@ -98,81 +100,13 @@ The results in \citep{Berger2021} are used as a supervised baseline.
 \par
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Experimental Setup}
-\subsection{Dataset}
-\label{section: dataset}
-In this thesis, the CheXpert dataset is used as a collection of chest X-ray images developed by \citep{Irvin2019}.
-The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
-Further, the reasoning behind the choice of used dataset splits is explained. 
-CheXpert is an extensive collection of both frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
-\par
-The dataset contains labels of 12 common chest- and lung pathologies, the control class "No Finding" and the "Support Devices" class which adds up to 14 total classes \citep{Irvin2019}.
-The 14 classes of the dataset were selected due to both common occurrence in the radiologic reports and clinical importance \citep{Irvin2019} and refer to the definitions in the glossary of terms for thoracic imaging \citep{Hansell2008}.   
-CheXpert is a multilabel dataset, which means that in each image multiple pathologies may be present.
-For each image, the pathologies are labelled as positive (1), negative (0) or uncertain (-1), where uncertainty labels express both contradictions in the report and also diagnostic uncertainty of the radiologist who has written the report \citep{Irvin2019}.
-\par
-Labels were extracted from free text radiology reports in three stages (see figure \ref{fig:multilabel-struc}).
-In the first step, observations were extracted from the reports with the help of a hand-selected list of common phrases, reviewed by different board-certified radiologists \citep{Irvin2019}.
-The extracted observations are then passed to a second stage.
-This stage is split into a three steps pipeline, where observations are matched against pre-negation uncertainty rules first, then against negation rules and finally against post-negation uncertainty rules \citep{Irvin2019}.
-Only if an observation does not match any of the rules, it is assigned a positive label \citep{Irvin2019}.
-Those rules are extracted through NLP techniques and details can be found in \citep{Irvin2019}.
-In the last step, mentions are aggregated into a final label for each image and each class.
-Observations with at least one positively labelled mention are assigned an aggregated positive label and an uncertainty label is selected if there is no positive mention and a minimum of one mention of uncertainty in the observations \citep{Irvin2019}.
-Negative labels are only assigned if at least one mention label is negative \citep{Irvin2019}. 
-If there is overall no mention of an observation, a \textit{blank} label is set as the label of the respective class \citep{Irvin2019}.
-\loadFigure{Figure:multilabel-struc}
-\par
-Both the multilabel structure and the number of different classes of the CheXpert dataset leave room for designing different ID and OOD split settings.
-For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
-\par
-In this thesis different settings are evaluated.
-[no ID label overlap assumed ergänzen]
-In the first setting, the No Finding class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
-Specifically, the model is trained on the No Finding class and performance metrics are separately evaluated on each of the six classes.
-The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
-Because CheXpert labels are hierarchically structured \cite{Irvin2019}, the pathologies Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia can be considered as subcases of Lung Opacity \textcolor{red}{\citep{Hansell2008}}.
-Therefore, in the first setting, that contrasts the No Finding class with the mentioned out-of-distribution classes, images of Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia were also added to the Lung Opacity class.
-Subsequently, the model performance evaluated on Lung Opacity is an average over five subclasses and one superclass.
-Further, the two different settings of \citep{Berger2021} are used.
-The first one defines Cardiomegaly and Pneumothorax as in-distribution pathologies and Fracture as out-of-distribution class.
-The other setting consists of the two in-distribution classes Lung Opacity and Pleural Effusion, which are evaluated against two out-of-distribution pathologies Fracture and Pneumonia.
-Settings and dataset sizes are summarized in table \ref{table:settings-dataset-sizes}.
-\loadTable{Table:settings-dataset-sizes}
-\par
-Medical imaging datasets differ from commonly used computer vision benchmarks like CIFAR-10 \citep{Krizhevsky2009a}, CIFAR-100 \citep{Krizhevsky2009b} or ImageNet \citep{Deng2009} in terms of appearance and variability of input images.
-Chest-X-ray images for example are greyscale by default and as only the upper body part is included there is only low input variability.
-Further, classifying the underlying pathologies is even challenging for certified board radiologists and also dependent on the class.
-On the CheXpert dataset, the miss rate (False Negative Rate) for classifying Consolidation can range from 55\% to 52\% or 37\% depending on the human radiologist assessing the Xray-image \citep{Irvin2019}, where lower values indicate better performance.
-On the Atelectasis class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance [ibid.].
-In addition to that, a study has shown that performance on the same pathology can also vary in-between X-ray datasets \textcolor{red}{\citep{Majkowska2020}}.
-\par
-Due to the differences between CheXpert and the frequently used benchmarks, medical domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations for specialized medical imaging datasets.
-In the following paragraph, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
-The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary \citep{Hansell2008} if mentioned there.
-Sample images of the conditions are depicted in figure \ref{fig:pathologies}.
-\loadFigure{Figure:pathologies} 
-\par
-Cardiomegaly is the first condition of interest.
-It is a general term for heart enlargements, where the cardiothoracic ratio is often used as a measurement of the severity of size increase.
-In \citep{Dahnert2011} the ratio is defined as the ratio between the heart size and the thorax width. 
-Values between 0.45 - 0.55 are marked as mild cardiomegaly and values above 0.55 are considered to be severe cases of cardiomegaly [ibid.].
-\par 
-Pneumothorax is a medical condition related to the lung (pleura) and will be used as an in-distribution pathology.
-It is associated to the pleural space, which is the space between the pulmonary pleura and the costal pleura and is also called the pleural cavity \citep{Charalampidis2015}.
-Pneumothorax is the medical term for a pleural space that is filled with gas (often air) \citep{Dahnert2011,Hansell2008}.
-If the mentioned pleural space is filled with an aggregation of fluid, the condition is referred to as a pleural effusion \citep{Karkhanis2012}.
-Lung opacity is a collective term and refers to lung areas which appears more opaque than the surrounding area \citep{Hansell2008}.
-Because the lung appears dark on x-ray images, opaque areas are white in contrast to the lung appearance.
-It should be emphasized that the term is unspecific and is not descriptive in terms of neither the extent nor the origin of the pathology \citep{Hansell2008}.
-Pneumonia is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue, which also appears as a lung opacity on chest x-rays [ibid.].
-A rib fracture is the term for a broken rib bone.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Vision Transformers}
+\subsection{Self-supervised Learning with Vision Transformers}
+\label{section: SSL}
+Introductory stuff about SSL.
+\subsubsection{Vision Transformers}
 \label{section: Vision Transformers}
 Vision Transformers (ViTs) are the reformulation of the Transformer architecture \cite{Vaswani2017} to images.
-Originally, sequences of natural language are split into tokens and then processed by the text Transformer [ibid.].  
+Originally, sequences of natural language are split into tokens and then processed by the text Transformer \citep{Vaswani2017}.  
 Similarly, ViTs process images as a fixed number of flattened image patches \citep{Dosovitskiy2020}.
 Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced with an emphasis on the encoder part in this thesis in the first part of the section as only the encoder is used within the ViT architecture.
 Then, minor adjustments that are needed to accept images rather than text as inputs are discussed.
@@ -257,12 +191,6 @@ Parameter configurations of ViT-S and ViT-B are detailed in table \ref{table:vit
 While Vision Transformers serve as the backbone model, different projection heads will be trained on top of the backbone. 
 After training, the projection head is discarded and features of the ViT will be used for detecting the OOD classes.
 The projection heads which are used, are detailed in the next section.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Learning Objectives}
-Some introductory stuff about SSL.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{SimCLR}
 \label{section: SimCLR}
 SimCLR is a training schema for learning contrastive visual representations \citep{Chen2020}.
@@ -434,65 +362,138 @@ The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 % The \textit{out} subscript indicates, that the summation over all positive examples in $P(i)$ is performed \textit{outside} the log function \citep{Khosla2020}.
 % One can also define the loss function $\mathcal{L}_{in}^{sup}$, which is similar to the previously described loss in equation \ref{equation: superv-contrastive-loss}, but now the summation over positives is with\textit{in} the logarithmic function \citep{Khosla2020}.
 % A comparison of the properties can be found in \citep{Khosla2020}, but for the purpose of this thesis, the higher performant loss function in equation \ref{equation: superv-contrastive-loss} is used as recommended by the authors.
-\subsection{Fine-tuning}
-Some stuff about fine-tuning
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Out-Of-Distribution Detection}
-\label{section: Out-Of-Distribution Detection}
-\subsubsection{Unsupervised}
-\subsubsection{Supervised}
-\subsubsection{Outlier Exposure}
+\section{Experimental Setup}
+\subsection{Dataset}
+\label{section: dataset}
+The CheXpert dataset is used as a collection of chest X-ray images developed in \citep{Irvin2019}.
+The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
+Further, the reasoning behind the choice of used dataset splits is explained. 
+CheXpert is an extensive collection of both frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
+\par
+The dataset contains labels of 12 common chest- and lung pathologies, the control class "No Finding" and the "Support Devices" class which adds up to 14 total classes \citep{Irvin2019}.
+The 14 classes of the dataset were selected due to both common occurrence in the radiologic reports and clinical importance \citep{Irvin2019} and refer to the definitions in the glossary of terms for thoracic imaging \citep{Hansell2008}.   
+CheXpert is a multilabel dataset, which means that in each image multiple pathologies may be present.
+For each image, the pathologies are labelled as positive (1), negative (0) or uncertain (-1), where uncertainty labels express both contradictions in the report and also diagnostic uncertainty of the radiologist who has written the report \citep{Irvin2019}.
+\par
+Labels were extracted from free text radiology reports in three stages (see figure \ref{fig:multilabel-struc}).
+In the first step, observations were extracted from the reports with the help of a hand-selected list of common phrases, reviewed by different board-certified radiologists \citep{Irvin2019}.
+The extracted observations are then passed to a second stage.
+This stage is split into a three steps pipeline, where observations are matched against pre-negation uncertainty rules first, then against negation rules and finally against post-negation uncertainty rules \citep{Irvin2019}.
+Only if an observation does not match any of the rules, it is assigned a positive label \citep{Irvin2019}.
+Those rules are extracted through NLP techniques and details can be found in \citep{Irvin2019}.
+In the last step, mentions are aggregated into a final label for each image and each class.
+Observations with at least one positively labelled mention are assigned an aggregated positive label and an uncertainty label is selected if there is no positive mention and a minimum of one mention of uncertainty in the observations \citep{Irvin2019}.
+Negative labels are only assigned if at least one mention label is negative \citep{Irvin2019}. 
+If there is overall no mention of an observation, a \textit{blank} label is set as the label of the respective class \citep{Irvin2019}.
+\loadFigure{Figure:multilabel-struc}
+\par
+Both the multilabel structure and the number of different classes of the CheXpert dataset leave room for designing different ID and OOD split settings.
+For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
+\par
+In this thesis different settings are evaluated.
+[no ID label overlap assumed ergänzen]
+In the first setting, the No Finding class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
+Specifically, the model is trained on the No Finding class and performance metrics are separately evaluated on each of the six classes.
+The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
+Because CheXpert labels are hierarchically structured \cite{Irvin2019}, the pathologies Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia can be considered as subcases of Lung Opacity \textcolor{red}{\citep{Hansell2008}}.
+Therefore, in the first setting, that contrasts the No Finding class with the mentioned out-of-distribution classes, images of Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia were also added to the Lung Opacity class.
+Subsequently, the model performance evaluated on Lung Opacity is an average over five subclasses and one superclass.
+Further, the two different settings of \citep{Berger2021} are used.
+The first one defines Cardiomegaly and Pneumothorax as in-distribution pathologies and Fracture as out-of-distribution class.
+The other setting consists of the two in-distribution classes Lung Opacity and Pleural Effusion, which are evaluated against two out-of-distribution pathologies Fracture and Pneumonia.
+Settings and dataset sizes are summarized in table \ref{table:settings-dataset-sizes}.
+\loadTable{Table:settings-dataset-sizes}
+\par
+Medical imaging datasets differ from commonly used computer vision benchmarks like CIFAR-10 \citep{Krizhevsky2009a}, CIFAR-100 \citep{Krizhevsky2009b} or ImageNet \citep{Deng2009} in terms of appearance and variability of input images.
+Chest-X-ray images for example are greyscale by default and as only the upper body part is included there is only low input variability.
+Further, classifying the underlying pathologies is even challenging for certified board radiologists and also dependent on the class.
+On the CheXpert dataset, the miss rate (False Negative Rate) for classifying Consolidation can range from 55\% to 52\% or 37\% depending on the human radiologist assessing the Xray-image \citep{Irvin2019}, where lower values indicate better performance.
+On the Atelectasis class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance [ibid.].
+In addition to that, a study has shown that performance on the same pathology can also vary in-between X-ray datasets \textcolor{red}{\citep{Majkowska2020}}.
+\par
+Due to the differences between CheXpert and the frequently used benchmarks, medical domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations for specialized medical imaging datasets.
+In the following paragraph, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
+The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary \citep{Hansell2008} if mentioned there.
+Sample images of the conditions are depicted in figure \ref{fig:pathologies}.
+\loadFigure{Figure:pathologies} 
+\par
+Cardiomegaly is the first condition of interest.
+It is a general term for heart enlargements, where the cardiothoracic ratio is often used as a measurement of the severity of size increase.
+In \citep{Dahnert2011} the ratio is defined as the ratio between the heart size and the thorax width. 
+Values between 0.45 - 0.55 are marked as mild cardiomegaly and values above 0.55 are considered to be severe cases of cardiomegaly [ibid.].
+\par 
+Pneumothorax is a medical condition related to the lung (pleura) and will be used as an in-distribution pathology.
+It is associated to the pleural space, which is the space between the pulmonary pleura and the costal pleura and is also called the pleural cavity \citep{Charalampidis2015}.
+Pneumothorax is the medical term for a pleural space that is filled with gas (often air) \citep{Dahnert2011,Hansell2008}.
+If the mentioned pleural space is filled with an aggregation of fluid, the condition is referred to as a pleural effusion \citep{Karkhanis2012}.
+Lung opacity is a collective term and refers to lung areas which appears more opaque than the surrounding area \citep{Hansell2008}.
+Because the lung appears dark on x-ray images, opaque areas are white in contrast to the lung appearance.
+It should be emphasized that the term is unspecific and is not descriptive in terms of neither the extent nor the origin of the pathology \citep{Hansell2008}.
+Pneumonia is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue, which also appears as a lung opacity on chest x-rays [ibid.].
+A rib fracture is the term for a broken rib bone.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experimental Setup}
-\begin{itemize}
-	\item Dataset: Whole CheXpert dataset \citep{Irvin2019} and CheXpert restricted to settings 1-3 as described in \ref{section: dataset}\\
-	\item Pretraining: Pretraining SimCLR and DINO on setting 1-3 and for a comparison on the whole CheXpert dataset.\\ 
-	\item Fine-tuning: After finishing SSL, the projection head is removed and the pretrained ViT encoder is used as a backbone for fine-tuning.
-	Fine-tuning is performed on setting 1-3 and either an MLP head with cross-entropy is trained on top [specify+SOURCE] [or Supervised Contrastive Learning is used as described in \ref{section: supervised-contrastive-learning}.]
-	The former is referred to as "Sup ViT" and the latter will be called "SupCon ViT".\\
-	\item Hyperparameters: 
-		\begin{itemize}
-			\item SimCLR: trained for 150 epochs with a batch size of 256 per GPU, learning rate of 3.0e-04 with a linear warmup of 10 epochs [QUELLE] and 5 gradient accumulation steps [QUELLE], weight decay of 1.0e-06 and a temperature of 0.5. 
-			As an optimizer, Adam [QUELLE] with a weight decay of 1.0e-06 was used.
-		\end{itemize}
-		\begin{itemize}
-			\item DINO: trained for 100 epochs on setting 1-3 with a batch size of 32 per GPU, learning rate of 0.0015 with a cosine schedule [QUELLE] and with 10 warmup epochs.
-			For the teacher network, a momentum of 0.996 is used and the teacher temperature $\tau_t$ is set to 0.04 using a linearly increasing schedule from 0.02 over 30 epochs.
-			The number of local crops is set to 10 and the number of global crops equals 2. 
-			Optimizer was set to AdamW [QUELLE] with a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
-			When training on $\text{CheXpert}_\text{all}$, $\tau_t$ is set to 0.07 and the maximum weight decay is replaced with 0.5.
-		\end{itemize}
-		% \begin{itemize}
-		% 	\item SupCon ViT: trained for 100 epochs with a batch size of 32 per GPU, learning rate of 0.00625 that was linearly warmed up from 0 over 10 epochs.
-		% 	The temperature $\tau$ of the loss function is set to 0.03 and SGD [QUELLE] is used as the optimizer.
-		% \end{itemize}
-		\begin{itemize}
-			\item Sup ViT: trained for 100 epochs with a batch size of 64 per GPU and a learning rate of 3.0e-04. SGD with a momentum of 0.9 and a weight decay of 0.0001 is used as the optimizer.
-		\end{itemize}
-			\item Augmentations: For SimCLR and SupCon ViT, the original SimCLR augmentations \texttt{random resized crop}, \texttt{random horizontal flip} and \texttt{random color distortions}
-			and \texttt{random Gaussian blur} are slightly altered.
-			Gaussian blur is not used as local textures and important pathology areas might become not well-defined if applied \citep{Azizi2021}.
-			Further, saturation and hue are also set to zero for the random color distortions, as hue and saturation are not meaningful for greyscale images with only one color channel. 
-			For training with the DINO objective, the original augmentations of \citep{Caron2021} are modified in the same way.
-			Additionally, the used augmentations for DINO are also expanded by a random rotation of 20 degrees and referred to as \texttt{Rotate augmentations}. 
-			This modification is adapted from \citep{Azizi2021} and will be compared to the mentioned augmentation from before.
-			If not mentioned otherwise, global crops scale and local crops scale are adapted from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
-			For fine-tuning the Sup ViT, \texttt{random resized crop}, \texttt{random horizontal flip}, \texttt{random color distortions} and \texttt{random rotation} are used as augmentations and the crop scale is set to [0.8, 1].
-	\item Evaluation: 
-	\begin{itemize}
-		\item during training: evaluate accuracy of 1-knn classifier [QUELLE] on top of the ViT features [QUELLE].
-	\end{itemize}
-	\begin{itemize}
-		\item after pretraining: temperature scaled feature similarity ($\tau=1$) as unsupervised OOD score on test set
-		\item evaluate after fine-tuning: 
-		\begin{itemize}
-			\item Sup ViT OOD score MSP and Mahalanobis distance
-			%\item SupCon ViT OOD score Mahalanobis
-		\end{itemize}
-	\end{itemize}
-	Similar to \citep{Berger2021, Cao2020}, performance of OOD score is measured with Area under the ROC curve (AUROC) [QUELLE] and Area under the Precision-Recall curve (AUPRC) [QUELLE].
-\end{itemize}
-
-
+\subsection{Adapted Methods and Evaluation Setup}
+\label{section: adapted-methods}
+\subsubsection*{Pretraining}
+SSL models are pretrained on setting 1-3 (see \ref{section: dataset}) and for a comparison on the whole CheXpert dataset ($\text{CheXpert}_\text{all}$).
+During training, the mean accuracy of a 1-knn classifier [QUELLE] on top of the ViT features [QUELLE] is evaluated to monitor the training progress.
+After finishing SSL, the projection head is removed [SOURCE] and the weights of the pretrained ViT encoder are used for unsupervised OoDD.
+Training and test set are passed through the ViT encoder and the k-NN feature similarity between train and test features is used as a measure for unsupervised OoDD (see equation \ref{equation:knn-score}).
+\par
+\subsubsection*{Fine-tuning}
+To also compare against the supervised baseline of \citep{Berger2021}, pretrained ViT weights are fine-tuned on setting 1-3 with a supervised MLP head with cross-entropy that is trained on top of the ViT encoder [specify+SOURCE].
+For fine-tuning, the MSP and the Mahalanobis distance are used as a supervised confidence score (see section \ref{section: Out-of-Distribution Detection}).
+We will refer to fine-tuned models as "Sup ViT".
+\par
+\subsubsection*{Augmentations}
+Smaller adjustments are made to the augmentations that are used for pretraining.
+\texttt{Gaussian blur} is not applied as local textures and important pathology areas might become not well-defined if applied \citep{Azizi2021}.
+Further, saturation and hue are also set to zero for the \texttt{random color distortions}, as hue and saturation are not meaningful for greyscale images with only one color channel.
+Additionally, an ablation study is evaluated and the used augmentations are expanded by a random rotation of 20 degrees and referred to as \texttt{Rotate augmentations}. 
+This modification is similar to \citep{Azizi2021} and will be compared to the adapted augmentations from before.
+If not mentioned otherwise, global crops scale and local crops scale of DINO models are taken from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
+For fine-tuning the Sup ViT, \texttt{random resized crop}, \texttt{random horizontal flip}, \texttt{random color distortions} and \texttt{random rotation} are used as augmentations and the crop scale is set to [0.8, 1].
+\par
+Further, custom augmentations are designed to simulate pathologies on chest X-ray images through image corruptions.
+They will be designed for the Fracture pathology and used for setting 1.
+The custom augmentations are applied to frontal images within bounding boxes depicted in figure \ref{fig:custom-augs-bbox} and assume, that the thorax is centered.
+The bounding boxes should heuristically cover large parts of the lung and the rib cage and are applied with a probability of 0.5 to either the left side of the image or to the right side.
+In figure \ref{fig:custom-augs-bbox}, the green bounding boxes correspond to the borders of possible image slices, where the image corruption is applied, while the red bounding boxes correspond to samples of image slices.
+Augmentations were designed for an image size of $224\times224$ pixels but with adjustments, any square size should be applicable.
+\par
+First, a probability p is sampled, that indicates on which side of the image the augmentation is applied.
+Then, a horizontal starting pixel of the red slice is drawn from pixel values ranging from 50 to 100 on the left side and 134 to 184 on the right side and a vertical starting pixel of the red slice is sampled from a pixel range of 45 to 80 (approx. 20\% - 36\% of the total height).
+Subsequently, a vertical ending point of the red slice is randomly chosen from pixel values ranging from 125 to 160 (approx. 56\% - 72\% of the total height).
+Then, the horizontal width of the red bounding box is chosen as a uniform value between 2 pixels and 6 pixels.
+Finally, a vertical offset value between 1 and 3 pixels is sampled, and the whole vertical slice represented by the red bounding boxes is shifted by this value.
+\loadFigure{Figure:custom-augs-bbox}
+The impact of the described image corruptions is visualized in figure \ref{fig:custom-augs-applied}.
+The applied colormap is not part of the augmentations and should just help to visualize the effect of the augmentations.
+The width of the simulated upper rib fracture (patient's left side, right image side) is 6 pixel values, while the vertical offset is 2 pixel values.
+Although the resolution is quite low, one can see the simulated fracture in the image by visual inspection.
+\loadFigure{Figure:custom-augs-applied}
+\subsubsection*{Implementation Details}
+\textbf{SimCLR} models are trained for 150 epochs with a batch size of 256 per GPU, a learning rate of 3.0e-04 with a linear warmup of 10 epochs [QUELLE] and 5 gradient accumulation steps [QUELLE]. 
+The temperature of the loss function is set to 0.5. 
+The training loss is optimized with Adam [QUELLE] and a weight decay of 1.0e-06.
+\par
+\textbf{DINO} models are trained for 100 epochs with a batch size of 32 per GPU, a learning rate of 0.0015 with a cosine schedule [SOURCE] and with 10 warmup epochs.
+For the teacher network, a momentum of 0.996 is used and the teacher temperature $\tau_t$ is set to 0.04 using a linearly increasing schedule from 0.02 over 30 epochs.
+The number of local crops is set to 10 and the number of global crops equals 2. 
+The loss is optimized with AdamW [QUELLE] with a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
+When training on $\text{CheXpert}_\text{all}$, $\tau_t$ is set to 0.07 and the maximum weight decay is replaced with 0.5.
+\par
+\textbf{Sup ViT} is trained for 100 epochs with a batch size of 64 per GPU and a learning rate of 3.0e-04. 
+Stochastic Gradient descent (SGD) with a momentum of 0.9 and a weight decay of 0.0001 is used to minimize the loss.
+\par
+For \textbf{outlier exposure} the same setup is used as for the Sup ViT.
+OOD samples are made available to the model during training with a percentage of $\text{OOD}_\text{fraction}$ and are oversampled by a factor of $1/(\text{OOD}_\text{fraction})$.
+The oversampling is adapted from \citep{Fort2021}, but the authors also correct for different number of classes in the ID and OOD dataset.
+This did not lead to satisfactory results and was therefore omitted.
+\subsubsection*{Evaluation metrics}
+All OOD scores are evaluated with the area under the curve (AUROC) [source] and the area under the precision-recall curve (AUPRC) [source].
+For the unsupervised feature similarity score, AUROC-k and AUPRC-k indicate, that k-nearest neighbours of the training features are used to calculate the OoDD score.
+The training and test accuracy is reported whenever applicable.

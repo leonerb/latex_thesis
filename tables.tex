@@ -187,7 +187,8 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 
 %<*Table:vit-model-variants>
 \begin{table}
-\centering
+    \renewcommand{\arraystretch}{1.5}
+    \centering
     \begin{tabular}{l c c c c c}
         \toprule
         Model name & Layers & $d_{model}$ & $d_{ff}$ & \#heads & \#parameters \\
@@ -355,11 +356,11 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     \multicolumn{1}{c|}{}& Sup. Baseline \citep{Berger2021} & 45.8 & 52.6 & 58.6 & \textbf{60.1} & - & 75.8 \\
     \bottomrule
     \end{tabular}
-    \caption{Supervised results with ViT-s backbone and Cross Entropy. Rows marked with a * are DINO weights which were pretrained on the respective dataset are DINO weights. 
-    The Mahahalanobis distance was calculated in the feature space of the ViT encoder as well as in the penultimate layer of the projection with Cross Entropy on top. 
+    \caption{Supervised results with ViT-s backbone and Cross Entropy. Rows marked with a * are DINO weights which were pretrained on the respective dataset. 
+    The Mahahalanobis distance is calculated in the feature space of the ViT encoder as well as in the penultimate layer of the projection with Cross Entropy on top. 
     The values that correspond to the ViT encoder are in brackets.
     Bold values depict the best column values.
-    The supervised baseline in \citep{Berger2021} is used for a comparison}
+    The supervised baseline in \citep{Berger2021} is described in \ref{section: Out-of-Distribution Detection} and is used as a comparison.}
     \label{table:finetuning-supervised-new}
 \end{table}
 %</Table:finetuning-supervised-new>
@@ -383,9 +384,32 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 \end{table}
 %</Table:supcon-results>
 
+%<*Table:vit-imagenet-model-size>
+\begin{table}[!htbp]
+    \renewcommand{\arraystretch}{2}
+    \centering
+    \begin{tabular}{l l c c c c c c}
+    \toprule
+    & & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
+    \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+    Eval& Model Size & MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
+    \hline
+    \multicolumn{1}{c|}{\multirow{2}{2pt}{\rotatebox{90}{Setting 2}}}& Sup ViT-s & \textbf{65.9} & 63.3 (59.7) & 66.8 & 64.4 (60.3) & 94.6 & \textbf{83.1} \\
+    \multicolumn{1}{c|}{}& Sup ViT-b & \textbf{65.9} & \textbf{66.7} (60.9) & \textbf{67.9} & \textbf{67.6} (61.9) & \textbf{95.6} & 82.8  \\
+    \hhline{========}
+    \multicolumn{1}{c|}{\multirow{2}{2pt}{\rotatebox{90}{Setting 3}}}& Sup ViT-s & \textbf{50.1} & 48.3 (47.1) & \textbf{53.3} & 49.1 (47.5) & 83.9 & \textbf{72.1} \\
+    \multicolumn{1}{c|}{}& Sup ViT-b & 49.7 & \textbf{50.9} (45.7) & 52.1 & \textbf{52.7} (46.8) & \textbf{90.0} & 70.5 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Supervised results with ViT-s and ViT-b backbone and Cross Entropy with DINO ImageNet initialization.
+    Bold values depict the best values for each setting and metric.}
+    \label{table:vit-imagenet-model-size}
+\end{table}
+%</Table:vit-imagenet-model-size>
+
 %<*Table:custom-augs-fracture-results>
 \begin{table}[!htbp]
-    \renewcommand{\arraystretch}{1.5}
+    \renewcommand{\arraystretch}{1.25}
     \centering
     \begin{tabular}{l c c}
     \toprule
