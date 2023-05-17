@@ -10,11 +10,11 @@ In general the data which is known to the classifier (train and validation set) 
 The task of out-of-distribution detection (OoDD) is to find inputs deviating from the training distribution.
 Therefore, a reliable model output cannot be guaranteed, and a separate consideration may be reasonable.
 \par
-These detection tasks are especially important in high-risk-environments such as medicine, where human intervention is required.
+These detection tasks are especially important in high-risk-environments such as medicine, where human intervention is often required.
 X-rays are a relevant imaging technique in medicine and frequently used as a diagnostic tool.
 \par
 According to \citep{Cao2020} one can generally distinguish three different use-cases.
-In the first use-case, images that are obviously unrelated to x-ray-images should be filtered out.
+In the first use-case, images that are unrelated to x-ray-images should be filtered out, e.g. they might originate from a different imaging procedure.
 In the second use-case the OOD images are x-ray-images, but they are acquired incorrectly and the image characteristics might be flawed (e.g. high contrast, rotation etc.).
 The third use-case considers x-ray images of unseen or novel pathologies as OOD samples.
 In this thesis, the focus is mainly on the third use case, which is unsolved to a large extent for x-ray-images.

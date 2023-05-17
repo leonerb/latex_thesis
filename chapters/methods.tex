@@ -5,10 +5,100 @@ SimCLR and DINO are SSL learning objectives to extract ViT-representations used 
 The features are used for score based OOD detection methods. 
 We can use the features only for unsupervised ood detection and if label knowledge and further fine-tuning is assumed supervised ood detection methods can be applied.
 We can also inject further ood samples (Outlier exposure) if only one in-distribution class is available. 
-Custom augmentations are also applied to simulate certain pathology characteristics that are ood-samples. 
-\textcolor{red}{[SOURCES]}  
+Custom augmentations are also applied to simulate certain pathology characteristics that are ood-samples.
+\section{Out-of-Distribution Detection}
+Out-of-distribution detection is a method to filter inputs not part of the training distribution (in-distribution) [SOURCES].
+The unknown test inputs represent samples of the out-of-distribution and a reliable detection of such samples is indispensable for safety reasons [SOURCES].
+Many machine learning models produce overconfident prediction and calibration is needed to mitigate potential failures [SOURCES].
+\textcolor{red}{ergänzen}
+\par
+In this thesis, the focus is on score based OoDD methods.
+Score based methods generate a confidence score for each test input and use a threshold to differentiate between in/out samples [SOURCES].
+The confidence score is based on the model's prediction trained on the in-sample distribution [SOURCES].
+\subsubsection*{Supervised}
+Supervised scores require label knowledge and are based on the assumption, that the model produces more reliable estimates on in-distribution samples compared to out-of-distribution samples [SOURCES].
+A simple, yet effective baseline is the \textbf{Maximum Softmax Probability (MSP)} of a given in-distribution classifier \citep{Hendrycks2016a}.
+Given $C$ classes, the MSP is calculated as $\text{MSP}(x)=\max_{i=1,\dots,C}p(y_i|x)$ and the score is used as a confidence score.
+\par
+The authors in \citep{Lee2018} argue that the MSP is a confidence score which can even show high confidence for out-of-distribution samples.
+Instead, they propose to use the \textbf{Mahalanobis distance} as a score, based on the representation $g(x)$ of a pretrained classifier with input $x$ \citep{Lee2018}.
+Further, assume label knowledge of samples $\{(x_1,y_1),\dots, (x_N,y_N)\}$, $y_i \in \{1,\dots,C\}$.
+In a first step, the authors fit a class conditional Gaussian to the representations of each class $c$ \citep{Lee2018}.
+The estimates for the class means $\mu_c$ and for the collective covariance $\Sigma$ of the Gaussian are calculated as follows \citep{Lee2018}:
+\begin{align}
+	\hat{\mu_c} = \frac{1}{N_c}\sum_{i=1}^{N_c}g(x_i), \hspace{8pt} \hat{\Sigma} = \frac{1}{N}\sum_{c=1}^{C}\sum_{i: y_i=c}(g(x_i)-\mu_c)(g(x_i)-\mu_c)^T
+\end{align}
+where $N_c$ is the number of samples of class $c$ \citep{Lee2018}.
+With estimated per class mean $\hat{\mu_c}$ and covariance $\hat{\Sigma}$, the Mahalanobis distance of a test sample $x'$ is then calculated as \citep{Lee2018}:
+\begin{align}
+	S_{md}(x') = - \min_c (g(x')-\hat{\mu_c})^T\hat{\Sigma}^{-1}(g(x')-\hat{\mu_c})
+\end{align}
+and used as a confidence score for OoDD.
+\par
+The ODIN method is an extension of the MSP score and is also based on a pre-trained neural network $f(x)$ \citep{Liang2018}.
+The authors suggest temperature scaling and input perturbations to improve the OoDD performance of the MSP score \citep{Liang2018}.
+First assume a temperature scaling factor of $T$ \citep{Liang2018}.
+By scaling the logits of the classifier output with 1/T, a scaled softmax score is obtained \citep{Liang2018}:
+\begin{align}
+	S_i(x,T) = \frac{\exp(f_i(x)/T)}{\sum_{j=1}^{C}\exp(f_j(x)/T)}, \forall i=1,\dots,C
+\end{align}
+The second part of the method is adding a preprocessing step for each test sample $x'$ \citep{Liang2018}.
+This step consists of adding a small perturbation to the input image $x'$, which is based on a gradient step and calculated as follows \citep{Liang2018}:
+\begin{align}
+	\tilde{x}' = x' - \epsilon \text{sign}(-\nabla_x \log \text{max}_i  S_i(x',T))
+\end{align}
+The parameter $\epsilon$ is the perturbation magnitude \citep{Liang2018}.
+The perturbed input $\tilde{x}'$ is then fed to the classifier and the confidence score is calculated as MSP \citep{Liang2018}:
+Both $T$ and $\epsilon$ are tuned on validation data and access to OOD samples is assumed \citep{Liang2018,Hsu2020}.
+Although \citep{Liang2018} argue that the parameters are insensitive to the tuning data and thus transferable, it should be noted that this is a difference to MSP and Mahalanobis distance which do not require access to OOD samples.
+\subsubsection*{Unsupervised}
+If no labels are available, unsupervised methods can still be used to extract OOD scores.
+Assume that $g(x)$ is the representation of an input $x$.
+Similar to \citep{Michels2023,Sun2022}, an OOD score can be constructed by applying the temperature based cosine similarity on a set of k-nearest neighbours.
+Let $k$ denote the number of nearest neighbours.
+The training embeddings are denoted as $\{g(x_1),\dots,g(x_N)\}$ and the set of k-nearest neighbours is denoted as $N_{x'} = \{g(x_{i_1}),\dots,g(x_{i_k})\}$, where $i_1,\dots,i_k$ are the training set indices of the k-nearest neighbours of $x'$.
+For a test sample $x'$ the OOD score is calculated as follows \citep{Michels2023,Sun2022}:
+\begin{align}
+	S_{nn}(x',K) = \frac{1}{K}\sum_{i=1}^K \text{sim}(x',N_{x'}(i))
+\end{align}
+where $sim(x,y) = \frac{x\cdot y}{\Vert x \Vert \Vert y \Vert}$ denotes the cosine similarity and in the case of k=1, the score is equivalent to the cosine similarity between the test sample and its nearest neighbour \citep{Michels2023}.
+\subsubsection*{Outlier Exposure}
+Outlier exposure was first introduced in \citep{Hendrycks2018} and is a method that injects a portion of known outliers into the training data.
+It was recently demonstrated, that pretrained Vision Transformers (ViTs) accelerate OOD detection performance with only a few examples per class available \citep{Fort2021}.
+The authors in \citep{Fort2021} propose the use of a ViT as a feature extractor and the training of a linear classifier on top of the features.
+\par
+Two settings are constructed and will also be adopted in this thesis.
+Suppose that there are $K$ in-distribution and $O$ out-of-distribution classes available \citep{Fort2021}.
+In the first case, all available outlier samples are collapsed to a single class and the pretrained ViT encoder with linear classifier is trained on $K+1$ classes \citep{Fort2021,Thulasidasan2021}.
+Since the true fine-grained OOD classes are essentially unknown, this scenario is referred to as \textbf{unsupervised outlier detection}  in this thesis.
+In contrast, the second setting assumes that the (fine-grained) labels are known for all outlier samples \citep{Fort2021,Roy2021}.
+Now, the pretrained feature extractor with linear classifier on top is trained on $K+O$ classes \citep{Fort2021}.
+We will refer to this case as \textbf{supervised outlier detection}.
+At test time, the OOD score for a test input $x'$ is calculated as the sum over the class probability of the $K$ in-distribution classes \citep{Fort2021}:
+\begin{align}
+	S_{oe}(x') = p(in|x) = \sum_{c=1}^{K}P(y=c|x')
+\end{align}
+\subsubsection*{OoDD on Chest-X-ray Images}
+\textcolor{red}{Chester?}
+Detecting erroneous inputs to a machine learning model is especially important in the medical domain.
+For chest-x-ray images, the OoDD task was recently explored in \citep{Cao2020,Berger2021}.
+The authors of \citep{Cao2020} propose a large cohort of methods to detect OOD samples on the frontal view of the ChestX-ray8 \citep{Wang2017} dataset.
+They assume a train dataset with labelled in-distribution examples, a validation set and a test set with in-distribution and out-of-distribution samples \citep{Cao2020}.
+In total, 22 different models are evaluated on three classes of OoDD methods \citep{Cao2020}.
+The three different classes of OoDD methods are grouped into data-only methods (KNN-1 and KNN-8), classifier based methods (including, but not limited to MSP, Mahalanobis distance and ODIN) and auxiliary methods (methods that use other training objectives than classification such as image reconstruction loss) \citep{Cao2020}.
+OOD samples are defined as unrelated images (use-case 1), incorrectly acquired samples (use-case 2) or images with unseen pathologies (use-case 3) \citep{Cao2020}.
+For the first two use cases, the authors obtain satisfactory results well above the random guess of 50\% AUROC \citep{Cao2020}.
+However, for the third use case, which is the focus in this thesis, none of the evaluated methods scores above 50\% and the authors caution users of diagnostic tools to not trust every output \citep{Cao2020}.
+\par
+In \citep{Berger2021} the authors focus on the third use case, apply classifier based methods and evaluate the performance on two ID-OOD splits (see section \ref{section: dataset})of the CheXpert dataset \citep{Irvin2019} with different pathologies.
+They use a WideResNet \citep{Zagoruyko2016} with depth factor 100 and widen factor 2 and train a classifier to distinguish the classes of the respective in-distribution \citep{Berger2021}.
+For OoDD they use the MSP score, the Mahalanobis distance and ODIN \citep{Berger2021}.
+The authors identify ODIN as the best performing method and score an AUROC of 84.1\% on the first ID-OOD split and 86.5\% on the second split \citep{Berger2021}.
+The results in \citep{Berger2021} are used as a supervised baseline.
+\par
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experimental Setup}
 \subsection{Dataset}
 \label{section: dataset}
 In this thesis, the CheXpert dataset is used as a collection of chest X-ray images developed by \citep{Irvin2019}.
@@ -267,11 +357,11 @@ As explained before, both probability distributions $P_s$ and $P_t$ are the norm
 The networks $g$ are the composition of a backbone network $f$ with an MLP projection head $h$ \citep{Caron2021}.
 The MLP projection head is comparable to the head that is used in \citep{Caron2020}, which is based on the SimCLR projection head described in section \ref{section: SimCLR}.
 The choice of the backbone network is flexible, but the authors primarily use a ViT architecture \citep{Dosovitskiy2020}, which is also the architectural choice in this thesis.
-First, the backbone $f$ is applied, and the resulting features are passed to the first two layers of the projection head with an output dimension of 2048 and a gaussian error linear units (GELU) activation in-between \citep{Hendrycks2016}:
+First, the backbone $f$ is applied, and the resulting features are passed to the first two layers of the projection head with an output dimension of 2048 and a gaussian error linear units (GELU) activation in-between \citep{Hendrycks2016b}:
 \begin{equation}
 \text{GELU}(x) = x \Phi(x)
 \end{equation}
-The cumulative distribution $\Phi(x)$ of the standard normal probability mass functions is used inside the GELU function, which is applied after each of the first two layers \citep{Hendrycks2016}.
+The cumulative distribution $\Phi(x)$ of the standard normal probability mass functions is used inside the GELU function, which is applied after each of the first two layers \citep{Hendrycks2016b}.
 The last layer of the projection head does \textit{not} use a GELU activation and projects the features to a bottleneck dimension of 256d \citep{Caron2021}.
 Then, the output is $\ell_2$-normalized ($x \leftarrow x/\Vert x \Vert_2$) so that each vector has unit norm \citep{Caron2021}.
 Finally, the output is passed to a fully connected layer of dimension $K$ with weight normalization.
@@ -344,6 +434,8 @@ The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 % The \textit{out} subscript indicates, that the summation over all positive examples in $P(i)$ is performed \textit{outside} the log function \citep{Khosla2020}.
 % One can also define the loss function $\mathcal{L}_{in}^{sup}$, which is similar to the previously described loss in equation \ref{equation: superv-contrastive-loss}, but now the summation over positives is with\textit{in} the logarithmic function \citep{Khosla2020}.
 % A comparison of the properties can be found in \citep{Khosla2020}, but for the purpose of this thesis, the higher performant loss function in equation \ref{equation: superv-contrastive-loss} is used as recommended by the authors.
+\subsection{Fine-tuning}
+Some stuff about fine-tuning
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Out-Of-Distribution Detection}
@@ -358,7 +450,7 @@ The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 	\item Dataset: Whole CheXpert dataset \citep{Irvin2019} and CheXpert restricted to settings 1-3 as described in \ref{section: dataset}\\
 	\item Pretraining: Pretraining SimCLR and DINO on setting 1-3 and for a comparison on the whole CheXpert dataset.\\ 
 	\item Fine-tuning: After finishing SSL, the projection head is removed and the pretrained ViT encoder is used as a backbone for fine-tuning.
-	Fine-tuning is performed on setting 1-3 and either an MLP head with cross-entropy is trained on top [specify+SOURCE] or Supervised Contrastive Learning is used as described in \ref{section: supervised-contrastive-learning}.
+	Fine-tuning is performed on setting 1-3 and either an MLP head with cross-entropy is trained on top [specify+SOURCE] [or Supervised Contrastive Learning is used as described in \ref{section: supervised-contrastive-learning}.]
 	The former is referred to as "Sup ViT" and the latter will be called "SupCon ViT".\\
 	\item Hyperparameters: 
 		\begin{itemize}
@@ -372,10 +464,10 @@ The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 			Optimizer was set to AdamW [QUELLE] with a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
 			When training on $\text{CheXpert}_\text{all}$, $\tau_t$ is set to 0.07 and the maximum weight decay is replaced with 0.5.
 		\end{itemize}
-		\begin{itemize}
-			\item SupCon ViT: trained for 100 epochs with a batch size of 32 per GPU, learning rate of 0.00625 that was linearly warmed up from 0 over 10 epochs.
-			The temperature $\tau$ of the loss function is set to 0.03 and SGD [QUELLE] is used as the optimizer.
-		\end{itemize}
+		% \begin{itemize}
+		% 	\item SupCon ViT: trained for 100 epochs with a batch size of 32 per GPU, learning rate of 0.00625 that was linearly warmed up from 0 over 10 epochs.
+		% 	The temperature $\tau$ of the loss function is set to 0.03 and SGD [QUELLE] is used as the optimizer.
+		% \end{itemize}
 		\begin{itemize}
 			\item Sup ViT: trained for 100 epochs with a batch size of 64 per GPU and a learning rate of 3.0e-04. SGD with a momentum of 0.9 and a weight decay of 0.0001 is used as the optimizer.
 		\end{itemize}
@@ -397,7 +489,7 @@ The student-teacher network of the DINO head is depicted in \ref{fig:dino-arch}.
 		\item evaluate after fine-tuning: 
 		\begin{itemize}
 			\item Sup ViT OOD score MSP and Mahalanobis distance
-			\item SupCon ViT OOD score Mahalanobis
+			%\item SupCon ViT OOD score Mahalanobis
 		\end{itemize}
 	\end{itemize}
 	Similar to \citep{Berger2021, Cao2020}, performance of OOD score is measured with Area under the ROC curve (AUROC) [QUELLE] and Area under the Precision-Recall curve (AUPRC) [QUELLE].
