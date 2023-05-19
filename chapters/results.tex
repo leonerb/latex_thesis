@@ -1,82 +1,115 @@
 \section{Results}
-This section investigates the OOD detection performance of the aforementioned models.
-In the first part, models are pretrained on setting 1-3 and self-supervised results are presented with no label knowledge.
-After establishing an unsupervised baseline, the pretrained models are finetuned and supervised results are discussed.
+The OoDD performance of the above models is examined in this section.
+In the first part, models are pretrained on both setting 1-3 and on the whole CheXpert dataset.
+After evaluating the unsupervised OOD capabilities, the pretrained models are fine-tuned and supervised results are discussed to compare with \citep{Berger2021}.
+Finally, the performance of outlier exposure is evaluated.
 \par
-First, different training architectures and model configurations are evaluated on the setting 1 dataset split (see table \ref{table:settings-dataset-sizes}).
-As this split contains six different OOD pathologies, including the ones from the other settings, the best configuration found for setting 1 was then applied to the other two settings.
+First, different training architectures and model configurations are evaluated on the setting 1 dataset split.
+As this split contains six different OOD pathologies, including the ones from the other settings (see table \ref{table:settings-dataset-sizes}), the best configuration found for setting 1 was then applied to the other two settings.
 \par
-In the first experiment, two different image normalizations were compared for SimCLR and DINO.
-The first normalization is adapted from \citep{Berger2021} and consists of both CheXpert dataset mean and standard deviation.
-This normalization will be referred to as the \textit{CheXpert} normalization and the other normalization is the \textit{ImageNet} normalization of the ImageNet dataset \citep{Deng2009}.
+In the first experiment, two different image normalizations are compared and applied to both SimCLR and DINO.
+Typically, the input images are normalized with the mean and standard deviation of the dataset.
+In computer vision, the ImageNet dataset statistics \citep{Deng2009} are also frequently used for normalization.
+However, the CheXpert dataset consists of greyscale images with low input variability in contrast to the ImageNet dataset.
+This raises the question, which normalization is more suitable for the task of OOD detection if SSL is applied.
+\par
+In the experiment, both SimCLR and DINO models are pretrained on setting 1 and the feature similarity is used as an unsupervised OOD score.
+The respective input images are normalized with the CheXpert dataset statistics and the ImageNet dataset statistics.
 Figure \ref{fig:setting1-chexnorm-v-imgnorm} summarizes the results.
-If averaged across the OOD pathologies, the CheXpert normalization is 0.26 percentage points higher for SimCLR, which is interpreted as both normalizations being on par.
-The features of the discarded DINO projection head outperform the features of the SimCLR architecture for each of the six OOD pathologies.
-On average, the ImageNet normalization applied to DINO leads to a slight performance increase of 0.66 percentage points over the CheXpert normalization and all AUROC values are slightly above chance level.
-Further, the low standard deviation of the CheXpert images of $\sigma=0.0349$, leads to a normalized input range of approximately [-17,17] and because neural nets with high input values tend to show convergence problems \textcolor{red}{QUELLE}, all following results use the ImageNet dataset statistics as a normalization.
-In addition to that, additional experiments with the SimCLR architecture are omitted due to the outperformance of the DINO model.
+In table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}, SimCLR and DINO models are compared for both normalizations.
+If restricted to SimCLR and averaged across the OOD pathologies, the AUROC is 0.26 percentage points higher for input normalized with CheXpert statistics.
+For the DINO models, the AUROC is 0.66 percentage points higher if the ImageNet normalization is applied.
+As indicated by the bold values, the ViT features of the discarded DINO projection head outperform the features of the SimCLR architecture for each of the six OOD pathologies.
+Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} shows this for the ImageNet normalization.
+The AUROC values are consisently above 50\% for all OOD pathologies with a maximum of 61.23\% for the OOD pathology Pneumothorax.
 \par
+Apart from the performance, the low standard deviation of the CheXpert dataset statistics ($\sigma=0.0349$), leads to a normalized input range of approximately [-17,17].
+Therefore, to mitigate the risk of convergence problems for high input values \citep{Lecun2002, He2015, Santurkar2019} and because of higher performance, the ImageNet normalization is used for all following experiments.
+Experiments with the SimCLR architecture are omitted due to the outperformance of the DINO model.
 \loadFigure{Figure:setting1-chexnorm-v-imgnorm}
-Next, DINO models are pretrained on setting 2 and setting 3.
+\par
+The performance of feature similarity as OOD score is dependent on the choice of the temperature $\tau$ and on the number of nearest neighbours $K$.
+It is analysed how the performance changes with different values for $\tau$ and $K$.
+As a DINO model was already pretrained on setting 1, the pretrained model weights are used as initializations to evaluate the mentioned setting.
+Further, additional DINO models are pretrained on setting 2 and setting 3.
+\par
 Then, the OOD score consistency of temperature scaled feature similarity was analysed for all three settings.
 Specifically, the pretrained model checkpoints were evaluated both on a set of nearest neighbour values $K$ (while keeping the temperature at $\tau=1.0$) and on different values for $\tau$ (while keeping $K$ fixed).
+\par
 The results are summarized in figure \ref{fig:auroc-vs-k-and-temp} and reveal the following findings:
 While the performance worsens for the first two settings with an increased value of $K$, the performance on setting 3 increases, when more neighbours are used for the feature similarity.
-In addition to that, setting 1 and setting 2 are not sensitive to temperature values, which is in contrast to setting 3 with an optimal $\tau$ value of 1.
-Therefore, no clear consistency across the settings can be observed and the temperature for all following experiments is set to $\tau=1$ for setting 1-3.
-Further, the number of neighbours $K$ is set to 1 when evaluating setting 1 and 2 and $K=N_3$ for setting 3, where $N_3$ is the length of the respective ID training set.
+Furthermore, setting 1 and setting 2 are not sensitive to temperature values, which is in contrast to setting 3 with an optimal $\tau$ value of 1.
+No clear consistency across the settings is observable and the temperature for all following experiments is set to $\tau=1$ for setting 1-3.
+Further, the number of neighbours $K$ is set to 1, if setting 1 or 2 are evaluated. 
+For setting 3, $K$ is set to $N_3$, which is the length of the respective ID training set (Lung Opacity and Pleural Effusion).
 \loadFigure{Figure:auroc-vs-k-and-temp}
 \par
-In another experiment, the impact of image augmentations is evaluated.
-The performance comparison between the adapted DINO augmentation and the Rotation augmentations used in \citep{Azizi2021} is depicted in figure \ref{fig:dino-rotate-augs-v-default-augs}.
+Augmentations are adapted to x-ray images in \ref{section: adapted-methods}.
+The impact of different image augmentations is now discussed.
+In the former experiments, the adopted DINO augmentations (see \ref{section: adapted-methods}) were used.
+The authors in \citep{Azizi2021} added a rotation of 20 degrees to their augmentations.
+We will also add a rotation of 20 degrees to the adopted DINO augmentations and compare the performance of both augmentation schemes.
+\par
+The results are summarized in figure \ref{fig:dino-rotate-augs-v-default-augs}.
 For unsupervised OOD detection, the DINO augmentations outperform the Rotation augmentations across all settings.
-The k-nn mean accuracy however is higher, if rotated augmentations are applied to the CheXpert images.
-
+However, the 1-NN mean accuracy is significantly higher on setting 2, if rotated augmentations are applied to the CheXpert images.
+In setting 3 no significant difference is observable for the training accuracy.
+Thus, a clear correlation between unsupervised OOD detection and 1-NN mean accuracy is not observable.
+It is not clear which augmentation scheme is more suitable for the task of OOD detection.
+The performance of both augmentation schemes was tested for fine-tuning experiments and the rotate augmentations lead to a higher ID accuracy and a higher OoDD performance. 
+In the remaining thesis, the rotate augmentations are used for all experiments.
 \loadFigure{Figure:dino-rotate-augs-v-default-augs}
 \par
-In addition to evaluating the performance of the models that were pretrained on setting 1-3, it is often insightful to visualize the self-attention maps of the ViT encoder.
-For each of the in-distribution pathologies, an input image of the respective class is fed to the ViT encoder and pixel regions are marked with respect to attention values.
-In our case, blue colormap values correspond to regions of the lowest attention, while yellow values indicate the regions of interest of the ViT encoder with higher attention values.
+It is often insightful to visualize the self-attention maps of the ViT encoder.
+The self-attention of the \texttt{[CLS]} token of the last layer is used for visualizing the output of each head \citep{Caron2021,Dosovitskiy2020}.
+For each of the in-distribution classes, an input image of the respective class is fed to the ViT encoder that was pretrained on setting 1-3.
+Pixel regions are marked with respect to self-attention values.
 Results for all six attention heads are summarized in \ref{table:attention-maps}.
+It should be emphasized, that the rows correspond to different models.
+For example, the second and third row show the attention maps for the Cardiomegaly and Pneumothorax class of a DINO model that was pretrained on setting 2 with the respective ID classes.
+The same holds for the first row (pretrained on setting 1) and for the fourth and fifth row (pretrained on setting 3).
+In our case, blue colormap values correspond to regions of the lowest attention, while yellow values indicate the regions of interest of the ViT encoder with higher attention values.
+\par
 The results show, that while some basic properties of chest x-rays are expressed through higher attention values, most heads do not attend to the region of interest.
 The ViT encoder attends for example only to random pixel regions for the "No Finding" class.
 In contrast to that, $\text{head}_5$ seems to attach to some lung parts for the Lung Opacity pathology.
 There is no evidence, that the DINO models pretrained on setting 1-3 show segmentation capabilities.
+Limiting the pretraining dataset to the narrow ID classes of the settings seems to inhibit the ViT encoder from learning meaningful representations.
 \loadTable{Table:attention-maps}
 \par
 In the former part, the unsupervised performance of the pretrained models was investigated.
 It is now analysed how well the pretrained models perform, if labels are available.
-To that end, another DINO model was pretrained on the whole CheXpert dataset to see how far the performance can be pushed.
+To that end, another DINO model was pretrained on the whole CheXpert dataset.
 The pretrained model weights are used as initializations for finetuning a cross-entropy based classifier on top of the ViT encoder.
 In this case, the performance is only evaluated on settings 2-3 in the first part, because setting 1 contains only 1 ID class and therefore no direct supervised classifier can be trained without modifications.
 Setting 1 will be revisited later and the performance of a supervised classifier on this setting is evaluated if custom augmentations are applied (thereby creating a second class next to the "No Finding" class) or if fractions of the OOD dataset are made available.
 \par
-With label access to the ID training set, supervised OOD detection is evaluated with MSP and Mahahalanobis distance as OOD score (see \ref{section: Out-Of-Distribution Detection}).
+With label access to the ID training set, supervised OOD detection is evaluated with MSP and Mahahalanobis distance as OOD score (see \ref{section: Out-of-Distribution Detection}).
 The Mahahalanobis distance was calculated in the feature space of the ViT encoder and in the penultimate layer of the classifier as suggested by \citep{Lee2018, Michels2023}.
 The results are summarized in table \ref{table:finetuning-supervised-new}.
 For setting 2, the CheXpert model that was pretrained on the whole dataset outperforms the other models, reaching up to 70.8\% AUROC and 71.6\% AUPRC.
 The supervised baseline in \citep{Berger2021} performs worse with 58 \% AUROC and 69.5 \% AUPRC respectively, but the authors report a higher test accuracy of 88.8 \% against 87.9 \% in our case.
 The DINO model that was pretrained on the smaller setting 2 dataset only reaches 63.4 \% AUROC and 64.5 \% AUPRC if the Mahahalanobis distance is used as the OOD score.
-This performance is comparable to finetuning DINO model weights that were pretrained on the ImageNet dataset, suggesting that pretraining on the settings only leads to no measurable performance increase against using ImageNet weights.
+This performance is comparable to finetuning DINO model weights that were pretrained on the ImageNet dataset, suggesting that pretraining on the settings leads to no measurable performance increase against using ImageNet weights.
 Finetuning the supervised classifier from random weights leads to the worst performance of 56.7 \% AUROC and 56.1 \% AUPRC.
 If restricted to our best performing model, a clear difference between applying the Mahahalanobis distance in the feature space of the ViT encoder and in the penultimate layer of the classifier is not observable.
-The Mahahalanobis distance is therefore only calculated for the feature space in the following experiments.
+The Mahahalanobis distance is therefore only calculated in the feature space of the ViT Encoder in the following experiments.
 \par
 Similar results hold for setting 3. However, the supervised baseline outperforms the DINO model that was pretrained on the whole CheXpert dataset if the AUPRC is used as a performance metric (60.1 \% vs. 56.5\%).
 AUROC values are higher for the DINO model (54.2 \% vs. 45.8 \%), if the MSP is used as an OOD score.
 The performance on setting 3 is worse than on setting 2 and most AUROC- and AUPRC values are close to random guessing of 50\%.
-Finetuning on setting 2 increased the performance, while finetuning on setting 3 even decreased the performance.
+%Finetuning on setting 2 increased the performance, while finetuning on setting 3 even decreased the performance.
 % This is because the OOD class Pneumonia used in setting 3 is a subclass of the ID pathology Lung Opacity (see figure \ref{fig:multilabel-struc}) and although no OOD labels were exposed to the classifier during training, the OOD detection performance might decrease with increasing accuracy, as the model does not distinguish between both classes.
 % Therefore, the following experiments will be carried out only on setting 1 and setting 2.
 \loadTable{Table:finetuning-supervised-new}
 \par
 Until now, only the ViT-s/16 was used as a backbone.
-Another experiment is designed to analyze the performance of the if the ViT-base variant is used as a backbone (see table \ref{table:vit-model-variants}).
+Another experiment is designed to analyze the performance, if the ViT-base variant (see table \ref{table:vit-model-variants}) is used as a backbone.
 Both Sup ViT-s and Sup ViT-b are initialized with ImageNet DINO weights and trained on the in-distributions of setting 2 and setting 3.
 The results are summarized in table \ref{table:vit-imagenet-model-size}.
 On setting 2, the MSP based AUROC is the same across both model sizes with 65.9 \% AUROC.
 Based on the AUPRC, the Sup ViT-b model outperforms the Sup ViT-s model with 67.9 \% AUPRC against 66.8 \% AUPRC.
-The MD based AUROC of the ViT-b architecture is 3 percentage points higher than the performance of the ViT-s architecture (66.7\% and 63.3\%).
+If the Mahahalanobis distance is used as OOD score, then the AUROC of the ViT-b architecture is 3 percentage points higher than the respective metric of the ViT-s architecture (66.7\% and 63.3\%).
 \par
 On setting 3, the MSP based AUPRC and AUROC of the ViT-s architecture is slightly higher.
 However, the ViT-b architecture performs better than ViT-s, if the MD is used as an OOD score.
@@ -88,6 +121,7 @@ Due to only minor performance gains and the increased model size, all following 
 In the former part of the results section, the unsupervised OoDD of settings 1-3 was evaluated.
 Further, pretrained models were finetuned on settings 2-3 and supervised OoDD methods were applied to compare with the unsupervised baseline and supervised baseline in \citep{Berger2021}.
 Supervised results for setting 2 and setting 3 are compared to the supervised baseline and ODIN in figure \ref{fig:supervised-vs-unsupervised} and unsupervised DINO results are depicted as a reference.
+\par
 For setting 2, the proposed Sup ViT outperforms the supervised baseline by 3 percentage points in terms of AUROC.
 Still, the performance of ODIN is 13 percentage points higher than the performance of the Sup ViT model.
 However, it needs to be noted, that ODIN typically has access to OOD samples to tune hyperparameters (see section \ref{section: Out-of-Distribution Detection}), while the Sup ViT did not have access to OOD samples during training.
@@ -99,6 +133,7 @@ The AUROC of ODIN is also higher as before and beats the Sup ViT model by a larg
 \par
 After evaluating the supervised performance of setting 2 and setting 3 in the first part, setting 1 is revisited and the performance of a supervised classifier is evaluated.
 Because the setting 1 only contains healthy patient images as in-distribution class, a supervised classifier is not directly applicable to this setting.
+\par
 To address this issue, the supervised classifier is trained on top of the ViT encoder using custom image augmentations, that should sensitize the classifier to the appearance of fractures in the images.
 The custom augmentations are described in detail in section \ref{section: adapted-methods}.
 In particular, the healthy patients are assigned a class label of 0 and the images with custom augmentations applied are assigned a class label of 1.
@@ -114,21 +149,24 @@ The same holds for random initializations.
 Although technically the described augmentations can also be generalized to other pathologies, further experiments are omitted.
 No performance increase is observed and manually designing augmentations for each pathology is cumbersome.
 \par
-\loadFigure{Figure:ood-fraction-avg}
 The attention in the last experiments is now shifted towards outlier exposure, where the assumption is made, that a small subsample of OOD images is available during training (see section \ref{section: Out-of-Distribution Detection}).
 First, the OOD dataset was limited to a maximum size of the ID dataset (10856 samples).
 Different fractions of the OOD dataset are made available to the classifier and the performance is evaluated on setting 1.
 The fractions are chosen to be 1\%, 5\%, 10\%, 25\%, 50\% and 100\% of the OOD dataset.
 Both unsupervised outlier exposure and supervised outlier exposure are applied (see \ref{section: Out-of-Distribution Detection}).
 First, the performance across the OOD pathologies Pleural Effusion, Cardiomegaly and Pneumothorax is evaluated.
+\loadFigure{Figure:ood-fraction-avg}
 \par
 Even for small fractions of OOD data (1\% and 5\%), the performance increases compared to the unsupervised baseline (DINO trained on setting 1).
+For reference, 1\% and 5 \% of the OOD dataset correspond to 109 and 547 samples, respectively.
 The performance increases with higher fractions of OOD data and reaches a maximum of 81.7\% AUROC (unsupervised outlier exposure) and 82.2\% AUROC (supervised outlier exposure), if the whole OOD dataset is available.
-Supervised outlier exposure did not lead to a performance increases over unsupervised outlier exposure, which implies that fine-grained labels are not necessary for outlier exposure on chest-x-rays.
+\par
+Supervised outlier exposure did not lead to a clear performance increase over unsupervised outlier exposure, which implies that fine-grained labels are not necessary for outlier exposure on chest-x-rays.
 The results are summarized in figure \ref{fig:ood-fraction-avg}.
 \loadFigure{Figure:ood-fraction-fracture}
 \par
-Now, the performance on the OOD pathology Fracture is discussed.
+Now, the performance on Fracture is discussed.
 In contrast to the other three mentioned OOD classes Pleural Effusion, Cardiomegaly and Pneumothorax, outlier exposure on Fracture only leads to minor performance increases.
+\par
 Even if the whole OOD dataset is available, the performance reaches a maximum of 59.0 \% AUROC (unsupervised outlier exposure) and 59.9 \% AUROC (supervised outlier exposure), which is only slightly above the baseline performance of 55.7 \% AUROC.
 The results are summarized in figure \ref{fig:ood-fraction-fracture} and suggest that the classifier is not able to distinguish between the ID and OOD class and that performance of outlier exposure deviates across the OOD pathologies.  
