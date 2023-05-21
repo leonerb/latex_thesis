@@ -14,42 +14,42 @@
 \begin{figure}[htbp]
 	\centering
 	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/cardiomegaly.png}
+		\includegraphics[width=\textwidth, height=\textwidth]{figures/attention-maps/cardiomegaly/img.png}
 		\caption{Cardiomegaly}
 		%\label{fig:first}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/pneumonia.jpg}
+		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/pneumonia_new_chex.jpg}
 		\caption{Pneumonia}
 		%\label{fig:second}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/rib-fracture.PNG}
+		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/rib_frac_new_chex.jpg}
 		\caption{Rib Fracture}
 		%\label{fig:third}
 	\end{subfigure}
 	\hfill
 	\vskip 1pt
 	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/pneumothorax.png}
+		\includegraphics[width=\textwidth, height=\textwidth]{figures/attention-maps/pneumothorax/img.png}
 		\caption{Pneumothorax}
 		%\label{fig:fourth}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/lung opacity.png}
+		\includegraphics[width=\textwidth, height=\textwidth]{figures/attention-maps/lung_opacity/img.png}
 		\caption{Lung Opacity}
 		%\label{fig:fifth}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[t]{0.3\textwidth}
-		\includegraphics[width=\textwidth, height=\textwidth]{figures/pathologies/pleural effusion.png}
+		\includegraphics[width=\textwidth, height=\textwidth]{figures/attention-maps/pleural_effusion/img.png}
 		\caption{Pleural Effusion}
 		%\label{fig:sixth}
 	\end{subfigure}	
-	\caption{Pathologies, neu machen mit CheXpert Bildern}
+	\caption{Pathologies: Pictures are taken from the CheXpert dataset \citep{Irvin2019}.}
 	\label{fig:pathologies}
 \end{figure}
 %</Figure:pathologies>
@@ -253,7 +253,8 @@
 	\centering
 	\includegraphics[width=\textwidth]{figures/custom_augs_applied.pdf}
 	\caption{Custom augmentations applied to a frontal chest-xray image.
-	The simulated rib fracture is in the upper part of the right image side (left side of the patient).}
+	The simulated rib fracture is in the upper part of the right image side (left side of the patient).
+	The red bounding box marks the region of interest.}
 	\label{fig:custom-augs-applied}
 \end{figure}
 %</Figure:custom-augs-applied>

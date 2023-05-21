@@ -5,10 +5,10 @@ SimCLR and DINO are SSL learning objectives to extract ViT-representations used 
 The features are used for score based OOD detection methods. 
 We can use the features only for unsupervised ood detection and if label knowledge and further fine-tuning is assumed supervised ood detection methods can be applied.
 We can also inject further ood samples (Outlier exposure) if only one in-distribution class is available. 
-Custom augmentations are also applied to simulate certain pathology characteristics that are ood-samples.
+Custom augmentations are also applied to simulate certain pathology characteristics that are OOD samples.
 \subsection{Out-of-Distribution Detection}
 \label{section: Out-of-Distribution Detection}
-Out-of-distribution detection is a method to filter inputs not part of the training distribution (in-distribution) [SOURCES].
+Out-of-distribution detection is a method to filter unsuitable inputs not part of the training distribution (in-distribution) [SOURCES].
 The unknown test inputs represent samples of the out-of-distribution and a reliable detection of such samples is indispensable for safety reasons [SOURCES].
 Many machine learning models produce overconfident prediction and calibration is needed to mitigate potential failures [SOURCES].
 \textcolor{red}{ergänzen}
@@ -16,15 +16,16 @@ Many machine learning models produce overconfident prediction and calibration is
 In this thesis, the focus is on score based OoDD methods.
 Score based methods generate a confidence score for each test input and use a threshold to differentiate between in/out samples [SOURCES].
 The confidence score is based on the model's prediction trained on the in-sample distribution [SOURCES].
-\subsubsection*{Supervised}
-Supervised scores require label knowledge and are based on the assumption, that the model produces more reliable estimates on in-distribution samples compared to out-of-distribution samples [SOURCES].
-A simple, yet effective baseline is the \textbf{Maximum Softmax Probability (MSP)} of a given in-distribution classifier \citep{Hendrycks2016a}.
+\subsubsection{Supervised}
+Supervised scores require label knowledge and are based on the assumption, that the model produces more reliable estimates on in-distribution samples compared to out-of-distribution samples \citep{Hendrycks2016a, Fort2021}.
+A commonly applied baseline is the \textbf{Maximum Softmax Probability (MSP)} of a given in-distribution classifier \citep{Hendrycks2016a}.
 Given $C$ classes, the MSP is calculated as $\text{MSP}(x)=\max_{i=1,\dots,C}p(y_i|x)$ and the score is used as a confidence score.
 \par
-The authors in \citep{Lee2018} argue that the MSP is a confidence score which can even show high confidence for out-of-distribution samples.
+Although the MSP is simple and effective, it has disadvantages.
+The authors in \citep{Lee2018} argue, that the MSP is a confidence score that can even produce high confidence for out-of-distribution samples, which is clearly undesirable.
 Instead, they propose to use the \textbf{Mahalanobis distance} as a score, based on the representation $g(x)$ of a pretrained classifier with input $x$ \citep{Lee2018}.
-Further, assume label knowledge of samples $\{(x_1,y_1),\dots, (x_N,y_N)\}$, $y_i \in \{1,\dots,C\}$.
-In a first step, the authors fit a class conditional Gaussian to the representations of each class $c$ \citep{Lee2018}.
+Let the labels $y_i$ of the training samples $\{(x_1,y_1),\dots, (x_N,y_N)\}$, $y_i \in \{1,\dots,C\}$ be known.
+The authors fit a class conditional Gaussian to the representations of each class $c$ \citep{Lee2018}.
 The estimates for the class means $\mu_c$ and for the collective covariance $\Sigma$ of the Gaussian are calculated as follows \citep{Lee2018}:
 \begin{align}
 	\hat{\mu_c} = \frac{1}{N_c}\sum_{i=1}^{N_c}g(x_i), \hspace{8pt} \hat{\Sigma} = \frac{1}{N}\sum_{c=1}^{C}\sum_{i: y_i=c}(g(x_i)-\mu_c)(g(x_i)-\mu_c)^T
@@ -44,55 +45,60 @@ By scaling the logits of the classifier output with 1/T, a scaled softmax score 
 	S_i(x,T) = \frac{\exp(f_i(x)/T)}{\sum_{j=1}^{C}\exp(f_j(x)/T)}, \forall i=1,\dots,C
 \end{align}
 The second part of the method is adding a preprocessing step for each test sample $x'$ \citep{Liang2018}.
-This step consists of adding a small perturbation to the input image $x'$, which is based on a gradient step and calculated as follows \citep{Liang2018}:
+This step consists of adding a small perturbation to the input image $x'$.
+It is realized by performing a gradient step on the input $x'$ that results in a perturbed input $\tilde{x}'$ \citep{Liang2018}: 
 \begin{align}
 	\tilde{x}' = x' - \epsilon \text{sign}(-\nabla_x \log \text{max}_i  S_i(x',T))
 \end{align}
 The parameter $\epsilon$ is the perturbation magnitude \citep{Liang2018}.
-The perturbed input $\tilde{x}'$ is then fed to the classifier and the confidence score is calculated as MSP \citep{Liang2018}:
+The perturbed input $\tilde{x}'$ is then fed to the classifier and the confidence score is calculated as the MSP \citep{Liang2018}:
 Both $T$ and $\epsilon$ are tuned on validation data and access to OOD samples is assumed \citep{Liang2018,Hsu2020}.
 Although \citep{Liang2018} argue that the parameters are insensitive to the tuning data and thus transferable, it should be noted that this is a difference to MSP and Mahalanobis distance which do not require access to OOD samples.
-\subsubsection*{Unsupervised}
+\subsubsection{Unsupervised}
 If no labels are available, unsupervised methods can still be used to extract OOD scores.
 Assume that $g(x)$ is the representation of an input $x$.
-Similar to \citep{Michels2023,Sun2022}, an OOD score can be constructed by applying the temperature based cosine similarity on a set of k-nearest neighbours.
-Let $k$ denote the number of nearest neighbours.
+Similar to \citep{Michels2023,Sun2022}, an OOD score can be constructed by applying the temperature scaled cosine similarity on a set of k-nearest neighbours.
+Let $k$ be the number of nearest neighbours and let $\tau>0$ be a temperature parameter.
 The training embeddings are denoted as $\{g(x_1),\dots,g(x_N)\}$ and the set of k-nearest neighbours is denoted as $N_{x'} = \{g(x_{i_1}),\dots,g(x_{i_k})\}$, where $i_1,\dots,i_k$ are the training set indices of the k-nearest neighbours of $x'$.
-For a test sample $x'$ the OOD score is calculated as follows \citep{Michels2023,Sun2022}:
+For a test sample $x'$ the OOD score is calculated as \citep{Michels2023,Sun2022}:
 \begin{align}
-	S_{nn}(x',K) = \frac{1}{K}\sum_{i=1}^K \text{sim}(x',N_{x'}(i))
+	S_{nn}(x',K) = \frac{1}{K}\sum_{i=1}^K \frac{\text{sim}(x',N_{x'}(i))}{\tau}
 	\label{equation:knn-score}
 \end{align}
-where $sim(x,y) = \frac{x\cdot y}{\Vert x \Vert \Vert y \Vert}$ denotes the cosine similarity and in the case of k=1, the score is equivalent to the cosine similarity between the test sample and its nearest neighbour \citep{Michels2023}.
-\subsubsection*{Outlier Exposure}
-Outlier exposure was first introduced in \citep{Hendrycks2018} and is a method that injects a portion of known outliers into the training data.
-It was recently demonstrated, that pretrained Vision Transformers (ViTs) accelerate OOD detection performance with only a few examples per class available \citep{Fort2021}.
-The authors in \citep{Fort2021} propose the use of a ViT as a feature extractor and the training of a linear classifier on top of the features.
+The cosine similarity is used as the similarity measure, i.e. $\text{sim}(x,y) = \frac{x\cdot y}{\Vert x \Vert \Vert y \Vert}$ and in the case of $k=\tau=1$, the score is equivalent to the cosine similarity between the test sample and its nearest neighbour applied in \citep{Michels2023}.
+\subsubsection{Outlier Exposure}
+Outlier exposure is a method in OoDD, that exposes a proportion of known outliers to the training data \citep{Hendrycks2018}.
+It was recently demonstrated, that pretrained ViTs accelerate OOD detection performance with only a few examples per class available \citep{Fort2021}.
+They use the pretrained ViT architecture as a feature extractor, and train a linear classifier on top of the features.
 \par
-Two settings are constructed and will also be adopted in this thesis.
+The two mentioned settings in \citep{Fort2021} are adopted in this thesis.
 Suppose that there are $K$ in-distribution and $O$ out-of-distribution classes available \citep{Fort2021}.
-In the first case, all available outlier samples are collapsed to a single class and the pretrained ViT encoder with linear classifier is trained on $K+1$ classes \citep{Fort2021,Thulasidasan2021}.
+In the first setting, all available outlier samples are collapsed to a single class and the pretrained ViT encoder with linear classifier is trained on $K+1$ classes \citep{Fort2021,Thulasidasan2021}.
 Since the true fine-grained OOD classes are essentially unknown, this scenario is referred to as \textbf{unsupervised outlier detection}  in this thesis.
 In contrast, the second setting assumes that the (fine-grained) labels are known for all outlier samples \citep{Fort2021,Roy2021}.
 Now, the pretrained feature extractor with linear classifier on top is trained on $K+O$ classes \citep{Fort2021}.
 We will refer to this case as \textbf{supervised outlier detection}.
 At test time, the OOD score for a test input $x'$ is calculated as the sum over the class probability of the $K$ in-distribution classes \citep{Fort2021}:
 \begin{align}
-	S_{oe}(x') = p(in|x) = \sum_{c=1}^{K}P(y=c|x')
+	S_{oe}(x') = p(in|x) = \sum_{c=1}^{K}P(y=c|x') 
 \end{align}
-\subsubsection*{OoDD on Chest-X-ray Images}
-\textcolor{red}{Chester?}
+\subsubsection{OoDD on Chest-X-ray Images}
 Detecting erroneous inputs to a machine learning model is especially important in the medical domain.
-For chest-x-ray images, the OoDD task was recently explored in \citep{Cao2020,Berger2021}.
+It is directly connected to the usability of the model and to the safety of the patient.
+The authors in \citep{Cohen2019} demonstrate the former and develop "Chester" as a disease prediction system and an integral preprocessing part of their pipeline is to detect OOD samples by a reconstruction loss \citep{Dumoulin2017}. 
+Chest X-rays that are too far away from the training distribution are rejected \citep{Cohen2019} and predictions are only made on samples within the "model's competence".
+\par
+A systematic evaluation was recently explored in \citep{Cao2020}.
 The authors of \citep{Cao2020} propose a large cohort of methods to detect OOD samples on the frontal view of the ChestX-ray8 \citep{Wang2017} dataset.
 They assume a train dataset with labelled in-distribution examples, a validation set and a test set with in-distribution and out-of-distribution samples \citep{Cao2020}.
 In total, 22 different models are evaluated on three classes of OoDD methods \citep{Cao2020}.
 The three different classes of OoDD methods are grouped into data-only methods (KNN-1 and KNN-8), classifier based methods (including, but not limited to MSP, Mahalanobis distance and ODIN) and auxiliary methods (methods that use other training objectives than classification such as image reconstruction loss) \citep{Cao2020}.
+\par
 OOD samples are defined as unrelated images (use-case 1), incorrectly acquired samples (use-case 2) or images with unseen pathologies (use-case 3) \citep{Cao2020}.
 For the first two use cases, the authors obtain satisfactory results well above the random guess of 50\% AUROC \citep{Cao2020}.
 However, for the third use case, which is the focus in this thesis, none of the evaluated methods scores above 50\% and the authors caution users of diagnostic tools to not trust every output \citep{Cao2020}.
 \par
-In \citep{Berger2021} the authors focus on the third use case, apply classifier based methods and evaluate the performance on two ID-OOD splits (see section \ref{section: dataset})of the CheXpert dataset \citep{Irvin2019} with different pathologies.
+In \citep{Berger2021} the authors focus on the third use case, apply classifier based methods and evaluate the performance on two ID-OOD splits (see section \ref{section: dataset}) of the CheXpert dataset \citep{Irvin2019} with different pathologies.
 They use a WideResNet \citep{Zagoruyko2016} with depth factor 100 and widen factor 2 and train a classifier to distinguish the classes of the respective in-distribution \citep{Berger2021}.
 For OoDD they use the MSP score, the Mahalanobis distance and ODIN \citep{Berger2021}.
 The authors identify ODIN as the best performing method and score an AUROC of 84.1\% on the first ID-OOD split and 86.5\% on the second split \citep{Berger2021}.
@@ -111,7 +117,7 @@ Similarly, ViTs process images as a fixed number of flattened image patches \cit
 Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced with an emphasis on the encoder part in this thesis in the first part of the section as only the encoder is used within the ViT architecture.
 Then, minor adjustments that are needed to accept images rather than text as inputs are discussed.
 \par
-The input is assumed to be a sequence $(x_1,\dots,x_n)$, which is mapped to a continuous representation $z=(z_1,\dots,z_n)$ by the Encoder\citep{Vaswani2017}.
+The input is assumed to be a sequence $(x_1,\dots,x_n)$, which is mapped to a continuous representation $z=(z_1,\dots,z_n)$ by the Encoder \citep{Vaswani2017}.
 The Encoder is an Encoder \textbf{stack} and consists of a stack of $L$ layers [ibid.].
 The outputs of each layer in the encoder (including the embedding layers) are of size $d_{model}$ and at the bottom of the Encoder, the input is embedded into a $d_{model}$ dimensional embedding space and then positional encodings are added. \citep{Vaswani2017}.
 As neither recurrent connections nor convolution is part of the Transformer architecture, positional encodings are necessary to constrain the model into learning about relative and absolute locational information within the sequence \citep{Vaswani2017}.
@@ -393,7 +399,7 @@ Both the multilabel structure and the number of different classes of the CheXper
 For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
 \par
 In this thesis different settings are evaluated.
-[no ID label overlap assumed ergänzen]
+For a comparison with the results of \citep{Berger2021} no label overlap between ID and OOD classes is assumed.
 In the first setting, the No Finding class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
 Specifically, the model is trained on the No Finding class and performance metrics are separately evaluated on each of the six classes.
 The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
@@ -437,18 +443,21 @@ A rib fracture is the term for a broken rib bone.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Adapted Methods and Evaluation Setup}
 \label{section: adapted-methods}
-\subsubsection*{Pretraining}
+\subsubsection{Pretraining and unsupervised OoDD framework}
 SSL models are pretrained on setting 1-3 (see \ref{section: dataset}) and for a comparison on the whole CheXpert dataset ($\text{CheXpert}_\text{all}$).
-During training, the mean accuracy of a 1-knn classifier [QUELLE] on top of the ViT features [QUELLE] is evaluated to monitor the training progress.
-After finishing SSL, the projection head is removed [SOURCE] and the weights of the pretrained ViT encoder are used for unsupervised OoDD.
+During  DINO training, the mean accuracy of a 1-knn classifier on top of the ViT features is evaluated, to monitor the training progress \citep{Wu2018,Caron2021}.
+After finishing SSL, the projection head is removed \citep{Caron2021,Chen2020} and the features of the pretrained ViT encoder are used for unsupervised OoDD.
 Training and test set are passed through the ViT encoder and the k-NN feature similarity between train and test features is used as a measure for unsupervised OoDD (see equation \ref{equation:knn-score}).
 \par
-\subsubsection*{Fine-tuning}
-To also compare against the supervised baseline of \citep{Berger2021}, pretrained ViT weights are fine-tuned on setting 1-3 with a supervised MLP head with cross-entropy that is trained on top of the ViT encoder [specify+SOURCE].
-For fine-tuning, the MSP and the Mahalanobis distance are used as a supervised confidence score (see section \ref{section: Out-of-Distribution Detection}).
-We will refer to fine-tuned models as "Sup ViT".
+\subsubsection{Fine-tuning and supervised OoDD framework}
+To also compare against the supervised baseline of \citep{Berger2021}, pretrained ViT weights are fine-tuned on setting 1-3 with a supervised MLP head.
+The MLP head consists of two fully connected layers with a hidden dimension of 256, an output dimension that is set to the number of in-distribution classes.
+Between the linear layers, we apply dropout with a dropout rate of 0.5 \citep{Srivastava2014} and a ReLU activation \citep{Agarap2018}.
+The loss function is set to the cross-entropy loss. 
+To detect OOD samples, the MSP and the Mahalanobis distance are used as supervised confidence scores (see section \ref{section: Out-of-Distribution Detection}).
+We will refer to fine-tuned models as \textbf{Sup ViT}.
 \par
-\subsubsection*{Augmentations}
+\subsubsection{Augmentations}
 Smaller adjustments are made to the augmentations that are used for pretraining.
 \texttt{Gaussian blur} is not applied as local textures and important pathology areas might become not well-defined if applied \citep{Azizi2021}.
 Further, saturation and hue are also set to zero for the \texttt{random color distortions}, as hue and saturation are not meaningful for greyscale images with only one color channel.
@@ -470,30 +479,35 @@ Subsequently, a vertical ending point of the red slice is randomly chosen from p
 Then, the horizontal width of the red bounding box is chosen as a uniform value between 2 pixels and 6 pixels.
 Finally, a vertical offset value between 1 and 3 pixels is sampled, and the whole vertical slice represented by the red bounding boxes is shifted by this value.
 \loadFigure{Figure:custom-augs-bbox}
-The impact of the described image corruptions is visualized in figure \ref{fig:custom-augs-applied}.
-The applied colormap is not part of the augmentations and should just help to visualize the effect of the augmentations.
+\par
+The effect of the described image corruptions is visualized in figure \ref{fig:custom-augs-applied}.
 The width of the simulated upper rib fracture (patient's left side, right image side) is 6 pixel values, while the vertical offset is 2 pixel values.
 Although the resolution is quite low, one can see the simulated fracture in the image by visual inspection.
 \loadFigure{Figure:custom-augs-applied}
-\subsubsection*{Implementation Details}
-\textbf{SimCLR} models are trained for 150 epochs with a batch size of 256 per GPU, a learning rate of 3.0e-04 with a linear warmup of 10 epochs [QUELLE] and 5 gradient accumulation steps [QUELLE]. 
+\subsubsection{Implementation Details}
+SimCLR models are trained for 150 epochs with a batch size of 256 per GPU.
+The learning rate is set to 3.0e-04 and is first warmed up for 10 epochs with a linear schedule \citep{Goyal2017} followed by a cosine decay schedule \citep{Chen2020,Loshchilov2016}. 
+Gradients are accumulated over 5 steps because SimCLR profits from larger batch sizes \citep{Chen2020}.
 The temperature of the loss function is set to 0.5. 
-The training loss is optimized with Adam [QUELLE] and a weight decay of 1.0e-06.
+The training loss is optimized with Adam \citep{Kingma2014} and the weight decay is set to 1.0e-06.
+Inputs are processed with an image size of $96\times96$ pixels.
 \par
-\textbf{DINO} models are trained for 100 epochs with a batch size of 32 per GPU, a learning rate of 0.0015 with a cosine schedule [SOURCE] and with 10 warmup epochs.
+DINO models are trained for 100 epochs with a batch size of 32 per GPU, a learning rate that is set to 0.0015, following a cosine schedule \citep{Caron2021,Loshchilov2016} with 10 linear warmup epochs \citep{Goyal2017}.
 For the teacher network, a momentum of 0.996 is used and the teacher temperature $\tau_t$ is set to 0.04 using a linearly increasing schedule from 0.02 over 30 epochs.
 The number of local crops is set to 10 and the number of global crops equals 2. 
-The loss is optimized with AdamW [QUELLE] with a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
+The loss is optimized with the AdamW optimizer \citep{Loshchilov2018} and a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
 When training on $\text{CheXpert}_\text{all}$, $\tau_t$ is set to 0.07 and the maximum weight decay is replaced with 0.5.
+Global crops are processed with an image size of $224\times224$ pixels and local crops are processed with an image size of $96\times96$ pixels.
 \par
-\textbf{Sup ViT} is trained for 100 epochs with a batch size of 64 per GPU and a learning rate of 3.0e-04. 
+Sup ViTs are trained for 100 epochs with a batch size of 64 per GPU and a learning rate of 3.0e-04. 
 Stochastic Gradient descent (SGD) with a momentum of 0.9 and a weight decay of 0.0001 is used to minimize the loss.
+The image size is set to $224\times224$ pixels.
 \par
-For \textbf{outlier exposure} the same setup is used as for the Sup ViT.
+For outlier exposure the same setup is used as for the Sup ViT.
 OOD samples are made available to the model during training with a percentage of $\text{OOD}_\text{fraction}$ and are oversampled by a factor of $1/(\text{OOD}_\text{fraction})$.
 The oversampling is adapted from \citep{Fort2021}, but the authors also correct for different number of classes in the ID and OOD dataset.
-This did not lead to satisfactory results and was therefore omitted.
-\subsubsection*{Evaluation metrics}
-All OOD scores are evaluated with the area under the curve (AUROC) [source] and the area under the precision-recall curve (AUPRC) [source].
+This did not lead to satisfactory results and is therefore omitted.
+\subsubsection{Evaluation metrics}
+All OOD scores are evaluated with the following metrics: area under the receiver operating characteristic curve (AUROC) and area under the precision-recall curve (AUPRC).
 For the unsupervised feature similarity score, AUROC-k and AUPRC-k indicate, that k-nearest neighbours of the training features are used to calculate the OoDD score.
 The training and test accuracy is reported whenever applicable.
