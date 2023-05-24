@@ -1,4 +1,17 @@
 %%% Die folgende Zeile nicht ändern!
 \section*{\ifthenelse{\equal{\sprache}{deutsch}}{Zusammenfassung}{Abstract}}
 %%% Zusammenfassung:
-Hier kommt eine ca.\ einseitige Zusammenfassung der Arbeit rein.
+Out-of-distribution detection (OoDD) is a strategy that aims to detect unsuitable input samples that could lead to model failure at prediction time.
+This failure should be avoided in medical applications, where reliable predictions are crucial.
+A recent work has used supervised classifiers that are trained on the in-distribution (ID) to extract confidence scores and to identify out-of-distribution (OOD) samples \citep{Berger2021}.
+In this thesis, self-supervised learning (SSL) methods are applied to compute representations of chest-X-rays without presumed labels.
+A nearest-neighbour based feature similarity between training- and test features \citep{Michels2023,Sun2022} is used to extract scores for OoDD from the representations of SimCLR \citep{Chen2020} and DINO \citep{Caron2021}.
+Three different dataset splits with different ID and OOD classes are considered.  
+It is shown that SSL methods can perform unsupervised OoDD on chest X-rays with only minor modifications to the used augmentations. 
+The applied methods are less performant than supervised methods and the detection accuracy varies depending on the included pathologies.
+Two strategies improved the performance of SSL methods for OoDD.
+One approach is fine-tuning with a supervised classifier, that can lead to comparable performance to supervised methods but also uses the same labels.
+In the second case, expanding the training data with labelled OOD samples \citep{Fort2021,Hendrycks2018} can also enhance the performance, even without fine-grained access to OOD class labels.
+In summary, this thesis evaluates SSL methods for OoDD on chest radiographs.
+SSL methods initially have lower performance, assuming label knowledge can bridge this gap and improve the identification of OOD samples. 
+This highlights the importance of labelled samples to achieve higher accuracy in OoDD for chest X-ray images and motivates future research to reduce the need for labels.

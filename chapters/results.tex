@@ -124,11 +124,11 @@ Supervised results for setting 2 and setting 3 are compared to the supervised ba
 \par
 For setting 2, the proposed Sup ViT outperforms the supervised baseline by 3 percentage points in terms of AUROC.
 Still, the performance of ODIN is 13 percentage points higher than the performance of the Sup ViT model.
-However, it needs to be noted, that ODIN typically has access to OOD samples to tune hyperparameters (see section \ref{section: Out-of-Distribution Detection}), while the Sup ViT did not have access to OOD samples during training.
+As already mentioned in \ref{section: Out-of-Distribution Detection}, the performance of ODIN is comparable to the other supervised methods because no access to OOD labels was assumed in \citep{Berger2021}.
 \par
 For setting 3, the Sup ViT model underperforms the supervised baseline by 4 percentage points in terms of AUROC.
 In addition to that, the supervised performance is lower than the unsupervised performance of the DINO model, suggesting that fine-tuning on setting 3 degrades the OOD detection performance.
-The AUROC of ODIN is also higher as before and beats the Sup ViT model by a large margin.
+The AUROC of ODIN is also higher like before and beats the Sup ViT model by a large margin.
 \loadFigure{Figure:supervised-vs-unsupervised}
 \par
 After evaluating the supervised performance of setting 2 and setting 3 in the first part, setting 1 is revisited and the performance of a supervised classifier is evaluated.
@@ -152,7 +152,7 @@ No performance increase is observed and manually designing augmentations for eac
 The attention in the last experiments is now shifted towards outlier exposure, where the assumption is made, that a small subsample of OOD images is available during training (see section \ref{section: Out-of-Distribution Detection}).
 First, the OOD dataset was limited to a maximum size of the ID dataset (10856 samples).
 Different fractions of the OOD dataset are made available to the classifier and the performance is evaluated on setting 1.
-The fractions are chosen to be 1\%, 5\%, 10\%, 25\%, 50\% and 100\% of the OOD dataset.
+The fractions are chosen to be 1\%, 5\%, 10\%, 25\%, 50\% and 100\% of the OOD dataset and the pretrained weights of $\text{CheXpert}_\text{all}$ are used as initializations.
 Both unsupervised outlier exposure and supervised outlier exposure are applied (see \ref{section: Out-of-Distribution Detection}).
 First, the performance across the OOD pathologies Pleural Effusion, Cardiomegaly and Pneumothorax is evaluated.
 \loadFigure{Figure:ood-fraction-avg}

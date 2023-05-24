@@ -25,7 +25,7 @@
 % Geben Sie hier den Titel Ihrer Arbeit an:
 \newcommand{\titel}{
 	\begin{spacing}{1.2}
-		Out-of-Distribution Detection for Chest X-ray Images using Self-Supervised \\Feature Learning
+		Out-of-Distribution Detection for Chest X-ray Images using Self-Supervised \\Learning
 	\end{spacing}
 }
 
@@ -41,7 +41,7 @@
 % benutzen Sie die folgende Zeile mit
 % \AN fuer zweiseitigen Druck
 % \AUS fuer einseitigen Druck
-\newcommand{\zweiseitig}{\AN}
+\newcommand{\zweiseitig}{\AUS}
 % true fuer biber, false fuer klassischen Zitierstil
 %\newcommand{\biber}{false}
 \newcommand{\biber}{true}
@@ -86,11 +86,7 @@
 \onehalfspacing
 \input{chapters/introduction.tex}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% ENDE TEXTTEIL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\clearpage
+\newpage
 
 \input{chapters/methods.tex}
 
@@ -101,9 +97,15 @@
 \clearpage
 
 \input{chapters/discussion.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% ENDE TEXTTEIL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 % Entfernen Sie das Kommentar aus der nachfolgenden Zeile, falls Sie einen Anhang in der Arbeit verwenden wollen. 
 % Beachten Sie, dass Sie sich im Verlauf der Arbeit mit \ref{...} (z.B. \ref{anhang:zusatz1}) auf den Anhang beziehen.
-\input{appendix.tex}
+%\input{appendix.tex}
 
 \ifthenelse{\boolean{\biber}}{ %with biber do
 	\DeclareNameAlias{sortname}{given-family}

@@ -30,15 +30,13 @@ To apply OoDD to chest-x-rays, Cao et. al. distinguish three different use cases
 In the first use-case, images that are unrelated to x-ray-images should be filtered out, e.g. they might originate from a different imaging procedure.
 In the second use-case the OOD images are x-ray-images, but they are acquired incorrectly and because of flawed image characteristics (e.g. high contrast, rotation etc.) a model prediction should be avoided.
 The third use-case considers x-ray images of unseen or novel pathologies as OOD samples and would also mark them as unknown.
-% In this thesis, the focus is mainly on the third use case, which is unsolved to a large extent for x-ray-images.
-% As a collection of chest-x-ray images, the CheXpert dataset is used \citep{Irvin2019} and the ID-OOD splits are adapted from \citep{Berger2021}.
 \par
 In \citep{Cao2020} OoDD of novel diseases only scores close to a random guess of 50\% AUROC across a large sample of unsupervised and supervised methods \citep{Cao2020}.
 However, the authors of \citep{Berger2021} achieve better performance with further adoptions and use a comparable but different data set.
 But, these improvements are based on supervised classifiers leading to limitations in the real world, because the acquisition of labels often has high costs. 
 In addition to that, supervised classifiers lead to highly specific weights.
 \par
-Another option is to appy self-supervised learning (SSL), which does not assume prior label knowledge and extracts more general representations of the input data.
+Another option is to apply self-supervised learning (SSL), which does not assume prior label knowledge and extracts more general representations of the input data.
 In computer vision, SSL is often implemented by augmenting the input images (e.g. image cropping or image rotation) and training the model with a specific learning objective.
 Commonly used learning objectives such as DINO \citep{Caron2021} and SimCLR \citep{Chen2020} report impressive results in the field of computer vision and especially DINO models show unsupervised semantic segmentation capabilities \citep{Caron2021}.
 \par
