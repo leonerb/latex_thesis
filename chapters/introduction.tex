@@ -25,21 +25,21 @@ An important factor for the acceptance of AI systems is the right calibration to
 Confidence calibration aims to align the predictive probability of a classifier to the true class probability \citep{Guo2017}.
 Preprocessing the input x-ray images and limiting prediction on OOD samples outside the model's competence could be a part of the solution to generalization problems and to limit overconfidence.
 \par
-The above paragraph motivated the use of OoDD in chest X-rays.
+The above paragraph motivates the use of OoDD in chest X-rays.
 To apply OoDD to chest-x-rays, Cao et. al. \citep{Cao2020} distinguish three different use cases.
 In the first use-case, images that are unrelated to X-ray-images should be filtered out, e.g. they might originate from a different imaging procedure.
 In the second use-case the OOD images are x-ray-images, but they are acquired incorrectly and because of flawed image characteristics (e.g. high contrast, rotation etc.) a model prediction should be avoided.
 The third use-case considers x-ray images of unseen or novel pathologies as OOD samples and would also mark them as unknown.
 \par
-The authors in \citep{Cao2020} only scores close to a random guess of 50\% AUROC across a large sample of unsupervised and supervised methods for OoDD of novel diseases (third use case).
+The authors in \citep{Cao2020} only score close to a random guess of 50\% AUROC across a large sample of unsupervised and supervised methods for OoDD of novel diseases (third use case).
 Berger et. al. \citep{Berger2021} achieve better performance with a supervised classifier and a comparable but different data set.
-Supervised classifiers are trained on labelled data and in most applications the acquisition of labels is time-consuming and has high costs.
+However, supervised classifiers are trained on labelled data and in most applications the acquisition of labels is time-consuming and has high costs.
 In addition to that, supervised classifiers lead to highly specific weights.
 \par
 In contrast to supervised learning, models are trained without label knowledge in unsupervised learning.
 Self-supervised learning (SSL) is a subset of unsupervised learning and extracts general features of the input data that can be used for downstream tasks such as image classification or semantic segmentation \citep{Jing2019}.
-In SSL the model is trained on a pretext task and pseudolabels are generated based on the input data itself \citep{Jaiswal2021}.
-In computer vision, the pretext task is often implemented by augmenting the input images (e.g. image cropping or image rotation) and training the model with a specific learning objective \citep{Jaiswal2020}.
+In SSL, the model is trained on a pretext task and pseudolabels are generated based on the input data itself \citep{Jaiswal2021}.
+In computer vision, the pretext task is often implemented by augmenting the input images (e.g. image cropping or image rotation) to generate different views of the image and then the model is trained with a specific learning objective with different views \citep{Jaiswal2020}.
 Commonly used learning objectives such as DINO \citep{Caron2021} and SimCLR \citep{Chen2020} report impressive results in the field of computer vision and especially DINO models show unsupervised semantic segmentation capabilities \citep{Caron2021}.
 Azizi et. al. \citep{Azizi2021} apply SimCLR to chest-X-ray images and achieve comparable performance to supervised models and Park et. al. \citep{Park2022} use a learning paradigm similar to DINO to extract features from chest-X-ray images.
 \par
@@ -51,10 +51,10 @@ This motivates the use of ViT models for OoDD of chest-X-ray images.
 \par
 The goal of this thesis is to investigate the performance of SSL methods on OoDD of chest-X-ray images and to analyse necessary adaptions of the methods to accept chest-X-ray images as input.
 Further, the performance of SSL methods is compared to supervised methods.
-The rest of this thesis is structured as follows: The next chapter introduces the commonly used OoDD methods and explains both Vision Transformers and the SSL methods SimCLR and DINO.
+The rest of this thesis is structured as follows: The next chapter introduces commonly used OoDD methods and explains both Vision Transformers and the SSL methods SimCLR and DINO.
 In chapter \ref{section: experimental-setup} the dataset is described.
 The ID-OOD splits are explained and the experimental setup and implementation details are presented.
-In chapter \ref{section: results} the results are presented which are discussed in chapter \ref{section: discussion}.
+In chapter \ref{section: results} the results are presented, which are discussed in chapter \ref{section: discussion}.
 The final chapter concludes the thesis and motivates future research directions.
 % Finally, in chapter \ref{section: conclusion} the conclusio
 % is presented.
