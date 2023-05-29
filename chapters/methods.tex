@@ -10,18 +10,18 @@
 \label{section: Out-of-Distribution Detection}
 \subsubsection{General Task}
 Out-of-distribution detection is a method to filter unsuitable inputs that are not part of the training distribution (in-distribution) \citep{Yang2021}.
-Unsuitable input is said to be out-of-distribution (OOD) and a reliable detection of such samples is indispensable for safety reasons \citep{Yang2021}.
+Unsuitable input is said to be out-of-distribution and a reliable detection of such samples is indispensable for safety reasons \citep{Yang2021}.
 Because the definition of the OOD dataset is task specific, one often distinguishes between near OOD and far OOD \citep{Winkens2020}.
 In the first case, ID and OOD set are (semantically) similar and in the second case they are considered as "unrelated" \citep{Winkens2020}.
 It is clear from the definition that one should expect near OOD to be harder than far OOD.
 OoDD is challenging because modelling every possible distribution is not achievable \citep{Salehi2022}.
-Fang et. al. recently explored theoretical boundaries of OoDD and conclude that one cannot expect a universally working algorithm for OoDD and that different algorithms need to be established for different use-cases \citep{Fang2023}.
+Fang et. al. \citep{Fang2023} recently explored theoretical boundaries of OoDD and conclude that one cannot expect a universally working algorithm for OoDD and that different algorithms need to be established for different use-cases.
 %Fort et. al. relate the definition to a meaningful practical example: far OOD is the detection of house numbers (SVHN dataset) as OOD samples in a classifier trained on CIFAR-10 \ .
 \par
-Yang et. al. develop a taxonomy for different OoDD methods and divide them into four categories: density-based, distance-based, reconstruction-based and score-based \citep{Yang2021}.
+Yang et. al. \citep{Yang2021} develop a taxonomy for different OoDD methods and divide them into four categories: density-based, distance-based, reconstruction-based and score-based.
 Density-based methods estimate the probability density function of the training data and assign a low probability to OOD samples.
 Distance-based methods rely on the assumption, that OOD samples should be distant to the training data in some specified space.
-Specifically, the distance is often measured between the test sample (either ID or OOD) and a class centroid or prototype of the in-distribution.
+Specifically the distance is often measured between the test sample (either ID or OOD) and a class centroid or prototype of the in-distribution.
 Reconstruction-based methods apply autoencoder architectures for OoDD.
 Autoencoders are unsupervised encoder-decoder frameworks introduced in \citep{Rumelhart1986} and are trained to reconstruct the input.
 The reconstruction loss is a distance measure between the input and the output of the decoder \citep{Baldi2012, Bank2020}.
@@ -31,183 +31,192 @@ Score-based methods typically rely on the prediction of a neural network and ass
 % Many machine learning models produce overconfident prediction and calibration is needed to mitigate potential failures [SOURCES].
 %\textcolor{red}{ergänzen}
 In this thesis, the focus is on score-based and distance-based OoDD.
-However, the distance is sometimes interpreted as a score and thus, we often use the term "score" to refer to a distance measure.
-\subsubsection{Supervised}
-Supervised scores require label knowledge and are based on the assumption, that the model produces more reliable estimates on in-distribution samples compared to out-of-distribution samples \citep{Hendrycks2016a, Fort2021}.
-A commonly applied baseline is the \textit{Maximum Softmax Probability (MSP)} of a given in-distribution classifier \citep{Hendrycks2016a}.
-Given $C$ classes, the MSP is calculated as $\text{MSP}(x)=\max_{i=1,\dots,C}p(y_i|x)$ and the score is used as a confidence score.
+However, the distance is sometimes interpreted as a score and thus the term "score" is often used to refer to a distance measure.
+\subsubsection{Supervised Out-of-Distribution Detection}
+In supervised OoDD, a common baseline is the \textit{Maximum Softmax Probability (MSP)} of a given in-distribution classifier \citep{Hendrycks2016a}.
+It is based on the observation, that a pretrained classifier typically assigns higher softmax probabilities to ID samples compared to OOD samples \citep{Hendrycks2016a}.
+This motivates the use of the maximum softmax probability as a confidence score for OoDD \citep{Hendrycks2016a}.
+Given $C$ classes and a test sample $x'$, the MSP score is calculated as 
+\begin{align}
+	S_{MSP}(x')=\max_{i=1,\dots,C}p(y_i|x').
+\end{align}	
 \par
 Although the MSP is simple and effective, it has disadvantages.
-The authors in \citep{Lee2018} argue, that the MSP is a confidence score that can even produce high confidence for out-of-distribution samples, which is clearly undesirable.
-Instead, they propose to use the \textit{Mahalanobis distance} as a score, based on the representation $g(x)$ of a pretrained classifier with input $x$ \citep{Lee2018}.
+The authors in \citep{Lee2018} argue, that the MSP is a confidence score that can produce high confidence for OOD samples, which is clearly undesirable.
+Instead, they propose to use the Mahalanobis distance as a score, based on the representation $g(x)$ of a pretrained classifier with the input $x$ \citep{Lee2018}.
 Let the labels $y_i$ of the training samples $\{(x_1,y_1),\dots, (x_N,y_N)\}$, $y_i \in \{1,\dots,C\}$ be known.
 The authors fit a class conditional Gaussian to the representations of each class $c$ \citep{Lee2018}.
 The estimates for the class means $\mu_c$ and for the collective covariance $\Sigma$ of the Gaussian are calculated as follows \citep{Lee2018}:
 \begin{align}
-	\hat{\mu_c} = \frac{1}{N_c}\sum_{i=1}^{N_c}g(x_i), \hspace{8pt} \hat{\Sigma} = \frac{1}{N}\sum_{c=1}^{C}\sum_{i: y_i=c}(g(x_i)-\mu_c)(g(x_i)-\mu_c)^T
+	\hat{\mu_c} = \frac{1}{N_c}\sum_{i=1}^{N_c}g(x_i), \hspace{8pt} \hat{\Sigma} = \frac{1}{N}\sum_{c=1}^{C}\sum_{i: y_i=c}(g(x_i)-\mu_c)(g(x_i)-\mu_c)^T.
 \end{align}
-where $N_c$ is the number of samples of class $c$ \citep{Lee2018}.
-With estimated per class mean $\hat{\mu_c}$ and covariance $\hat{\Sigma}$, the Mahalanobis distance of a test sample $x'$ is then calculated as \citep{Lee2018}:
+$N_c$ is the number of samples of class $c$ and $N$ is the number of training samples \citep{Lee2018}.
+With estimated per class mean $\hat{\mu_c}$ and covariance $\hat{\Sigma}$, the Mahalanobis distance of a test sample $x'$ is used as OOD score and calculated as \citep{Lee2018}
 \begin{align}
-	S_{md}(x') = - \min_c (g(x')-\hat{\mu_c})^T\hat{\Sigma}^{-1}(g(x')-\hat{\mu_c})
+	S_{MD}(x') = - \min_c (g(x')-\hat{\mu_c})^T\hat{\Sigma}^{-1}(g(x')-\hat{\mu_c}).
 \end{align}
-and used as a confidence score for OoDD.
+In the thesis, the Mahahalanobis distance is calculated in the feature space of the ViT encoder and in the penultimate layer of the classifier as suggested by \citep{Lee2018, Michels2023}.
 \par
-The ODIN method (Out-of-DIstribution detector for Neural networks), is an extension of the MSP score and is also based on a pre-trained neural network $f(x)$ \citep{Liang2018}.
+The ODIN method (Out-of-DIstribution detector for Neural networks) is an extension of the MSP score and is also based on a pre-trained neural network $f(x)$ \citep{Liang2018}.
 The authors suggest temperature scaling and input perturbations to improve the OoDD performance of the MSP score \citep{Liang2018}.
-First assume a temperature scaling factor of $T$ \citep{Liang2018}.
-By scaling the logits of the classifier output with 1/T, a scaled softmax score is obtained \citep{Liang2018}:
+First assume a temperature scaling factor of $\tau$ \citep{Liang2018}.
+By scaling the logits of the classifier output with 1/$\tau$, a scaled softmax score is obtained by \citep{Liang2018}
 \begin{align}
-	S_i(x,T) = \frac{\exp(f_i(x)/T)}{\sum_{j=1}^{C}\exp(f_j(x)/T)}, \forall i=1,\dots,C
+	S_i(x,\tau) = \frac{\exp(f_i(x)/\tau)}{\sum_{j=1}^{C}\exp(f_j(x)/\tau)}, \forall i=1,\dots,C.
 \end{align}
-The second part of the method is adding a preprocessing step for each test sample $x'$ \citep{Liang2018}.
-This step consists of adding a small perturbation to the input image $x'$.
-It is realized by performing a gradient step on the input $x'$ that results in a perturbed input $\tilde{x}'$ \citep{Liang2018}: 
+For training the classifier, the temperature scaling factor is set to $\tau_{tr}=1$ \citep{Liang2018}.
+The second component of ODIN is adding a preprocessing step for each test sample $x'$ and consists of adding a small perturbation to the input image $x'$ \citep{Liang2018}.
+A gradient step is performed on the test input, resulting in a perturbed input $\tilde{x}'$ \citep{Liang2018}: 
 \begin{align}
-	\tilde{x}' = x' - \epsilon \text{sign}(-\nabla_x \log \text{max}_i  S_i(x',T))
+	\tilde{x}' = x' - \epsilon \text{sign}(-\nabla_x \log \text{max}_i  S_i(x',\tau_{tr})).
 \end{align}
 The parameter $\epsilon$ is the perturbation magnitude \citep{Liang2018}.
-The perturbed input $\tilde{x}'$ is then fed to the classifier and the confidence score is calculated as the MSP \citep{Liang2018}.
-Both $T$ and $\epsilon$ are tuned on validation data and access to OOD samples is assumed \citep{Liang2018,Hsu2020}.
+Then, the perturbed input $\tilde{x}'$ is given to the classifier and the confidence score is calculated as the temperature scaled MSP of $\tilde{x}'$ \citep{Liang2018}:
+\begin{align}
+	S_{ODIN}(x,\tau) = \max_i S_i(\tilde{x}',\tau).
+\end{align}
+Both $\tau$ and $\epsilon$ are tuned on validation data in the original paper and access to OOD samples is assumed \citep{Liang2018,Hsu2020}.
 Although \citep{Liang2018} argue that the parameters are insensitive to the tuning data and thus transferable, it should be noted that this is a difference to MSP and Mahalanobis distance which do not require access to OOD samples.
-\subsubsection{Unsupervised}
+\subsubsection{Unsupervised Out-of-Distribution Detection}
 If no labels are available, unsupervised methods can still be used to extract OOD scores.
 Assume that $g(x)$ is the representation of an input $x$.
-Similar to \citep{Michels2023,Sun2022}, an OOD score can be constructed by applying the temperature scaled cosine similarity on a set of k-nearest neighbours.
-Let $k$ be the number of nearest neighbours and let $\tau>0$ be a temperature parameter.
-The training embeddings are denoted as $\{g(x_1),\dots,g(x_N)\}$ and let the set of the k-nearest neighbours of a test sample $x'$ be denoted as $N_{x'} = \{g(x_{i_1}),\dots,g(x_{i_k})\}$, where $i_1,\dots,i_k$ are the training set indices of the k-nearest neighbours of $x'$.
-The OOD score is calculated as \citep{Michels2023,Sun2022}:
+Similar to \citep{Michels2023,Sun2022}, an OOD score can be constructed by applying the cosine similarity to a set of $k$-nearest neighbours.
+Let $k$ be the number of nearest neighbours.
+The training embeddings are denoted as $\{g(x_1),\dots,g(x_N)\}$ and let the set of the $k$-nearest neighbours of a test sample $x'$ be denoted as $N_{x'} = \{g(x_{i_1}),\dots,g(x_{i_k})\}$, where $i_1,\dots,i_k$ are the training set indices of the k-nearest neighbours of $x'$.
+The OOD score is calculated as \citep{Michels2023,Sun2022}
 \begin{align}
-	S_{nn}(x',k) = \frac{1}{k}\sum_{i=1}^k \frac{\text{sim}(x',N_{x'}(i))}{\tau}
+	S_{NN}(x',k) = \frac{1}{k}\sum_{i=1}^k \text{sim}(x',N_{x'}(i)).
 	\label{equation:knn-score}
 \end{align}
-The cosine similarity is used as the similarity measure, i.e. $\text{sim}(x,y) = \frac{x\cdot y}{\Vert x \Vert \Vert y \Vert}$ and in the case of $k=\tau=1$, the score is equivalent to the cosine similarity between the test sample and its nearest neighbour applied in \citep{Michels2023}.
+The cosine similarity is used as the similarity measure, i.e. $\text{sim}(x,y) = \frac{x\cdot y}{\Vert x \Vert \Vert y \Vert}$ and in the case of $k=1$, the score is equivalent to the cosine similarity between the test sample and its nearest neighbour applied in \citep{Michels2023}.
 \subsubsection{Outlier Exposure}
 Outlier exposure is a method in OoDD, that exposes a proportion of known outliers to the training data \citep{Hendrycks2018}.
 It was recently demonstrated, that pretrained ViTs accelerate OOD detection performance with only a few examples per class available \citep{Fort2021}.
-They use the pretrained ViT architecture as a feature extractor, and train a linear classifier on top of the features.
-The two mentioned settings in \citep{Fort2021} are adopted in this thesis.
-Suppose that there are $K$ in-distribution and $O$ out-of-distribution classes available \citep{Fort2021}.
-In the first setting, all available outlier samples are collapsed to a single class and the pretrained ViT encoder with linear classifier is trained on $K+1$ classes \citep{Fort2021,Thulasidasan2021}.
-Since the true fine-grained OOD classes are essentially unknown, this scenario is referred to as \textit{unsupervised outlier exposure}  in this thesis.
-In contrast, the second setting assumes that the (fine-grained) labels are known for all outlier samples \citep{Fort2021,Roy2021}.
-Now, the pretrained feature extractor with linear classifier on top is trained on $K+O$ classes \citep{Fort2021}.
-We will refer to this case as \textit{supervised outlier exposure}.
-At test time, the OOD score for a test input $x'$ is calculated as the sum over the class probability of the $K$ in-distribution classes \citep{Fort2021}:
+They use the pretrained ViT architecture as a feature extractor and train a linear classifier on top of the features.
+Suppose that there are $C$ in-distribution and $O$ out-of-distribution classes available \citep{Fort2021}.
+The authors distinguish between two settings \citep{Fort2021}:
+In the first setting, all available outlier samples are collapsed to a single class and the pretrained ViT encoder with linear classifier is trained on $C+1$ classes \citep{Fort2021,Thulasidasan2021}.
+Since the true fine-grained OOD classes are essentially unknown, this thesis refers to the scenario as \textit{unsupervised outlier exposure}.
+In contrast, the second setting assumes that the (fine-grained) labels are known for all exposed outlier samples \citep{Fort2021,Roy2021}.
+Now, the pretrained feature extractor with linear classifier on top is trained on $C+O$ classes \citep{Fort2021}.
+In this case, \textit{supervised outlier exposure} is the term that is used.
+In both supervised- and unsupervised outlier exposure, the OOD score for a test input $x'$ is calculated as the sum over the class probability of the $C$ in-distribution classes \citep{Fort2021}:
 \begin{align}
-	S_{oe}(x') = p(in|x) = \sum_{c=1}^{K}P(y=c|x') 
+	S_{OE}(x') = \sum_{c=1}^{C}p(y=c|x') 
 \end{align}
 \subsubsection{OoDD on Chest-X-ray Images}
+\label{section: OoDD on Chest-X-ray Images}
 Detecting erroneous inputs to a machine learning model is especially important in the medical domain.
-In general, OoDD on Chest-X-ray images is a challenging task, because variations between different pathologies are often nuanced \citep{Salehi2022}.
+In general, OoDD on chest-X-ray images is a challenging task, because variations between different pathologies are often nuanced \citep{Salehi2022}.
 Detecting OOD samples is directly connected to the usability of the model and to the safety of the patient.
-The authors in \citep{Cohen2019} demonstrate the former and develop \textit{Chester} as a disease prediction system for Chest-X-rays, where an integral preprocessing part of their pipeline is to detect OOD samples by a reconstruction loss \citep{Dumoulin2017}. 
-Images that are too far away from the training distribution are rejected \citep{Cohen2019} and predictions are only made on samples within the "model's competence".
+The authors in \citep{Cohen2019} demonstrate the former and develop \textit{Chester} as a disease prediction system for chest-X-rays, where an integral pre-processing part of their pipeline is the detection of OOD samples through a reconstruction loss \citep{Dumoulin2017}. 
+Images that are too different from the training distribution are rejected \citep{Cohen2019} and predictions are only made on samples within the "model's competence".
 \par
 A systematic evaluation of the task was recently explored in \citep{Cao2020}.
-The authors of \citep{Cao2020} propose a large cohort of methods to detect OOD samples on the frontal view of the ChestX-ray8 \citep{Wang2017} dataset.
-They assume a train dataset with labelled in-distribution examples, a validation set and a test set with in-distribution and out-of-distribution samples \citep{Cao2020}.
+The authors of \citep{Cao2020} propose a large cohort of methods to detect OOD samples on frontal views of the ChestX-ray8 \citep{Wang2017} dataset.
+They assume a train dataset with labelled in-distribution examples, a validation set and a test set with ID and OOD samples \citep{Cao2020}.
 In total, 22 different models are evaluated on three classes of OoDD methods \citep{Cao2020}.
-The three different classes of OoDD methods are grouped into data-only methods (KNN-1 and KNN-8), classifier based methods (including, but not limited to MSP, Mahalanobis distance and ODIN) and auxiliary methods (methods that use other training objectives than classification such as image reconstruction loss) \citep{Cao2020}.
+The three different classes of OoDD methods are grouped into data-only methods (KNN-1 and KNN-8), classifier based methods (including, but not limited to MSP, Mahalanobis distance and ODIN) and auxiliary methods (that use other training objectives than classification such as image reconstruction loss) \citep{Cao2020}.
 \par
 OOD samples are defined as unrelated images (use-case 1), incorrectly acquired samples (use-case 2) or images with unseen pathologies (use-case 3) \citep{Cao2020}.
-For the first two use cases, the authors obtain satisfactory results well above the random guess of 50\% AUROC \citep{Cao2020}.
-However, for the third use case, which is the focus in this thesis, none of the evaluated methods scores above 50\% and the authors caution users of diagnostic tools to not trust every output \citep{Cao2020}.
+For the first two use-cases, the authors obtain satisfactory results above the random guess of 50\% AUROC \citep{Cao2020}.
+However, for the third use-case, which is focussed in this thesis, none of the evaluated methods scores above 50\% and the authors caution users of diagnostic tools to not trust every output \citep{Cao2020}.
 \par
-Berger et. al. focus on the third use case, apply classifier based methods and evaluate the performance on two ID-OOD splits (see section \ref{section: dataset}) of the CheXpert dataset \citep{Irvin2019} with different pathologies \citep{Berger2021}.
+Berger et. al. focus \citep{Berger2021} on the third use-case, apply classifier based methods and evaluate the performance on two ID-OOD splits (see section \ref{section: dataset}) of the CheXpert dataset \citep{Irvin2019} with different pathologies \citep{Berger2021}.
 They use a WideResNet \citep{Zagoruyko2016} with depth factor 100 and widen factor 2 and train a classifier to distinguish the classes of the respective in-distribution \citep{Berger2021}.
 For OoDD they use the MSP score, the Mahalanobis distance and ODIN \citep{Berger2021}.
-It is important to note, that the authors did not assume access to OOD samples for ODIN and applied the parameters of the original paper that were tuned on the CIFAR-10 \citep{Krizhevsky2009b} dataset \citep{Liang2018}.
-The authors identify ODIN as the best performing method and score an AUROC of 84.1\% on the first ID-OOD split and 86.5\% on the second split \citep{Berger2021}.
+It is important to note, that the authors did not assume access to OOD samples for ODIN and applied the parameters of the original paper \citep{Liang2018} that were tuned on the CIFAR-10 \citep{Krizhevsky2009b} dataset.
+They identify ODIN as the best performing method and score an AUROC of 84.1\% on the first ID-OOD split and 86.5\% on the second split \citep{Berger2021}.
 The results in \citep{Berger2021} are used as a supervised baseline.
-The third use case can be considered as near OOD and the most challenging and the results in \citep{Berger2021} are promising.
 \par
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Self-supervised Learning with Vision Transformers}
 \label{section: SSL}
 %Introductory stuff about SSL.
-\subsubsection{Vision Transformers}
+\subsection{Vision Transformers}
 \label{section: Vision Transformers}
-Vision Transformers (ViTs) are the reformulation of the Transformer architecture \cite{Vaswani2017} to images.
+Vision Transformers are the reformulation of the Transformer architecture \cite{Vaswani2017} to images.
 Originally, sequences of natural language are split into tokens and then processed by the text Transformer \citep{Vaswani2017}.  
 Similarly, ViTs process images as a fixed number of flattened image patches \citep{Dosovitskiy2020}.
-Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced with an emphasis on the encoder part in this thesis in the first part of the section as only the encoder is used within the ViT architecture.
+Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced with an emphasis on the encoder part in this thesis, as only the encoder is used within the ViT architecture.
 Then, minor adjustments that are needed to accept images rather than text as inputs are discussed.
 \par
 The input is assumed to be a sequence $(x_1,\dots,x_n)$, which is mapped to a continuous representation $z=(z_1,\dots,z_n)$ by the encoder \citep{Vaswani2017}.
 The encoder is an encoder \textit{stack} and consists of a stack of $L$ layers \citep{Vaswani2017}.
-The outputs of each layer in the encoder (including the embedding layers) are of size $d_{model}$ and at the bottom of the encoder, the input is embedded into a $d_{model}$ dimensional embedding space and then positional encodings are added. \citep{Vaswani2017}.
-As neither recurrent connections nor convolution is part of the Transformer architecture, positional encodings are necessary to constrain the model into learning about relative and absolute locational information within the sequence \citep{Vaswani2017}.
-The authors experimented with learning positional encodings \citep{Gehring2018}, but decided to stay with sinusoidal positional encodings, as it theoretically allows the model to generalize to larger, unseen sequence lengths not seen in training \citep{Vaswani2017}.
-The positional encodings depend on both the position $pos$ of the element within the sequence and on the parity of the dimension $i$ of the i-th component of the embedding vector, which means, that depending on if $i$ is an odd or even number, the following functions are applied to retrieve a positional encoding \citep{Vaswani2017}:
+The outputs of each layer in the encoder (including the embedding layers) are of size $d_{model}$ and at the bottom of the encoder, the input is embedded into a $d_{model}$ dimensional embedding space.
+Then positional encodings are added. \citep{Vaswani2017}.
+As neither recurrent connections nor convolution are part of the Transformer architecture, positional encodings are necessary to constrain the model into learning about relative and absolute locational information within the sequence \citep{Vaswani2017}.
+%The authors experimented with learning positional encodings \citep{Gehring2018}, but decided to stay with sinusoidal positional encodings, as it theoretically allows the model to generalize to larger, unseen sequence lengths not seen in training \citep{Vaswani2017}.
+The positional encodings depend on both the position $pos$ of the element within the sequence and on the parity of the dimension $i$ of the i-th component of the embedding vector.
+This means, that depending on if $i$ is an odd or even number, the following functions are applied to retrieve a positional encoding \citep{Vaswani2017}:
 \begin{equation}
 	PE(pos, i) = 
 	\begin{cases}
 		sin(\frac{pos}{10000^{2i / d_{model}}}), i \text{ is even} \\
-		cos(\frac{pos}{10000^{2i / d_{model}}}), \text{ else}
+		cos(\frac{pos}{10000^{2i / d_{model}}}), \text{ else}.
 	\end{cases}
 	\label{equation:positional-encoding}
 \end{equation}
 \par
 The input (embedding + positional encoding) is further processed by two sublayers and each sublayer is wrapped with a residual connection \citep{He2016}, which is subsequently transformed by a layer normalization \citep{Ba2016}.
-This means that the normalization is applied on x + Sublayer(x), where Sublayer(x) is the output of the respective sublayer \citep{Vaswani2017}.
+This means, that the normalization is applied on x + Sublayer(x), while Sublayer(x) is the output of the respective sublayer \citep{Vaswani2017}.
 Specifically, applying a normalization layer to a vector $u\in \mathbb{R}^d$ corresponds to the following computation \citep{Ba2016,Xiong2020}:
 \begin{align}
 	\text{LayerNorm}(u) = \gamma \frac{u-\mu}{\sigma}+\beta,\\
-	\mu = \frac{1}{d}\sum_{k=1}^{d}u_k, \sigma^2 = \frac{1}{d}\sum_{k=1}^{d}(u_k - \mu)^2
+	\mu = \frac{1}{d}\sum_{k=1}^{d}u_k, \sigma^2 = \frac{1}{d}\sum_{k=1}^{d}(u_k - \mu)^2.
 \end{align}
 The mean and standard deviation is denoted as $\mu$ and $\sigma$, $\gamma$ is a scale parameter and $\beta$ is a bias vector \citep{Xiong2020}.
 \par
 The first sublayer of the encoder architecture is a multi-head attention layer.   
-Multi-head attention layers are one of the main components of the Transformer architecture and prerequire the concept of attention \citep{Vaswani2017}.
+These layers are one of the main components of the Transformer architecture and prerequire the concept of attention \citep{Vaswani2017}.
 Attention mechanisms are functions, which map three input vectors $q,k,v$ called query, keys and values to an output \citep{Vaswani2017}.
 This output is a linear combination of the values $v$ where the specific weights for each component $v_i$ are obtained by a similarity function between the query and the corresponding keys \citep{Vaswani2017}.
-The specific attention function which is used is named "Scaled Dot-Product Attention" and implemented by the following formula \citep{Vaswani2017}:
+The specific attention function which is used is named "Scaled Dot-Product Attention" and is implemented by the following formula \citep{Vaswani2017}:
 \begin{align}
-    \text{Attention}(Q,K,V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V
+    \text{Attention}(Q,K,V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V.
 	\label{equation:attention}
 \end{align}
 The three matrices $Q,K,V$ consist of a stack of the vectors $q,k,v$ which are processed together and are called queries, keys and values similar to before.
 Each vector component of $Q$ and $K$ is $d_k$ dimensional and the matrix $V$ is a stack of $d_v$ dimensional vectors \citep{Vaswani2017}.
-Equation \ref{equation:attention} is a specific adaption of dot-product attention with a scaling factor that is the reciprocal of the square-root of the dimension $d_k$, which helps to mitigate the risk of vanishing softmax gradients for larger values of $d_k$ \citep{Vaswani2017}.
+Equation \ref{equation:attention} is a specific adaption of dot-product attention with a scaling factor being the reciprocal of the square-root of the dimension $d_k$, which helps to mitigate the risk of vanishing softmax gradients for larger values of $d_k$ \citep{Vaswani2017}.
 The dot-product is realized through the matrix multiplication $QK^T$.
 A multi-head attention layer now builds upon the mentioned attention mechanism by concatenating the output of $h$ different attention functions.
 Queries, keys and values are mapped onto $h$ distinct subspaces with weight matrices $W_i^Q$, $W_i^K$, $W_i^V$ where $i=1,\dots,h$ \citep{Vaswani2017}.
 This enables the model to mutually attend to the knowledge of various representation subspaces at different positions \citep{Vaswani2017}:
 \begin{align}
 	\text{MultiHead}(Q,K,V) &= \text{Concat}(\text{head}_1,\dots,\text{head}_h)W^O, \\
-	\text{head}_i & = \text{Attention}(QW_i^Q,KW_i^K,VW_i^V) \\
-	& W_{i}^{Q}, W_{i}^{k} \in \mathbb{R}^{d_{model}\times d_k} , W_i^V \in \mathbb{R}^{d_{model} \times d_v}	
+	\text{head}_i & = \text{Attention}(QW_i^Q,KW_i^K,VW_i^V), \\
+	& W_{i}^{Q}, W_{i}^{k} \in \mathbb{R}^{d_{model}\times d_k} , W_i^V \in \mathbb{R}^{d_{model} \times d_v}.	
 \end{align}
 After concatenating the attention of each head, the outputs are projected back onto the model dimension $d_{model}$ with the matrix $W^O \in \mathbb{R}^{hd_v \times d_{model}}$ and passed to the second sublayer of the Transformer encoder block \citep{Vaswani2017}.
 \par
-The second sublayer is a fully connected neural network with two linear layers, that are separated by a ReLU activation \citep{Vaswani2017} and the output of this feed forward network is also wrapped by a residual connection, followed by layer normalization as explained before.
+The second sublayer is a fully connected neural network with two linear layers, that are separated by a ReLU activation \citep{Vaswani2017}.
+The output of this feed forward network is also wrapped by a residual connection, followed by layer normalization as explained before.
 Both in- and output dimension are set to $d_{model}$ and the inner dimension (output dimension of the first layer and input dimension of the second layer) is set to $d_{ff}$ \citep{Vaswani2017}.
 Thus, the second sublayer can be described by the following formula:
 \begin{equation}
-	\text{FFN}(x) = \max(0, xW_1 + b_1)W_2+b_2 
+	\text{FFN}(x) = \max(0, xW_1 + b_1)W_2+b_2. 
 	\label{equation:FFN}
 \end{equation}
 In previous paragraphs the input sequence of the Transformer was assumed to be a one dimensional text sequence (e.g. a sentence).
-Now, necessary architectural modifications are introduced to also allow 2D images as inputs \citep{Dosovitskiy2020}.
+In the following paragraph, necessary architectural modifications are introduced to also allow 2D images as inputs \citep{Dosovitskiy2020}.
 \par
-First, assume a 2D image $x\in \mathbb{R}^{H\times W \times C }$, where $(H, W)$ is the shape (height $\times$ width) and C is the number of (color) channels of the image expressed as a 3D tensor \citep{Dosovitskiy2020}.
+Assume a 2D image $x\in \mathbb{R}^{H\times W \times C }$, where $(H, W)$ is the shape (height $\times$ width) and C is the number of (color) channels of the image expressed as a 3D tensor \citep{Dosovitskiy2020}.
 The image is now subdivided into image patches of size $(P, P)$ and the input tensor $x$ is flattened into a sequence of two-dimensional patches $x_p \in \mathbb{R}^{N \times (P^2C)}$ where the number of input patches is calculated as $N = HW/P^2$ and each patch is spatially flattened and concatenated across the color channels \citep{Dosovitskiy2020}.
 The sequence of flattened image patches is projected to the constant model dimension $d_{model}$ with a linear trainable patch embedding \citep{Dosovitskiy2020,Vaswani2017}.
-Further, a trainable \texttt{[class]} token is inserted at the first position of the sequence of the embedded patches, whose state at the last layer $L$ of the Transformer architecture is the representation of the image $y$ \citep{Dosovitskiy2020}.
+Further, a trainable \texttt{[class]} token is inserted at the first position of the sequence of the embedded patches, whose state at the last layer $L$ of the ViT architecture is the representation of the image $y$ \citep{Dosovitskiy2020}.
 This approach is based on the BERT \texttt{[CLS]} token \citep{Devlin2018} and the output $y$ will serve as the feature vectors (representations) in this thesis.
 \par
 ViTs also use positional encodings similar to the standard Transformer architecture.
-In contrast to the fixed sinusoidal positional encodings mentioned in equation \ref{equation:positional-encoding}, \citep{Dosovitskiy2020} use trainable parameters to encode position into the image patch.
+In contrast to the fixed sinusoidal positional encodings mentioned in equation \ref{equation:positional-encoding}, Dosovitskiy et. al. \citep{Dosovitskiy2020} use trainable parameters to encode position into the image patch.
 The authors hypothesize, that because ViTs work with image patches rather than processing the information pixel-wise, the differences on how to enforce spatial information are minor \citep{Dosovitskiy2020}.
-After adding the positional encoding, the sequence is fed into the Transformer encoder.
+After adding the positional encoding, the sequence is passed into the Transformer encoder.
 The architecture of the ViT is depicted in figure \ref{fig:vit-arch}.
 \loadFigure{Figure:vit-arch}
 \par
-Depending on the number of layers $L$, the hidden model size $d_{model}$, the inner dimension $d_{ff}$ of the FFN network \ref{equation:FFN} and the number of heads $h$, \citep{Dosovitskiy2020} define the three model variants ViT-Base (ViT-B), ViT-Large (ViT-L) and ViT-Huge (ViT-H), which were inspired by \citep{Devlin2018}.
+Depending on the number of layers $L$, the hidden model size $d_{model}$, the inner dimension $d_{ff}$ of the FFN network (see equation \ref{equation:FFN}) and the number of heads $h$ \citep{Dosovitskiy2020} define the three model variants ViT-Base (ViT-B), ViT-Large (ViT-L) and ViT-Huge (ViT-H), which were inspired by \citep{Devlin2018}.
 The authors in \citep{Touvron2020} introduced a smaller variant DeiT-S with a smaller number of heads, but with the same dimension \textit{per} head compared to the ViT-B.
-In the thesis, the smaller variant DeiT-S \citep{Touvron2020} and the base configuration ViT-B with patch size 16 are used.
+In this thesis, the smaller variant DeiT-S \citep{Touvron2020} and the base configuration ViT-B with patch size 16 are used.
 As in \citep{Caron2021} the smaller variant will be referred to as ViT-S/16 or simply ViT-S.
 Parameter configurations of ViT-S and ViT-B are detailed in table \ref{table:vit-model-variants}.
 \loadTable{Table:vit-model-variants}
@@ -215,23 +224,24 @@ Parameter configurations of ViT-S and ViT-B are detailed in table \ref{table:vit
 While Vision Transformers serve as the backbone model, different projection heads will be trained on top of the backbone. 
 After training, the projection head is discarded and features of the ViT will be used for detecting the OOD classes.
 The projection heads which are used, are detailed in the next section.
+\subsection{Self-Supervised Learning}
 \subsubsection{SimCLR}
 \label{section: SimCLR}
 SimCLR is a training schema for learning contrastive visual representations \citep{Chen2020}.
 Contrastive learning is a learning objective that encourages augmented versions of the same training samples to be close together in an embedding space whilst simultaneously repelling those embeddings from different samples \citep{Jaiswal2020}.
-SimCLR is self-supervised which means that no label knowledge is assumed \citep{Chen2020}.
+SimCLR is self-supervised, which means that no label knowledge is assumed \citep{Chen2020}.
 The framework consists of four main parts and the notation of the original paper is adapted \citep{Chen2020}.
 \par
-The first component consists of applying data augmentation to the input image, which results in two randomly altered image views $\tilde{x}_i$ and $\tilde{x}_j$ that form a positive pair (i.e. an instance of the same class) and which are fed to the base encoder \citep{Chen2020}.
+The first component consists of applying data augmentation to the input image, which results in two randomly altered image views $\tilde{x}_i$ and $\tilde{x}_j$ that form a positive pair (i.e. an instance of the same class) and which are passed to the base encoder \citep{Chen2020}.
 The original SimCLR image augmentations consist of \texttt{random resized crop}, \texttt{random color distortions} and \texttt{random Gaussian blur} \citep{Chen2020}.
 \loadFigure{Figure:simclr-arch}
 \par
-In the second component, both views $\tilde{x}_i$ and $\tilde{x}_j$ are passed to an encoder network which $f(\cdot)$ that returns two representations $h_i$ and $h_j$ \citep{Chen2020}.
+In the second component, both views $\tilde{x}_i$ and $\tilde{x}_j$ are passed to an encoder network $f(\cdot)$ that returns two representations $h_i$ and $h_j$ \citep{Chen2020}.
 The choice of the network is flexible and in this thesis a ViT encoder is used as encoder network.
 Specifically, applying the ViT to the augmented view $\tilde{x}_i$ results in $h_i = f(\tilde{x}_i) = \text{ViT}(\tilde{x}_i)$ with $h_i \in \mathbb{R}^{d_{model}}$ being the output of layer $L$ restricted to the \texttt{[class]} token (see \ref{section: Vision Transformers}) \citep{Chen2020}.
 \par
 Subsequently, both representations are projected with a feed-forward network from the embedding space $\mathbb{R}^{d_{model}}$ to a space where the loss is applied \citep{Chen2020}.
-Similar to before, this projection head $g(\cdot)$ consists of a two layer neural network with inner dimensions that equal the embedding size (e.g. for ViT-S $d=384$), output dimension of 128 and with a ReLU activation in-between \citep{Chen2020} and yields a projected vector $z_i = \max(0, h_iW_1 + b_1)W_2+b_2, z_i \in \mathbb{R}^{128}$.
+Similar to before, this projection head $g(\cdot)$ consists of a two layer neural network with inner dimensions that are equal to the embedding size (e.g. for ViT-S $d=384$), output dimension of 128 and with a ReLU activation in-between \citep{Chen2020} and yields a projected vector $z_i = \max(0, h_iW_1 + b_1)W_2+b_2, z_i \in \mathbb{R}^{128}$.
 \par 
 The last component of the SimCLR module is a contrastive loss function that is applied on the output of the projection head.
 Assume $S=\{{\tilde{x_k}}\}$ and positive pairs $\tilde{x_i}, \tilde{x_j} \in S$ \citep{Chen2020}.
@@ -243,83 +253,91 @@ Specifically all other augmented views are interpreted as negative pairs \citep{
 The resulting loss function has also been included in prior works by \citep{Sohn2016,Wu2018,Oord2018}, is defined for a positive pair $(i,j)$ of augmented examples and was termed \textit{NT-Xent} by \citep{Chen2017}:
 \begin{align}
 	\ell_{i,j} = -\log\frac{\exp(\text{sim}(z_i,z_j)/\tau)}{\sum_{k=1}^{2N} \mathbbm{1}_{[k \neq i]}\exp(\text{sim}(z_i,z_k)/\tau)}, \tag{NT-Xent}\\
-	\text{sim}(u,v) = \frac{u\cdot v}{\Vert u \Vert \Vert v \Vert} \\
+	\text{sim}(u,v) = \frac{u\cdot v}{\Vert u \Vert \Vert v \Vert}, \\
 	\mathbbm{1}_{[k \neq i]} = \begin{cases}
 		1, \text{ if } k \neq i \\
-		0, \text{ else}
+		0, \text{ else}.
 	\end{cases}
 \end{align}
-The parameter $\tau$ refers to the temperature and the similarity function which is used, is the cosine similarity \citep{Chen2020}.
+The parameter $\tau$ refers to the temperature and the usesd similarity function is the cosine similarity \citep{Chen2020}.
 The terminal loss is calculated over all positive tuples $(i,j)$ and also $(j,i)$ \citep{Chen2020}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{DINO}
-A DINO \citep{Caron2021} head is also used as a projection network, which is trained on top of the ViT backbone.
-DINO stands for "Distilled Knowledge with No Labels" and both notation and terminology of the following subsection are adapted from \citep{Caron2021}.
+\paragraph{Teacher and Student Network} \mbox{} \\
+\\
+DINO is an abbrevation for "Distilled Knowledge with No Labels" and both notation and terminology of the following subsection are adapted from \citep{Caron2021}.
 The authors base their training method on knowledge distillation (KD).
 KD was introduced in \citep{Hinton2015} and refers to transferring the prediction capabilities from a large model to a smaller (compressed) one.
-The authors assume a large model, which is potentially trained on an extensive amount of data and inject knowledge into the smaller model, which is enforced to replicate the output of the larger model \citep{Hinton2015,Caron2021}.
-Often one refers to the large model as a teacher network while the smaller model is called the student network \citep{Caron2021}. 
-One major difference of the DINO paradigm to the original KD concept is, that no pretrained teacher network is assumed \citep{Caron2021}.
+In KD, a large model is assumed, that is potentially trained on an extensive amount of data and knowledge is injected into the smaller model, which is enforced to replicate the output of the larger model \citep{Hinton2015,Caron2021}.
+Often one refers to the large model as a \textit{teacher network} while the smaller model is called the \textit{student network} \citep{Caron2021}. 
+A major difference of the DINO paradigm to the original KD concept is, that no pretrained teacher network is assumed \citep{Caron2021}.
 Both teacher network and student network are parametrized by a weight vector $\theta_t$ and $\theta_s$ respectively.
 The output $g_{\theta_s}$ of the student network is trained to equal the output $g_{\theta_t}$ of the teacher network \citep{Caron2021}.
 \par
-An input image $x$ is passed through each network, given both student and teacher network.
-The architectural choice of both networks is discussed after giving an overview of the training objective.
-The output of both teacher- and student network is normalized with a softmax function, which results in two $K$-dimensional probability distributions $P_s$ and $P_t$ \citep{Caron2021}:
+Multiple views of an image $x$ are passed through each network, given both student and teacher network.
+The architectural choice of each network is discussed after giving an overview of the training objective.
+The output of both teacher- and student network is normalized with a softmax function, which results in two $D$-dimensional probability distributions $P_s$ and $P_t$ \citep{Caron2021}:
 \begin{align}
-	P_{s}(x)^i = \frac{\exp(g_{\theta_{s}}(x)^i/\tau_{s})}{\sum_{k=1}^{k=K}\exp(g_{\theta_{s}}(x)^k/\tau_{s})}, \hspace{8pt} i=1,\dots,K, \\
-	P_{t}(x)^i = \frac{\exp(g_{\theta_{t}}(x)^i/\tau_{t})}{\sum_{k=1}^{k=K}\exp(g_{\theta_{t}}(x)^k/\tau_{t})}, \hspace{8pt} i=1,\dots,K,
+	P_{s}(x)^{(i)} = \frac{\exp(g_{\theta_{s}}(x)^{(i)}/\tau_{s})}{\sum_{d=1}^{D}\exp(g_{\theta_{s}}(x)^{(d)}/\tau_{s})}, \hspace{8pt} i=1,\dots,D, \\
+	P_{t}(x)^{(i)} = \frac{\exp(g_{\theta_{t}}(x)^{(i)}/\tau_{t})}{\sum_{d=1}^{D}\exp(g_{\theta_{t}}(x)^{(d)}/\tau_{t})}, \hspace{8pt} i=1,\dots,D.
 	\label{equation:dino-softmax}
 \end{align}
 The temperature $\tau$ controls the smoothness of the output distribution \citep{Caron2021} and larger values for $\tau$ tend to produce smoother distributions \citep{Hinton2015}.
-The exact number of dimensions $K$ is unknown, as no direct label knowledge is incorporated.
+The exact number of dimensions $D$ is unknown, as no direct label knowledge is incorporated.
+The student-teacher network of the DINO head is depicted in figure \ref{fig:dino-arch}.
+\loadFigure{Figure:dino-arch}
 \par
 The normalized output $P_s$ and $P_t$ are now matched with the cross-entropy.
 Let $H(a,b)$ denote the cross entropy of two probability vectors $a$, $b$, i.e. $H(a,b)=-a \log b$ and further, assume a fixed teacher network parametrized by $\theta_t$ \citep{Caron2021}.
-Both distribution are aligned by minimizing the cross-entropy of the fixed teacher distribution and the student distribution with respect to $P_s$ \citep{Caron2021}: 
+Both distributions are aligned by minimizing the cross entropy of the fixed teacher distribution and the student distribution with respect to $P_s$ \citep{Caron2021}: 
 \begin{align}
-	\hat{\theta}_s = \min_{\theta_s}H(P_t(x),P_s(x))
+	\hat{\theta}_s = \min_{\theta_s}H(P_t(x),P_s(x)).
 	\label{equation:ce-student-teacher}	
 \end{align}
 Equation \ref{equation:ce-student-teacher} is used as a base for the training loss and further self-supervised learning techniques are adopted to boost model performance \citep{Caron2021}.
-Analogous to the SimCLR architecture, different augmented views of the same image are generated and passes to the model.
+\paragraph{Multi-crop Strategy} \mbox{} \\
+\\
+Analogous to the SimCLR architecture, different augmented views of the same image are generated and passed to the model.
 While in the standard SimCLR setting two views are created \citep{Chen2020}, the DINO head uses a \textit{set} $V$ of several views, that typically encompasses more than two views \citep{Caron2021}.
 \par
 In particular, they use a multi-crop augmentation strategy, that creates two global views of full resolution and a number of local views of lower resolution \citep{Caron2020, Caron2021}. 
 The full resolution views embody large parts (e.g. more than 50\%) of the original image at resolution $224^2$ (e.g. more than 50\%) and the local views of resolution $96^2$ are cropped to a smaller size (e.g. maximum 50\% of the original image) \citep{Caron2021}.
-Depending on the type of view, the crop is then passed to the student or the teacher network.
+Depending on the type of view, the crop is passed to the student or the teacher network.
 While the student network receives all crops (global and local), the teacher network produces outputs for global views only \citep{Caron2021}.
 According to the authors this should enforce the model to gather information from small image patches (local information) and connect them to its global image interpretation \citep{Caron2021}.
 Now, given the set of views $V$, the following, adapted training loss is minimized \citep{Caron2021}:
 \begin{align}
-	\min_{\theta_s}\sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x\prime \in V, \\ x\neq x\prime}} H(P_t(x),P_s(x\prime))
+	\min_{\theta_s}\sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x\prime \in V, \\ x\neq x\prime}} H(P_t(x),P_s(x\prime)).
 	\label{equation:dino-training-objective}
 \end{align}
 The outer sum collects both global views $x_i^g, i\in\{1,2\}$ that are passed to the teacher network and the inner sum ranges over all local views $x\prime \neq x, x \prime \in V $ that are passed to the student network \citep{Caron2021}.
-Given a fixed teacher distribution, the student distribution that minimizes the loss, minimizes the sum of the cross-entropies between all views seen by the student and two global views processed by the teacher network.
+If the teacher distribution is fixed, the student distribution that minimizes the loss minimizes the sum of the cross entropies between all views seen by the student and the two global views processed by the teacher network.
 So essentially all views are processed by the student network and are aligned to both global views.
-\par
+%\par
+\paragraph{Backbone and Projection Head} \mbox{} \\
+\\
 As explained before, both probability distributions $P_s$ and $P_t$ are the normalized output of network architectures $g_{\theta_s}$ and $g_{\theta_t}$ and share the same underlying architecture \citep{Caron2021}.
 The networks $g$ are the composition of a backbone network $f$ with an MLP projection head $h$ \citep{Caron2021}.
 The MLP projection head is comparable to the head that is used in \citep{Caron2020}, which is based on the SimCLR projection head described in section \ref{section: SimCLR}.
 The choice of the backbone network is flexible, but the authors primarily use a ViT architecture \citep{Dosovitskiy2020}, which is also the architectural choice in this thesis.
 First, the backbone $f$ is applied, and the resulting features are passed to the first two layers of the projection head with an output dimension of 2048 and a gaussian error linear units (GELU) activation in-between \citep{Hendrycks2016b}:
 \begin{equation}
-\text{GELU}(x) = x \Phi(x)
+\text{GELU}(x) = x \Phi(x).
 \end{equation}
 The cumulative distribution $\Phi(x)$ of the standard normal probability mass functions is used inside the GELU function, which is applied after each of the first two layers \citep{Hendrycks2016b}.
 The last layer of the projection head does \textit{not} use a GELU activation and projects the features to a bottleneck dimension of 256d \citep{Caron2021}.
 Then, the output is $\ell_2$-normalized ($x \leftarrow x/\Vert x \Vert_2$) so that each vector has unit norm \citep{Caron2021}.
-Finally, the output is passed to a fully connected layer of dimension $K$ with weight normalization.
+Finally, the output is passed to a fully connected layer of dimension $D$ with weight normalization.
 Weight normalization speeds-up convergence by reformulating the weight vectors in a neural net with different parameters and was proposed in \citep{Salimans2016}.
 The weights $w$ of a neural net are reparametrized with reference to a new parameter vector $v$ of the same dimension as $w$ and with a scalar parameter $g$ \citep{Salimans2016}:
 \begin{equation}
-	w = g \frac{v}{\Vert v \Vert}
+	w = g \frac{v}{\Vert v \Vert}.
 \end{equation}
 Both parameters are trainable and optimization is performed on $g$ and $v$ and not on $w$ \citep{Salimans2016}.
-\par
-While both networks share the same architecture, student- and teacher network are updated differently. 
+\paragraph{Optimization of both Networks} \mbox{} \\
+\\
+While both networks share the same architecture, student network and teacher network are updated differently. 
 The parameter weights of the student network $\theta_s$ are updated by stochastic gradient descent with learning rate $\eta$ and fixed teacher network $\bar{P}_t$, i.e. \citep{Caron2021}:
 \begin{align}
 	\mathcal{L}  &= \sum_{x \in \{x_1^g, x_2^g\}} \hspace{5pt} \sum_{\substack{ x\prime \in V, \\ x\neq x\prime}} H(\bar P_t(x),P_s(x\prime)), \\ 
@@ -329,7 +347,7 @@ New parameter weights of the teacher network are obtained by adding the weighted
 This technique is known as exponential moving average (EMA) on the students weights and is also referred to as a momentum encoder \citep{He2019,Caron2021}.
 The parameter weights of $g_{\theta_t}$ are obtained by calculating an exponential moving average \citep{Grill2020,Caron2021}: 
 \begin{align}
-	\theta_t \leftarrow \lambda \theta_t + (1-\lambda) \theta_s
+	\theta_t \leftarrow \lambda \theta_t + (1-\lambda) \theta_s.
 	\label{equation:dino-momentum-encoder}
 \end{align}
 The momentum parameter $\lambda$ in equation \ref{equation:dino-momentum-encoder} is set with a cosine schedule \citep{Grill2020}.
@@ -338,14 +356,14 @@ They validate by experiments, that the centering technique is necessary to avoid
 Centering is achieved by adding a bias term $c$ to the output of the teacher network and $c$ is improved by an exponential moving average with a parameter $m$ that averages between the prior $c$ and the average teacher output over the current batch with batch size $B$ \citep{Caron2021}:
 \begin{align}
 	c & \leftarrow mc + (1-m) \frac{1}{B}\sum_{i=1}^B g_{\theta_t}(x_i), \\
-	& g_t(x) \leftarrow g_{\theta_t}(x) + c
+	& g_t(x) \leftarrow g_{\theta_t}(x) + c.
 	\label{equation:dino-centering}
 \end{align}
 To counteract the effect of centering, that can lead to a collapse to a uniform distribution, the authors apply sharpening on the teacher output \citep{Caron2021}.
 Sharpening of the teacher output is achieved by using a low value for the temperature parameter $\tau_t$, when applying the softmax normalization in equation \ref{equation:dino-softmax} \citep{Caron2021}.
 %As already mentioned, lower temperature values tend to sharpen the probability distribution \textcolor{red}{\citep{Hinton2015}}.
-The student-teacher network of the DINO head is depicted in figure \ref{fig:dino-arch}.
-\loadFigure{Figure:dino-arch}
+%The student-teacher network of the DINO head is depicted in figure \ref{fig:dino-arch}.
+%\loadFigure{Figure:dino-arch}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \subsubsection{Supervised Contrastive Learning}
@@ -386,11 +404,12 @@ The student-teacher network of the DINO head is depicted in figure \ref{fig:dino
 \section{Experimental Setup}
 \label{section: experimental-setup}
 \subsection{Dataset}
+\subsubsection{General Description}
 \label{section: dataset}
 The CheXpert dataset is used as a collection of chest X-ray images developed in \citep{Irvin2019}.
-The following subsection will describe the dataset and summarize the label extraction methods of radiology reports of the authors in more detail.
+The following subsection will describe the dataset and summarize the label extraction methods of radiology reports in more detail.
 Further, the reasoning behind the choice of used dataset splits is explained. 
-CheXpert is an extensive collection of both frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
+CheXpert is an extensive collection of frontal and lateral chest X-ray images with 224,316 images in total which were obtained from 65,240 patients.
 \par
 The dataset contains labels of 12 common chest- and lung pathologies, the control class "No Finding" and the "Support Devices" class which adds up to 14 total classes \citep{Irvin2019}.
 The 14 classes of the dataset were selected due to both common occurrence in the radiologic reports and clinical importance \citep{Irvin2019} and refer to the definitions in the glossary of terms for thoracic imaging \citep{Hansell2008}.   
@@ -398,64 +417,68 @@ CheXpert is a multilabel dataset, which means that in each image multiple pathol
 For each image, the pathologies are labelled as positive (1), negative (0) or uncertain (-1), where uncertainty labels express both contradictions in the report and also diagnostic uncertainty of the radiologist who has written the report \citep{Irvin2019}.
 \par
 Labels were extracted from free text radiology reports in three stages (see figure \ref{fig:multilabel-struc}).
-In the first step, observations were extracted from the reports with the help of a hand-selected list of common phrases, reviewed by different board-certified radiologists \citep{Irvin2019}.
-The extracted observations are then passed to a second stage.
+In the first step, observations were extracted from the reports with the help of a hand-selected list of common phrases reviewed by different board-certified radiologists \citep{Irvin2019}.
+The extracted observations are passed to a second stage.
 This stage is split into a three steps pipeline, where observations are matched against pre-negation uncertainty rules first, then against negation rules and finally against post-negation uncertainty rules \citep{Irvin2019}.
-Only if an observation does not match any of the rules, it is assigned a positive label \citep{Irvin2019}.
-Those rules are extracted through NLP techniques and details can be found in \citep{Irvin2019}.
+Only if an observation does not match any of the rules a positive label is assigned \citep{Irvin2019}.
+The rules are extracted through NLP techniques \citep{Irvin2019}.
 In the last step, mentions are aggregated into a final label for each image and each class.
-Observations with at least one positively labelled mention are assigned an aggregated positive label and an uncertainty label is selected if there is no positive mention and a minimum of one mention of uncertainty in the observations \citep{Irvin2019}.
+Observations with at least one positive labelled mention are assigned to an aggregated positive label.
+An uncertainty label is selected if there is no positive mention and a minimum of one mention of uncertainty in the observations \citep{Irvin2019}.
 Negative labels are only assigned if at least one mention label is negative \citep{Irvin2019}. 
 If there is overall no mention of an observation, a \textit{blank} label is set as the label of the respective class \citep{Irvin2019}.
-\loadFigure{Figure:multilabel-struc}
-\par
-Both the multilabel structure and the number of different classes of the CheXpert dataset leave room for designing different ID and OOD split settings.
-For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
-\par
-In this thesis different settings are evaluated.
-For a comparison with the results of \citep{Berger2021} no label overlap between ID and OOD classes is assumed.
-In the first setting, the No Finding class is used as the in-distribution class, while a total of six pathologies is used as the out-of-distribution class.
-Specifically, the model is trained on the No Finding class and performance metrics are separately evaluated on each of the six classes.
-The out-of-distribution classes are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
-Because CheXpert labels are hierarchically structured \cite{Irvin2019}, the pathologies Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia can be considered as subcases of Lung Opacity (see figure \ref{fig:multilabel-struc}).
-Therefore, in the first setting, that contrasts the No Finding class with the mentioned out-of-distribution classes, images of Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia were also added to the Lung Opacity class.
-Subsequently, the model performance evaluated on Lung Opacity is an average over five subclasses and one superclass.
-Further, the two different settings of \citep{Berger2021} are used.
-The first one defines Cardiomegaly and Pneumothorax as in-distribution pathologies and Fracture as out-of-distribution class.
-The other setting consists of the two in-distribution classes Lung Opacity and Pleural Effusion, which are evaluated against two out-of-distribution pathologies Fracture and Pneumonia.
-Settings and dataset sizes are summarized in table \ref{table:settings-dataset-sizes}.
-\loadTable{Table:settings-dataset-sizes}
-\par
 Medical imaging datasets differ from commonly used computer vision benchmarks like CIFAR-10 \citep{Krizhevsky2009a}, CIFAR-100 \citep{Krizhevsky2009b} or ImageNet \citep{Deng2009} in terms of appearance and variability of input images.
-Chest-X-ray images for example are greyscale by default and as only the upper body part is included there is only low input variability.
+Chest-X-ray images for example are greyscaled and as only the upper body part is included there is only low input variability.
 Further, classifying the underlying pathologies is even challenging for certified board radiologists and also dependent on the class.
 On the CheXpert dataset, the miss rate (False Negative Rate) for classifying Consolidation can range from 55\% to 52\% or 37\% depending on the human radiologist assessing the Xray-image \citep{Irvin2019}, where lower values indicate better performance.
-On the Atelectasis class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance [ibid.].
+On the Atelectasis class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance \citep{Irvin2019}.
 In addition to that, a study has shown that performance on the same pathology can also vary in-between X-ray datasets \citep{Majkowska2020}.
+\loadFigure{Figure:multilabel-struc}
 \par
+\subsubsection{ID and OOD Settings}
+Both the multilabel structure and the number of different classes of the CheXpert dataset allow for designing different ID and OOD split settings.
+For novel disease detection, \citep{Berger2021} developed two different settings for the CheXpert dataset and for the NIH ChestX-ray8 dataset \citep{Wang2017} another setting can be found in \citep{Cao2020}.
+In this thesis, different settings are evaluated.
+For a comparison with the results of \citep{Berger2021} no label overlap between ID and OOD classes is assumed.
+In the first setting, the No Finding class is the ID class, while a total of six pathologies are used as OOD classes.
+Specifically, the model is trained on the No Finding class and performance metrics are separately evaluated on each of the six classes.
+The OOD are Cardiomegaly, Fracture, Lung Opacity, Pleural Effusion, Pneumothorax and Support Devices.
+\loadTable{Table:settings-dataset-sizes}
+\par
+Because CheXpert labels are hierarchically structured \cite{Irvin2019}, the pathologies Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia can be considered as subcases of Lung Opacity (see figure \ref{fig:multilabel-struc}).
+Therefore, in the first setting, that contrasts the No Finding class with the mentioned OOD classes, images of Atelectasis, Edema, Consolidation, Lung Lesion and Pneumonia were also added to the Lung Opacity class.
+Subsequently, the model performance evaluated on Lung Opacity is an average over five subclasses and one superclass.
+Further, the two different settings of \citep{Berger2021} are used.
+The first one defines Cardiomegaly and Pneumothorax as ID pathologies and Fracture as OOD class.
+The other setting consists of the two in-distribution classes Lung Opacity and Pleural Effusion, which are evaluated against two OOD pathologies Fracture and Pneumonia.
+Settings and dataset sizes are summarized in table \ref{table:settings-dataset-sizes}.
+\subsubsection{Pathologies}
 Due to the differences between CheXpert and the frequently used benchmarks, medical domain knowledge is advantageous and can result in better performance when designing the model architecture or the data augmentations for specialized medical imaging datasets.
-In the following paragraph, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
+In this paragraph, six different conditions are briefly discussed providing basic medical knowledge about the CheXpert labels contained in different ID-OOD settings in this master thesis.
 The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere to the glossary \citep{Hansell2008} if mentioned there.
-Sample images of the conditions are depicted in figure \ref{fig:pathologies}.
-\loadFigure{Figure:pathologies} 
+\loadFigure{Figure:pathologies}
 \par
 Cardiomegaly is the first condition of interest.
 It is a general term for heart enlargements, where the cardiothoracic ratio is often used as a measurement of the severity of size increase.
 In \citep{Dahnert2011} the ratio is defined as the ratio between the heart size and the thorax width. 
 Values between 0.45 - 0.55 are marked as mild cardiomegaly and values above 0.55 are considered to be severe cases of cardiomegaly \citep{Dahnert2011}.
-\par 
-Pneumothorax is a medical condition related to the lung (pleura) and is used as an in-distribution pathology.
-It is associated to the pleural space, which is the space between the pulmonary pleura and the costal pleura and is also called the pleural cavity \citep{Charalampidis2015}.
-Pneumothorax is the medical term for a pleural space that is filled with gas (often air) \citep{Dahnert2011,Hansell2008}.
+Pneumothorax is a medical condition related to the pulmonary pleura and is used as an ID pathology.
+It is defined as a loss of negative pressure in the pleural space, which can lead to a lung collapse \citep{Dahnert2011, Hansell2008}.
+%It is associated to the pleural space, which is the space between the pulmonary pleura and the costal pleura and is also called the pleural cavity \citep{Charalampidis2015}.
+%Pneumothorax is the medical term for a pleural space that is filled with gas (often air) \citep{Dahnert2011,Hansell2008}.
+%\loadFigure{Figure:pathologies}
 If the mentioned pleural space is filled with an aggregation of fluid, the condition is referred to as a pleural effusion \citep{Karkhanis2012}.
 Lung opacity is a collective term and refers to lung areas which appears more opaque than the surrounding area \citep{Hansell2008}.
-Because the lung appears dark on x-ray images, opaque areas are white in contrast to the lung appearance.
+Because the lung appears dark on X-ray images, opaque areas are white in contrast to the lung appearance.
 It should be emphasized that the term is unspecific and is not descriptive in terms of neither the extent nor the origin of the pathology \citep{Hansell2008}.
-Pneumonia is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue, which also appears as a lung opacity on chest x-rays [ibid.].
+Pneumonia is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue, which also appears as a lung opacity on chest X-rays \citep{Hansell2008}.
 A rib fracture is the term for a broken rib bone.
+Sample images of the conditions are depicted in figure \ref{fig:pathologies}.
+%\loadFigure{Figure:pathologies} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Adapted Methods and Evaluation Setup}
+\subsection{Adapting SimCLR and DINO for Chest-X-ray Images}
+%\subsection{Methods and Evaluation Setup
 \label{section: adapted-methods}
 \subsubsection{Pretraining and Unsupervised OoDD Framework}
 SSL models are pretrained on setting 1-3 (see \ref{section: dataset}) and for a comparison on the whole CheXpert dataset ($\text{CheXpert}_\text{all}$).
@@ -465,62 +488,103 @@ Training and test set are passed through the ViT encoder and the k-NN feature si
 \par
 \subsubsection{Fine-tuning and Supervised OoDD Framework}
 To also compare against the supervised baseline of \citep{Berger2021}, pretrained ViT weights are fine-tuned on setting 1-3 with a supervised MLP head.
-The MLP head consists of two fully connected layers with a hidden dimension of 256, an output dimension that is set to the number of in-distribution classes.
-Between the linear layers, we apply dropout with a dropout rate of 0.5 \citep{Srivastava2014} and a ReLU activation \citep{Agarap2018}.
+The MLP head consists of two fully connected layers with a hidden dimension of 256 and an output dimension that is set to the number of ID classes.
+Between the linear layers, dropout with a dropout rate of 0.5 \citep{Srivastava2014} and ReLU activation \citep{Agarap2018} are applied.
 The loss function is set to the cross-entropy loss. 
 To detect OOD samples, the MSP and the Mahalanobis distance are used as supervised confidence scores (see section \ref{section: Out-of-Distribution Detection}).
-We will refer to fine-tuned models as \textit{Sup ViT}.
+Fine-tuned models will be referred to as \textit{Sup ViT}.
 \par
 \subsubsection{Augmentations}
 Smaller adjustments are made to the augmentations that are used for pretraining.
 \texttt{Gaussian blur} is not applied as local textures and important pathology areas might become not well-defined if applied \citep{Azizi2021}.
 Further, saturation and hue are also set to zero for the \texttt{random color distortions}, as hue and saturation are not meaningful for greyscale images with only one color channel.
-Additionally, an ablation study is evaluated and the used augmentations are expanded by a random rotation of 20 degrees and referred to as \texttt{Rotate augmentations}. 
-This modification is similar to \citep{Azizi2021} and will be compared to the adapted augmentations from before.
-If not mentioned otherwise, global crops scale and local crops scale of DINO models are taken from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
+Additionally, an ablation study is evaluated and the used augmentations are expanded by a random rotation of 20 degrees and referred to as \texttt{rotate augmentations}. 
+This modification is similar to \citep{Azizi2021} and is compared to the adapted augmentations from before.
+If not mentioned otherwise, global crops scale and local crops scale of DINO models are copied from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
 For fine-tuning the Sup ViT, \texttt{random resized crop}, \texttt{random horizontal flip}, \texttt{random color distortions} and \texttt{random rotation} are used as augmentations and the crop scale is set to [0.8, 1].
 \par
 Further, custom augmentations are designed to simulate pathologies on chest X-ray images through image corruptions.
 They will be designed for the Fracture pathology and used for setting 1.
-The custom augmentations are applied to frontal images within bounding boxes depicted in figure \ref{fig:custom-augs-bbox} and assume, that the thorax is centered.
+The custom augmentations are applied to frontal images within bounding boxes depicted in figure \ref{fig:custom-augs-applied} and assume, that the thorax is centered.
 The bounding boxes should heuristically cover large parts of the lung and the rib cage and are applied with a probability of 0.5 to either the left side of the image or to the right side.
-In figure \ref{fig:custom-augs-bbox}, the green bounding boxes correspond to the borders of possible image slices, where the image corruption is applied, while the red bounding boxes correspond to samples of image slices.
-Augmentations were designed for an image size of $224\times224$ pixels but with adjustments, any square size should be applicable.
+In figure \ref{fig:custom-augs-applied}, the green bounding boxes correspond to the borders of possible image slices, where the image corruption is applied.
+The red bounding boxes correspond to samples of possible image slices.
+Augmentations are designed for an image size of $224\times224$ pixels but with adjustments, any square size should be applicable.
 \par
 First, a probability p is sampled, that indicates on which side of the image the augmentation is applied.
 Then, a horizontal starting pixel of the red slice is drawn from pixel values ranging from 50 to 100 on the left side and 134 to 184 on the right side and a vertical starting pixel of the red slice is sampled from a pixel range of 45 to 80 (approx. 20\% - 36\% of the total height).
 Subsequently, a vertical ending point of the red slice is randomly chosen from pixel values ranging from 125 to 160 (approx. 56\% - 72\% of the total height).
 Then, the horizontal width of the red bounding box is chosen as a uniform value between 2 pixels and 6 pixels.
-Finally, a vertical offset value between 1 and 3 pixels is sampled, and the whole vertical slice represented by the red bounding boxes is shifted by this value.
-\loadFigure{Figure:custom-augs-bbox}
+Finally, a vertical offset value between 1 and 3 pixels is sampled, and the whole vertical slice represented by the red bounding boxes, is shifted by this value.
+%\loadFigure{Figure:custom-augs-bbox}
 The effect of the described image corruptions is visualized in figure \ref{fig:custom-augs-applied}.
 The width of the simulated upper rib fracture (patient's left side, right image side) is 6 pixel values, while the vertical offset is 2 pixel values.
-Although the resolution is quite low, one can see the simulated fracture in the image by visual inspection.
+Although the resolution is quite low, one can see the simulated fracture in the image by visual inspection and marked by the blue arrow.
 \loadFigure{Figure:custom-augs-applied}
 \subsubsection{Implementation Details}
-SimCLR models are trained for 150 epochs with a batch size of 256 per GPU.
+SimCLR models are trained for 150 epochs with an effective batch size of 1024.
 The learning rate is set to 3.0e-04 and is first warmed up for 10 epochs with a linear schedule \citep{Goyal2017} followed by a cosine decay schedule \citep{Chen2020,Loshchilov2016}. 
 Gradients are accumulated over 5 steps because SimCLR profits from larger batch sizes \citep{Chen2020}.
 The temperature of the loss function is set to 0.5. 
 The training loss is optimized with Adam \citep{Kingma2014} and the weight decay is set to 1.0e-06.
 Inputs are processed with a pixel size of $96\times96$.
 \par
-DINO models are trained for 100 epochs with a batch size of 32 per GPU, a learning rate that is set to 0.0015, following a cosine schedule \citep{Caron2021,Loshchilov2016} with 10 linear warmup epochs \citep{Goyal2017}.
+DINO models are trained for 100 epochs with a batch size of 128, a learning rate that is set to 0.0015, following a cosine schedule \citep{Caron2021,Loshchilov2016} with 10 linear warmup epochs \citep{Goyal2017}.
 For the teacher network, a momentum of 0.996 is used and the teacher temperature $\tau_t$ is set to 0.04 using a linearly increasing schedule from 0.02 over 30 epochs.
 The number of local crops is set to 10 and the number of global crops equals 2.
-The output dimension is set to $K=12000$ and the loss is optimized with the AdamW optimizer \citep{Loshchilov2018} and a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
+The output dimension is set to $D=12000$ and the loss is optimized with the AdamW optimizer \citep{Loshchilov2018} and a weight decay that follows a cosine schedule with a maximum of 0.4 and a base value of 0.04.
 When training on $\text{CheXpert}_\text{all}$, $\tau_t$ is set to 0.07 and the maximum weight decay is replaced with 0.5.
 Global crops are processed with an image size of $224\times224$ pixels and local crops are processed with an image size of $96\times96$.
 \par
-Sup ViTs are trained for 100 epochs with a batch size of 64 per GPU and a learning rate of 3.0e-04. 
-Stochastic Gradient descent (SGD) with a momentum of 0.9 and a weight decay of 0.0001 is used to minimize the loss.
+Sup ViTs are trained for 100 epochs with a batch size of 256 and a learning rate of 3.0e-04. 
+Stochastic Gradient descent with a momentum of 0.9 and a weight decay of 0.0001 is used to minimize the loss.
 The image size is set to $224\times224$ pixels.
 \par
 For outlier exposure the same setup is used as for the Sup ViT.
 OOD samples are made available to the model during training with a percentage of $\text{OOD}_\text{fraction}$ and are oversampled by a factor of $1/(\text{OOD}_\text{fraction})$.
 The oversampling is adapted from \citep{Fort2021}, but the authors also correct for different number of classes in the ID and OOD dataset.
 This did not lead to satisfactory results and is therefore omitted.
-\subsubsection{Evaluation Metrics}
+\subsection{Experiments and Evaluation Metrics}
+\textbf{Experiment 1.} In the first experiment, two different image normalizations are compared and applied to both SimCLR and DINO.
+Typically, the input images are normalized with the mean and standard deviation of the dataset.
+In computer vision, the ImageNet dataset statistics \citep{Deng2009} are also frequently used for normalization.
+However, the CheXpert dataset consists of greyscaled images with low input variability in contrast to the ImageNet dataset.
+This raises the question, which normalization is more suitable for the task of OOD detection if SSL is applied.
+SimCLR and DINO are pretrained with the two different normalization schemes on the first setting.
+\par
+\textbf{Experiment 2.} The performance of feature similarity as an unsupervised OOD score depends on the choice of the number of nearest-neighbours $k$.
+In the next experiment, the performance of feature similarity is evaluated for different values of $k$.
+After pretraining with DINO on setting 1-3, the ViT encoder is used to extract features.
+\par
+\textbf{Experiment 3.}
+In the former experiments, the adopted DINO augmentations (see \ref{section: adapted-methods}) were used.
+The authors in \citep{Azizi2021} added a rotation of 20 degrees to their augmentations.
+In the third experiments, a rotation of 20 degrees is added to the adopted DINO augmentations and the performance of both augmentation schemes is compared.
+\par
+\textbf{Experiment 4.}
+In the next experiment, it is evaluated how well the pretrained models perform on the task of OOD detection, if labels are available.
+To that end, DINO models were pretrained on the whole CheXpert dataset and on setting 2 and 3.
+The pretrained model weights are used as initializations for fine-tuning a cross-entropy based classifier on top of the ViT encoder (see \ref{section: adapted-methods}).
+\par
+\textbf{Experiment 5.}
+Another experiment is designed to analyse the performance, if the ViT-Base variant (see table \ref{table:vit-model-variants}) is used as a backbone.
+Both Sup ViT-S and Sup ViT-B are initialized with ImageNet DINO weights and trained on the in-distributions of setting 2 and setting 3.
+\par
+\textbf{Experiment 6.}
+Because setting 1 only contains healthy patient images as in-distribution class, a supervised classifier is not directly applicable to this setting.
+To address this issue, the supervised classifier is trained on top of the ViT encoder using custom image augmentations, that should sensitize the classifier to the appearance of fractures in the images.
+The custom augmentations are described in detail in section \ref{section: adapted-methods}.
+In particular, the healthy patients are assigned a class label of 0 and the images with custom augmentations applied are assigned a class label of 1.
+This should enable the supervised classifier to distinguish between the two classes.
+\par
+\textbf{Experiment 7.}
+Another experiment is designed for setting 1 to evaluate the performance of outlier exposure with different fractions of the OOD dataset.
+The OOD dataset was limited to a maximum size of the ID dataset (10856 samples).
+Different fractions of the OOD dataset are made available to the classifier and the performance is evaluated on setting 1.
+The fractions are defined as 1\%, 5\%, 10\%, 25\%, 50\% and 100\% of the OOD dataset and the pretrained weights of $\text{CheXpert}_\text{all}$ are used as initializations.
+Both unsupervised outlier exposure and supervised outlier exposure are applied (see \ref{section: Out-of-Distribution Detection}).
+\par
+\textbf{Evaluation Metrics.}
+%\subsection{Evaluation Metrics}
 All OOD scores are evaluated with the following metrics: area under the receiver operating characteristic curve (AUROC) and area under the precision-recall curve (AUPRC).
-For the unsupervised feature similarity score, AUROC-k and AUPRC-k indicate, that k-nearest neighbours of the training features are used to calculate the OoDD score.
 The training and test accuracy is reported whenever applicable.

@@ -1,35 +1,35 @@
 \section{Introduction}
 \raggedbottom
 Nowadays, most Machine Learning (ML) applications operate under closed-world assumptions.
-Models are trained on the \textit{train set}, hyperparameters are tuned on the \textit{validation set} and the true performance is evaluated on a held-out \textit{test set}, which was not included in the training process.
+Models are trained on the \textit{train set}, hyperparameters are tuned on the \textit{validation set} and the true performance is evaluated on a held-out \textit{test set}, which is not included in the training process.
 It is implicitly assumed, that the \textit{test set} serves as a proxy for the true performance which would be encountered, when models are deployed in real-world applications.
 \par
 The performance of ML models to accurately predict novel samples is known as \textit{generalization} \citep{Bishop2006}.
 Recent works question the generalization capability of ML models trained under closed-world assumptions because of lower performance \citep{Recht2018,Zech2018}.
 Performance issues can be caused by unsuitable input data and a strategy to deal with this problem is out-of-distribution detection (OoDD).
 OoDD is defined as the task of identifying those test samples, that are drawn from a distribution that differs from the training distribution \citep{Yang2021}.
-What constitutes a shift in the distribution depends on the application, but it is often assumed that the OOD samples are drawn from a distribution with labels from the training distribution \citep{Yang2021}.
+What constitutes a shift in the distribution depends on the application, but it is often assumed that the OOD samples are drawn from a distribution with labels different from the training distribution \citep{Yang2021}.
 The data known to the classifier (train and validation set) is described as \textit{in-distribution} (ID) while new, often unknown data represents samples from \textit{out-of-distribution} (OOD).
 A reliable model output on OOD samples cannot be guaranteed, and a separate consideration may be reasonable.
 \par
 OOD detection is especially important in high-risk-environments such as medicine, where human intervention is often required.
-Chest-x-rays are commonly used imaging procedures in medicine to diagnose patients with dyspnea or thoracic pain.
-Common pathologies detected in x-rays are e.g. pneumonia, cardiomegaly, pleural effusion, atelectasis, edema, pneumothorax and fractures. 
-Because of constant time pressure in emergency rooms and the high number of patients it could be a great support for radiologists to get X-rays pre-examined by artificial intelligence (AI) systems.
+Chest-X-rays are commonly used imaging procedures in medicine to diagnose patients with dyspnea or thoracic pain.
+Common pathologies detected in X-rays are e.g. pneumonia, cardiomegaly, pleural effusion, atelectasis, edema, pneumothorax and fractures. 
+Because of constant time pressure in emergency rooms and the high number of patients it could be a great support for radiologists to get X-rays pre-examined by artificial intelligence systems.
 \par
 Deep learning has shown promising results in predicting pathologies in chest-X-rays, for example Rajpurkar et. al. \citep{Rajpurkar2017} introduced CheXNet and achieve comparable performance to radiologists in detecting different diseases in chest-X-rays.
 On the other hand, failures of deep learning models in chest-X-ray images have been identified in different studies.
-Rayner et. al. \citep{Rayner2019} analyse the impact of a selection bias related to training labels and conclude that benchmark performance in the literature does not necessarily translate to clinical applicability.
+Rayner et. al. \citep{Rayner2019} analyse the impact of a selection bias related to training labels and conclude that benchmark performance in the literature does not necessarily translate into clinical applicability.
 Zech et. al. \citep{Zech2018} also show that the performance of pneumonia screening of chest X-rays from outside hospitals was significantly lower than that of chest X-rays from the original hospital cohort in three out of five cases.
-An important factor for the acceptance of AI systems is the right calibration to limit their predictive overconfidence, because wrong detections could be dangerous especially in medicine.
+An important factor for the acceptance of artificial intelligence systems is the right calibration to limit their predictive overconfidence, because wrong detections could be dangerous especially in medicine.
 Confidence calibration aims to align the predictive probability of a classifier to the true class probability \citep{Guo2017}.
-Preprocessing the input x-ray images and limiting prediction on OOD samples outside the model's competence could be a part of the solution to generalization problems and to limit overconfidence.
+Preprocessing the input X-ray images and limiting prediction on OOD samples outside the model's competence could be a part of the solution to generalization problems and to limit overconfidence.
 \par
 The above paragraph motivates the use of OoDD in chest X-rays.
-To apply OoDD to chest-x-rays, Cao et. al. \citep{Cao2020} distinguish three different use cases.
+To apply OoDD to chest-X-rays, Cao et. al. \citep{Cao2020} distinguish three different use-cases.
 In the first use-case, images that are unrelated to X-ray-images should be filtered out, e.g. they might originate from a different imaging procedure.
-In the second use-case the OOD images are x-ray-images, but they are acquired incorrectly and because of flawed image characteristics (e.g. high contrast, rotation etc.) a model prediction should be avoided.
-The third use-case considers x-ray images of unseen or novel pathologies as OOD samples and would also mark them as unknown.
+In the second use-case the OOD images are X-ray-images, but they are acquired incorrectly and because of flawed image characteristics (e.g. high contrast, rotation etc.) a model prediction should be avoided.
+The third use-case considers X-ray images of unseen or novel pathologies as OOD samples and would also mark them as unknown.
 \par
 The authors in \citep{Cao2020} only score close to a random guess of 50\% AUROC across a large sample of unsupervised and supervised methods for OoDD of novel diseases (third use case).
 Berger et. al. \citep{Berger2021} achieve better performance with a supervised classifier and a comparable but different data set.
@@ -51,10 +51,10 @@ This motivates the use of ViT models for OoDD of chest-X-ray images.
 \par
 The goal of this thesis is to investigate the performance of SSL methods on OoDD of chest-X-ray images and to analyse necessary adaptions of the methods to accept chest-X-ray images as input.
 Further, the performance of SSL methods is compared to supervised methods.
-The rest of this thesis is structured as follows: The next chapter introduces commonly used OoDD methods and explains both Vision Transformers and the SSL methods SimCLR and DINO.
-In chapter \ref{section: experimental-setup} the dataset is described.
+The rest of this thesis is structured as follows: The next chapter introduces commonly used OoDD methods and explains both ViTs and the SSL methods SimCLR and DINO.
+In the third chapter the dataset is described.
 The ID-OOD splits are explained and the experimental setup and implementation details are presented.
-In chapter \ref{section: results} the results are presented, which are discussed in chapter \ref{section: discussion}.
+In chapter four the results are presented, which are discussed in the fifth chapter.
 The final chapter concludes the thesis and motivates future research directions.
 % Finally, in chapter \ref{section: conclusion} the conclusio
 % is presented.

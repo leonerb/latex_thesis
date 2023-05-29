@@ -95,7 +95,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
 %</Table:settings-dataset-sizes3>
 
 %<*Table:settings-dataset-sizes>
-\begin{table}[h]
+\begin{table}[!htbp]
 	\begin{subtable}[t]{\textwidth}
         \centering
 		\begin{tabular}[t]{l l c c} 
@@ -150,9 +150,9 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
         \end{tabular}
     \caption{Setting 3}
 	\end{subtable}
-    \caption{Dataset sizes for settings 1-3.
+    \caption{\textbf{Dataset ID-OOD splits for settings 1-3}.
     $n_{train}$ refers to the number of training images in the in-distribution class and $n_{test}$ is the number of test images.
-    *:  In setting 1, the super class Lung Opacity ($n_{test}=10880$) additional samples of Atelectasis ($n_{test}=2171$), Consolidation ($n_{test}=1327$), Edema ($n_{test}=3364$), Lung Lesion ($n_{test}=1105$) and Pneumonia ($n_{test}=641$) were added.}
+    *:  In setting 1, the super class Lung Opacity ($n_{test}=10880$) contains additional samples of Atelectasis ($n_{test}=2171$), Consolidation ($n_{test}=1327$), Edema ($n_{test}=3364$), Lung Lesion ($n_{test}=1105$) and Pneumonia ($n_{test}=641$) were added.}
 	\label{table:settings-dataset-sizes}
 \end{table}
 %</Table:settings-dataset-sizes>
@@ -197,13 +197,13 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
         ViT-B \citep{Dosovitskiy2020} & 12 & 768 & 3072 & 12 & 86M \\
         \bottomrule    
     \end{tabular}
-    \caption{ViT model variants used in this thesis. Adapted from \citep{Dosovitskiy2020,Touvron2020}.}
+    \caption{\textbf{ViT model variants}. Adapted from \citep{Dosovitskiy2020,Touvron2020}.}
     \label{table:vit-model-variants}
 \end{table}
 %</Table:vit-model-variants>
 
 %<*Table:attention-maps>
-\begin{table}[!htbp]
+\begin{table}[!h]
     %\renewcommand{\arraystretch}{1.2}
     \centering
     \begin{tabular}{l m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth} m{0.09\textwidth}}
@@ -214,19 +214,21 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
     No Finding & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/no_finding/attn-head5.png} \\
     \hline
     \\[-0.3cm]
-    Cardiomegaly& \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head5.png} \\
+    Cardiomegaly& \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/img Kopie.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/cardiomegaly/attn-head5.png} \\
     \hline
     \\[-0.3cm]
-    Pneumothorax & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head5.png} \\ 
+    Pneumothorax & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/img Kopie.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pneumothorax/attn-head5.png} \\ 
     \hline
     \\[-0.3cm]
-    Lung Opacity& \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head5.png} \\
+    Lung Opacity& \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/img Kopie.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/lung_opacity/attn-head5.png} \\
     \hline
     \\[-0.3cm]
-    Pleural Effusion & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/img.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head5.png} \\
+    Pleural Effusion & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/img Kopie.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head0.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head1.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head2.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head3.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head4.png} & \includegraphics[width=0.09\textwidth]{figures/attention-maps/pleural_effusion/attn-head5.png} \\
 \end{tabular}
-\caption{Self-attention maps of the different in-distribution classes, adapted from \citep{Caron2021}. 
-The second column depicts the reference image while the other columns show the self-attention maps of the ViT encoder.}
+\caption{\textbf{Self-attention maps of the in-distribution classes.} 
+The second column depicts the reference image while the other columns show the self-attention maps of the ViT encoder.
+Red annotations (bounding box or arrow) indicate the pathology region.
+Adapted from \citep{Caron2021}.}
 \label{table:attention-maps}
 \end{table}
 %</Table:attention-maps>
@@ -334,34 +336,34 @@ The second column depicts the reference image while the other columns show the s
 %</Table:finetuning-supervised-2>
 
 %<*Table:finetuning-supervised-new>
-\begin{table}[!htbp]
+\begin{table}[h]
     \renewcommand{\arraystretch}{1.5}
     \centering
-    \begin{tabular}{l l c c c c c c}
+    \begin{tabular}{L{0.6cm} C{2.5cm} C{1.6cm} C{0.8cm} C{1.7cm} C{0.8cm} C{1.7cm} C{0.7cm} C{0.7cm} C{0.8cm}}
     \toprule
-    & & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
-    \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
-    Eval& Initialization & MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
+    & &  & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
+    \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+    Eval& Model/ Method& Pretrained (On)&  MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
     \hline
     %\multirow{5}{3pt}{\rotatebox{90}{Setting 2}} 
-    \multicolumn{1}{c|}{\multirow{5}{3pt}{\rotatebox{90}{Setting 2}} } & $\text{CheXpert}_{\text{setting 2}}$* & 65.5 & 63.4 (56.3) & 67.7 & 64.5 (54.2) & 83.8 & 83.4 \\
-    \multicolumn{1}{c|}{}& $\text{CheXpert}_{\text{all}}$* & \textbf{69.5} & \textbf{70.8} (70.7) & \textbf{68.6} & 71.6 (\textbf{72.1}) & \textbf{99.7} & 87.9 \\
-    \multicolumn{1}{c|}{}& ImageNet* & 65.9 & 63.3 (59.7) & 66.8 & 64.4 (60.3) & 94.6 & 83.1 \\
-    \multicolumn{1}{c|}{}& Random & 53.5 & 56.7 (56.1) & 54.2 & 56.1 (55.0) & 65.6 & 64.5 \\
-    \multicolumn{1}{c|}{}& Sup. Baseline \citep{Berger2021} & 67.8 & 58.0 & 58.0 & 69.5 & - & \textbf{88.8} \\
-    \hhline{========}
-    \multicolumn{1}{c|}{\multirow{5}{3pt}{\rotatebox{90}{Setting 3}}} & $\text{CheXpert}_{\text{setting 3}}* $ & 46.3 & \textbf{53.6} (53.0) & 50.4 & 53.3 (50.3) & 76.1 & \textbf{74.9} \\
-    \multicolumn{1}{c|}{}& $\text{CheXpert}_{\text{all}}$* & \textbf{54.2} & 52.9 (53.4) & \textbf{54.4} & 56.5 (57.1) & \textbf{99.0} & 73.3 \\
-    \multicolumn{1}{c|}{}& ImageNet* & 50.1 & 48.3 (47.1) & 53.3 & 49.1 (47.5) & 83.9 & 72.1 \\
-    \multicolumn{1}{c|}{}& Random & 37.6 & 51.3 (52.5) & 40.8 & 50.5 (51.6) & 58.0 & 57.2 \\
-    \multicolumn{1}{c|}{}& Sup. Baseline \citep{Berger2021} & 45.8 & 52.6 & 58.6 & \textbf{60.1} & - & 75.8 \\
+    \multicolumn{1}{c|}{\multirow{5}{3pt}{\rotatebox{90}{Setting 2}} } &\multicolumn{1}{c|}{\multirow{4}{*}{Sup ViT-S}} & setting 2 & 65.5 & 63.4 (56.3) & 67.7 & 64.5 (54.2) & 83.8 & 83.4 \\
+    \multicolumn{1}{c|}{}& \multicolumn{1}{c|}{}& $\text{CheXpert}$ & \textbf{69.5} & \textbf{70.8} (70.7) & \textbf{68.6} & 71.6 (\textbf{72.1}) & \textbf{99.7} & 87.9 \\
+    \multicolumn{1}{c|}{}& \multicolumn{1}{c|}{}&ImageNet&  65.9 & 63.3 (59.7) & 66.8 & 64.4 (60.3) & 94.6 & 83.1 \\
+    \multicolumn{1}{c|}{}& \multicolumn{1}{c|}{}&\xmark &  53.5 & 56.7 (56.1) & 54.2 & 56.1 (55.0) & 65.6 & 64.5 \\\cline{2-9}
+    \multicolumn{1}{c|}{}& \multicolumn{1}{c|}{Berger et. al. \citep{Berger2021}} & \xmark &  67.8 & 58.0 & 58.0 & 69.5 & - & \textbf{88.8} \\
+    \hhline{=========}
+    \multicolumn{1}{c|}{\multirow{5}{3pt}{\rotatebox{90}{Setting 3}}} & \multicolumn{1}{c|}{\multirow{4}{*}{Sup ViT-S}}& setting 3 & 46.3 & \textbf{53.6} (53.0) & 50.4 & 53.3 (50.3) & 76.1 & \textbf{74.9} \\
+    \multicolumn{1}{c|}{}&\multicolumn{1}{c|}{} &$\text{CheXpert}$ &  \textbf{54.2} & 52.9 (53.4) & \textbf{54.4} & 56.5 (57.1) & \textbf{99.0} & 73.3 \\
+    \multicolumn{1}{c|}{}&\multicolumn{1}{c|}{} &ImageNet&  50.1 & 48.3 (47.1) & 53.3 & 49.1 (47.5) & 83.9 & 72.1 \\
+    \multicolumn{1}{c|}{}&\multicolumn{1}{c|}{} &\xmark&  37.6 & 51.3 (52.5) & 40.8 & 50.5 (51.6) & 58.0 & 57.2 \\\cline{2-9}
+    \multicolumn{1}{c|}{}& \multicolumn{1}{c|}{Berger et. al. \citep{Berger2021}} &\xmark&  45.8 & 52.6 & 58.6 & \textbf{60.1} & - & 75.8 \\
     \bottomrule
     \end{tabular}
-    \caption{Supervised results with ViT-s backbone and Cross Entropy. Rows marked with a * are DINO weights which were pretrained on the respective dataset. 
+    \caption{\textbf{Supervised results with ViT-S backbone and cross entropy.} All pretrained models are DINO models and the respective ID training set is used for finetuning.
     The Mahahalanobis distance is calculated in the feature space of the ViT encoder as well as in the penultimate layer of the projection with Cross Entropy on top. 
     The values that correspond to the ViT encoder are in brackets.
-    Bold values depict the best column values.
-    The supervised baseline in \citep{Berger2021} is described in \ref{section: Out-of-Distribution Detection} and is used as a comparison.}
+    The supervised baseline of Berger et. al. \citep{Berger2021} is used as a reference.
+    Bold values depict the best column values.}
     \label{table:finetuning-supervised-new}
 \end{table}
 %</Table:finetuning-supervised-new>
@@ -393,16 +395,16 @@ The second column depicts the reference image while the other columns show the s
     \toprule
     & & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
     \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
-    Eval& Model Size & MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
+    Eval& Model & MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
     \hline
-    \multicolumn{1}{c|}{\multirow{2}{2pt}{\rotatebox{90}{Setting 2}}}& Sup ViT-s & \textbf{65.9} & 63.3 (59.7) & 66.8 & 64.4 (60.3) & 94.6 & \textbf{83.1} \\
-    \multicolumn{1}{c|}{}& Sup ViT-b & \textbf{65.9} & \textbf{66.7} (60.9) & \textbf{67.9} & \textbf{67.6} (61.9) & \textbf{95.6} & 82.8  \\
+    \multicolumn{1}{c|}{\multirow{2}{2pt}{\rotatebox{90}{Setting 2}}}& Sup ViT-S & \textbf{65.9} & 63.3 (59.7) & 66.8 & 64.4 (60.3) & 94.6 & \textbf{83.1} \\
+    \multicolumn{1}{c|}{}& Sup ViT-B & \textbf{65.9} & \textbf{66.7} (60.9) & \textbf{67.9} & \textbf{67.6} (61.9) & \textbf{95.6} & 82.8  \\
     \hhline{========}
-    \multicolumn{1}{c|}{\multirow{2}{2pt}{\rotatebox{90}{Setting 3}}}& Sup ViT-s & \textbf{50.1} & 48.3 (47.1) & \textbf{53.3} & 49.1 (47.5) & 83.9 & \textbf{72.1} \\
-    \multicolumn{1}{c|}{}& Sup ViT-b & 49.7 & \textbf{50.9} (45.7) & 52.1 & \textbf{52.7} (46.8) & \textbf{90.0} & 70.5 \\
+    \multicolumn{1}{c|}{\multirow{2}{2pt}{\rotatebox{90}{Setting 3}}}& Sup ViT-S & \textbf{50.1} & 48.3 (47.1) & \textbf{53.3} & 49.1 (47.5) & 83.9 & \textbf{72.1} \\
+    \multicolumn{1}{c|}{}& Sup ViT-B & 49.7 & \textbf{50.9} (45.7) & 52.1 & \textbf{52.7} (46.8) & \textbf{90.0} & 70.5 \\
     \bottomrule
     \end{tabular}
-    \caption{Supervised results with ViT-s and ViT-b backbone and Cross Entropy with DINO ImageNet initialization.
+    \caption{\textbf{Supervised results with ViT-S and ViT-B backbone and Cross Entropy.} DINO ImageNet weights are used for initialization.
     Bold values depict the best values for each setting and metric.}
     \label{table:vit-imagenet-model-size}
 \end{table}
@@ -419,11 +421,11 @@ The second column depicts the reference image while the other columns show the s
     Initialization & MSP & MSP \\
     \hline
     $\text{CheXpert}_{\text{all}}$* & 52.2 & 52.9 \\
-    $\text{CheXpert}_{\text{Setting 1}}$* & 53.6 & 53.2\\
-    Random & 53.5 & 54.1\\
+    $\text{CheXpert}_{\text{Setting 1}}$* & \textbf{53.6} & 53.2\\
+    Random & 53.5 & \textbf{54.1}\\
     \bottomrule
     \end{tabular}
-    \caption{Results if custom augmentations are applied to the control class. 
+    \caption{\textbf{Custom augmentations applied to setting 1.} 
     Rows marked with a * are DINO weights which were pretrained on the respective dataset.
     Values are reported only for the Fracture OOD class.}
     \label{table:custom-augs-fracture-results}

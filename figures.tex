@@ -2,16 +2,16 @@
 \begin{figure}[h]
 	\centering
     \includegraphics[width=\textwidth]{figures/multilabel-struc.pdf}
-    \caption{Hierarchical structure of the CheXpert dataset. 
+    \caption{\textbf{Hierarchical structure of the CheXpert dataset.} 
 	The labels are grouped into 14 categories.
-	The dotted arrow from the Support Devices class indicates, that patients with a support device can also be labeled as No Finding, representing the only source of overlap between the No Finding class and other classes.
+	The dotted arrow from the Support Devices class indicates, that patients with a support device can also be labelled as No Finding, representing the only source of overlap between the No Finding class and other classes.
 	Adapted from \citep{Irvin2019}.}
     \label{fig:multilabel-struc}
 \end{figure}
 %</Figure:multilabel-struc>
 
 %<*Figure:pathologies>
-\begin{figure}[htbp]
+\begin{figure}[h]
 	\centering
 	\begin{subfigure}[t]{0.3\textwidth}
 		\includegraphics[width=\textwidth, height=\textwidth]{figures/attention-maps/cardiomegaly/img.png}
@@ -49,7 +49,7 @@
 		\caption{Pleural Effusion}
 		%\label{fig:sixth}
 	\end{subfigure}	
-	\caption{Pathologies: Pictures are taken from the CheXpert dataset \citep{Irvin2019}.}
+	\caption{\textbf{Pathologies.} Pictures are taken from the CheXpert dataset \citep{Irvin2019}.}
 	\label{fig:pathologies}
 \end{figure}
 %</Figure:pathologies>
@@ -58,8 +58,8 @@
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=\textwidth]{figures/vit_arch_new.drawio.pdf}
-	\caption{Model architecture of ViT Transformer. Adapted from \citep{Dosovitskiy2020}. 
-    The Chest X-ray image is taken from the CheXpert dataset \citep{Irvin2019}.}
+	\caption{\textbf{Model architecture of the Vision Transformer.}
+    The Chest X-ray image is taken from the CheXpert dataset \citep{Irvin2019} and the figure is adapted from \citep{Dosovitskiy2020}.}
 	\label{fig:vit-arch}
 \end{figure}
 %</Figure:vit-arch>
@@ -68,8 +68,8 @@
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=\textwidth]{figures/simclr-arch-new.pdf}
-	\caption{SimCLR architecture, adapted from \citep{Chen2020}. 
-	The Chest X-ray image is taken from the CheXpert dataset \citep{Irvin2019}.
+	\caption{\textbf{SimCLR architecture.} 
+	The Chest X-ray image is taken from the CheXpert dataset \citep{Irvin2019} and the figure is adapted from \citep{Chen2020}.
 	}
 	\label{fig:simclr-arch}
 \end{figure}
@@ -79,9 +79,10 @@
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=\textwidth]{figures/dino-arch-new.pdf}
-	\caption{DINO architecture, adapted from \citep{Caron2021}.
+	\caption{\textbf{DINO teacher and student network.} The figure is adapted from \citep{Caron2021}.
+	A single pair of views $(x_1,x_2)$ is assumed for simplicity of illustration \citep{Caron2021}.
 	Exponential moving average is abbreviated as EMA.
-	The crossed out gradient $\cancel{\nabla}$ indicates, that there is a gradient back propagation for the student- but not for the teacher weights.
+	The crossed out gradient $\cancel{\nabla}$ indicates, that there is a gradient back propagation for the student weights but not for the teacher weights.
 	}
 	\label{fig:dino-arch}
 \end{figure}
@@ -90,9 +91,10 @@
 %<*Figure:setting1-chexnorm-v-imgnorm>
 \begin{figure}[!htbp]
 	\begin{subtable}[c]{\textwidth}
-		\renewcommand{\arraystretch}{1.5}
+		%\renewcommand{\arraystretch}{1.2}
 		\centering
-		\begin{tabular}{l c c c c} 
+		%\begin{tabular}{l c c c c} 
+		\begin{tabular}{L{3cm} c c c c} 	
 		\toprule
 		& \multicolumn{2}{c}{SimCLR} & \multicolumn{2}{c}{DINO}\\
 		\cmidrule(lr){2-3} \cmidrule(lr){4-5}
@@ -106,21 +108,27 @@
 		Pleural Effusion&58.48&58.05&\textbf{64.33}&61.56\\
 		Pneumothorax&60.10&60.54&57.51&\textbf{61.23}\\
 		Support Devices&53.58&53.50&56.97&\textbf{57.44}\\
+		\hline
+		\multicolumn{1}{L{3cm}}{Mean $\Delta$ (ImageNet $-$ CheXpert)} & \multicolumn{2}{c}{$-$0.26 pp.} & \multicolumn{2}{c}{$+$0.66 pp.}  \\
+		%\parbox[b]{2.8cm}{\noindent Avg. diff. (CheXpert - ImageNet)}& & & & \\
+		%\multicolumn{1}{l}{\parbox[l]{3cm}{\centering Avg. diff. (CheXpert - ImageNet)}} & & & & \\
+		%Avg. diff 
+		%\multirow{3}{2cm}{\centering Avg. difference (CheX - ImageNet)} & & & & \\
 		\bottomrule
 		\end{tabular}
-		\caption{AUROC 1 values for last epoch}
+		\caption{AUROC (\%) values}
 		\label{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}
 	\end{subtable}
-	\\[.2cm]
+	\\
 	\begin{subfigure}[t]{\textwidth}
 		\centering
 		\input{figures/setting1-imagenet-norm-dino-v-simclr-barplot.pgf}
-		\caption{AUROC 1 values for last epoch for ImageNet normalization}
+		\caption{AUROC (\%) values for last epoch for ImageNet normalization}
 		\label{fig:setting1-chexnorm-v-imgnorm-dino-barplot}
 	\end{subfigure}
-    \caption{Comparison between Chexpert and ImageNet normalization for the first setting.
+    \caption{\textbf{Comparison between CheXpert and ImageNet normalization for the first setting.}
 	Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch} shows the results for SimCLR and DINO respectively across both normalizations.
-	AUROC values are based on the feature similarity and maximum values are marked in bold.
+	AUROC values are based on the feature similarity score and maximum values are marked in bold.
 	Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} depicts the results for both models restricted to ImageNet normalization only.
 	The dotted line refers to the performance equivalent to the chance level at 50\% AUROC.
 	For the ImageNet normalization, all images were scaled with $\mu=(0.485, 0.456, 0.406)$ and $\sigma=(0.229, 0.224, 0.225)$. 
@@ -130,43 +138,56 @@
 \end{figure}
 %</Figure:setting1-chexnorm-v-imgnorm>
 
-%<*Figure:auroc-vs-k-and-temp>
+%<*Figure:auroc-vs-k>
 \begin{figure}[!htbp]
-	\begin{subfigure}[t]{\textwidth}
 		\centering
 		\input{figures/auroc-vs-k.pgf}
-		\caption{}
 		%AUROC in relation to the number of nearest neighbours used for feature similarity.
-		\label{fig:auroc-vs-k}
-	\end{subfigure}
-	\begin{subfigure}[t]{\textwidth}
-		\centering
-		\input{figures/auroc-vs-temp.pgf}
-		\caption{}
-		%AUROC of settings 1-3 compared to the temperature.
-		\label{fig:auroc-vs-temp}
-	\end{subfigure}
-	\caption{The values for setting 1 were calculated as a top-3 average of the six OOD pathologies over Pleural Effusion, Cardiomegaly and Pneumothorax.
-	$N_i$ refers to the length of the in-distribution train dataset of the i-th setting, where $i \in \{1,2,3\}$.
-	The temperature is set to 1 for all values in figure \ref{fig:auroc-vs-k}.}
-	\label{fig:auroc-vs-k-and-temp}
+	\caption{\textbf{AUROC (\%) values for setting 1 based on $k$-NN feature similarity with different values for $k$.}  
+	The values are calculated as a top-3 average of the six OOD pathologies over Pleural Effusion, Cardiomegaly and Pneumothorax.
+	$N_i$ refers to the length of the in-distribution train dataset of the i-th setting, where $i \in \{1,2,3\}$.}
+	\label{fig:auroc-vs-k}
 \end{figure}
-%</Figure:auroc-vs-k-and-temp>
+%</Figure:auroc-vs-k>
+
+% %<*Figure:auroc-vs-k-and-temp>
+% \begin{figure}[!htbp]
+% 	\begin{subfigure}[t]{\textwidth}
+% 		\centering
+% 		\input{figures/auroc-vs-k.pgf}
+% 		\caption{}
+% 		%AUROC in relation to the number of nearest neighbours used for feature similarity.
+% 		\label{fig:auroc-vs-k}
+% 	\end{subfigure}
+% 	\begin{subfigure}[t]{\textwidth}
+% 		\centering
+% 		\input{figures/auroc-vs-temp.pgf}
+% 		\caption{}
+% 		%AUROC of settings 1-3 compared to the temperature.
+% 		\label{fig:auroc-vs-temp}
+% 	\end{subfigure}
+% 	\caption{The values for setting 1 were calculated as a top-3 average of the six OOD pathologies over Pleural Effusion, Cardiomegaly and Pneumothorax.
+% 	$N_i$ refers to the length of the in-distribution train dataset of the i-th setting, where $i \in \{1,2,3\}$.
+% 	The temperature is set to 1 for all values in figure \ref{fig:auroc-vs-k}.}
+% 	\label{fig:auroc-vs-k-and-temp}
+% \end{figure}
+% %</Figure:auroc-vs-k-and-temp>
 
 %<*Figure:dino-rotate-augs-v-default-augs>
 \begin{figure}[ht]
 	\centering
 	\input{figures/dino-rotate-augs-vs-default-augs-new.pgf}
-	\caption{Comparison of the adapted DINO augmentations and additionally adding a rotation by 20 degrees (Rotate augmentations, detailed in \ref{section: adapted-methods}).}
+	\caption{\textbf{Comparison between augmentations.} DINO augmentations ($\mathcal{T}_{DINO}$) and additionally a rotation between [-20, 20] degrees ($\mathcal{T}_{DINO+rot(20)}$, detailed in \ref{section: adapted-methods}) are applied.
+	The AUROC is computed for the feature similarity score ($k=1$).}
 	\label{fig:dino-rotate-augs-v-default-augs}
 \end{figure}
 %</Figure:dino-rotate-augs-v-default-augs>
 
 %<*Figure:supervised-vs-unsupervised>
-\begin{figure}[ht]
+\begin{figure}[htbp]
 	\centering
 	\input{figures/supervised-vs-unsupervised.pgf}
-	\caption{Comparison of supervised (Sup ViT, Sup. Baseline, ODIN) and unsupervised models (DINO) for setting 2 and setting 3.}
+	\caption{\textbf{Comparison of supervised (Sup ViT, Berger et. al. \citep{Berger2021}) and unsupervised models (ViT DINO pretrained) for setting 2 and setting 3.}}
 	\label{fig:supervised-vs-unsupervised}
 \end{figure}
 %</Figure:supervised-vs-unsupervised>
@@ -252,9 +273,10 @@
 \begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=\textwidth]{figures/custom_augs_applied.pdf}
-	\caption{Custom augmentations applied to a frontal chest-xray image.
-	The simulated rib fracture is in the upper part of the right image side (left side of the patient).
-	The red bounding box marks the region of interest.}
+	\caption{\textbf{Custom augmentations applied to a frontal chest-X-ray image.}
+	The green bounding boxes represent border values, where possible slices are sampled on which the augmentations are applied. 
+	The red bounding boxes represent those slices.
+	The simulated rib fracture is in the upper part of the right image side (left side of the patient) and is marked with a blue arrow.}
 	\label{fig:custom-augs-applied}
 \end{figure}
 %</Figure:custom-augs-applied>
@@ -263,8 +285,7 @@
 \begin{figure}[h]
 	\centering
 	\input{figures/ood-fraction-avg.pgf}
-	\caption{Outlier exposure on Setting 1: OoDD performance between Pleural Effusion, Cardiomegaly, Pneumothorax (OOD) against No Finding (ID).
-	The average is calculated over the OOD classes to compare with \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}.
+	\caption{\textbf{Outlier exposure on Setting 1.} Average OoDD performance between No Finding (ID) and Pleural Effusion, Cardiomegaly, Pneumothorax (OOD).
 	Supervised outlier exposure assumes access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Out-of-Distribution Detection}).}
 	\label{fig:ood-fraction-avg}
 \end{figure}
@@ -274,7 +295,7 @@
 \begin{figure}[!htbp]
 	\centering
 	\input{figures/ood-fraction-fracture.pgf}
-	\caption{Outlier exposure on setting 1: OoDD performance between Fracture (OOD) and No Finding (ID).
+	\caption{\textbf{Outlier exposure on setting 1.} OoDD performance between No Finding (ID) and Fracture (OOD).
 	Supervised outlier exposure assumes access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Out-of-Distribution Detection}).}
 	\label{fig:ood-fraction-fracture}
 \end{figure}
