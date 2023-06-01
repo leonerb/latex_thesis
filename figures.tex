@@ -4,7 +4,7 @@
     \includegraphics[width=\textwidth]{figures/multilabel-struc.pdf}
     \caption{\textbf{Hierarchical structure of the CheXpert dataset.} 
 	The labels are grouped into 14 categories.
-	The dotted arrow from the Support Devices class indicates, that patients with a support device can also be labelled as No Finding, representing the only source of overlap between the No Finding class and other classes.
+	The dotted arrow from the Support Devices class indicates, that patients with a support device can also be labeled as No Finding, representing the only source of overlap between the No Finding class and other classes.
 	Adapted from \citep{Irvin2019}.}
     \label{fig:multilabel-struc}
 \end{figure}
@@ -187,7 +187,7 @@
 \begin{figure}[htbp]
 	\centering
 	\input{figures/supervised-vs-unsupervised.pgf}
-	\caption{\textbf{Comparison of supervised (Sup ViT, Berger et. al. \citep{Berger2021}) and unsupervised models (ViT DINO pretrained) for setting 2 and setting 3.}}
+	\caption{\textbf{Comparison of supervised (Sup ViT, Berger et al. \citep{Berger2021}) and unsupervised models (ViT DINO pretrained) for setting 2 and setting 3.}}
 	\label{fig:supervised-vs-unsupervised}
 \end{figure}
 %</Figure:supervised-vs-unsupervised>
@@ -273,7 +273,7 @@
 \begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=\textwidth]{figures/custom_augs_applied.pdf}
-	\caption{\textbf{Custom augmentations applied to a frontal chest-X-ray image.}
+	\caption{\textbf{Custom augmentations applied to a frontal chest X-ray image.}
 	The green bounding boxes represent border values, where possible slices are sampled on which the augmentations are applied. 
 	The red bounding boxes represent those slices.
 	The simulated rib fracture is in the upper part of the right image side (left side of the patient) and is marked with a blue arrow.}
@@ -285,7 +285,7 @@
 \begin{figure}[h]
 	\centering
 	\input{figures/ood-fraction-avg.pgf}
-	\caption{\textbf{Outlier exposure on Setting 1.} Average OoDD performance between No Finding (ID) and Pleural Effusion, Cardiomegaly, Pneumothorax (OOD).
+	\caption{\textbf{Outlier exposure on Setting 1.} Average OOD detection performance between No Finding (ID) and Pleural Effusion, Cardiomegaly, Pneumothorax (OOD).
 	Supervised outlier exposure assumes access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Out-of-Distribution Detection}).}
 	\label{fig:ood-fraction-avg}
 \end{figure}
@@ -295,7 +295,7 @@
 \begin{figure}[!htbp]
 	\centering
 	\input{figures/ood-fraction-fracture.pgf}
-	\caption{\textbf{Outlier exposure on setting 1.} OoDD performance between No Finding (ID) and Fracture (OOD).
+	\caption{\textbf{Outlier exposure on setting 1.} OOD detection performance between No Finding (ID) and Fracture (OOD).
 	Supervised outlier exposure assumes access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Out-of-Distribution Detection}).}
 	\label{fig:ood-fraction-fracture}
 \end{figure}

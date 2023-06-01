@@ -1,6 +1,6 @@
 \section{Discussion}
 \label{section: discussion}
-In this thesis, the performance of SSL methods on OoDD for chest-X-ray images was examined and compared to supervised methods.
+In this thesis, the performance of SSL methods on OOD detection for chest X-ray images was examined and compared to supervised methods.
 It was not possible to outperform the supervised baseline methods in \citep{Berger2021} with the unsupervised feature similarity OOD score.
 However, comparable results to the supervised baseline methods were achieved when the pretrained ViT encoders were fine-tuned.
 Outlier exposure was also applied and lead to performance improvements.
@@ -18,9 +18,9 @@ ImageNet normalization is therefore favourable to CheXpert normalization.
 The effect of adding rotations to the augmentations was examined, and it was shown that unsupervised OOD detection performance was worse when rotations were added to the augmentations.
 The 1-NN mean accuracy however increased for setting 2 and for setting 3 no clear trend could be established (see figure \ref{fig:dino-rotate-augs-v-default-augs}).
 In fact, no clear trend could be observed between the 1-NN mean accuracy and the unsupervised OOD detection performance independent of the applied augmentations.
-This is different to natural images: For example Rafiee et. al. \citep{Rafiee2022} establish a correlation between the 10-NN mean ID accuracy and unsupervised OOD detection performance for near- and far OOD on natural images.
-The effectiveness of adding rotations to the augmentations for OOD detection of chest-X-ray images should be further examined as the supervised OOD performance was significantly higher for setting 2 when rotations were added to the pretraining augmentations and fine-tuning was applied.
-In a recent study, Elgendi et. al. \citep{Elgendi2021} investigate the effectiveness of geometric augmentations (e.g. rotations) to detect COVID-19 in chest-X-rays.
+This is different to natural images: For example Rafiee et al. \citep{Rafiee2022} establish a correlation between the 10-NN mean ID accuracy and unsupervised OOD detection performance for near- and far OOD on natural images.
+The effectiveness of adding rotations to the augmentations for OOD detection of chest X-ray images should be further examined as the supervised OOD performance was significantly higher for setting 2 when rotations were added to the pretraining augmentations and fine-tuning was applied.
+In a recent study, Elgendi et al. \citep{Elgendi2021} investigate the effectiveness of geometric augmentations (e.g. rotations) to detect COVID-19 in chest X-rays.
 They conclude, that geometric augmentations are not effective for COVID-19 detection and hypothesize \citep{Elgendi2021} that pneumonias tend to be of unspecific size and shape and therefore geometric augmentations migh not effective.
 As setting 3 contains the unspecific Lung Opacity as ID class, this could be a reason for the ineffectiveness of rotations.
 Further, one can hypothesize that Cardiomegaly and Pneumothorax often share a more "typical pattern" and therefore rotations are more effective for setting 2 and lead to higher ID accuracy.
@@ -37,29 +37,29 @@ No performance increases were observed for applying custom augmentations specifi
 The augmentations can be interpreted as heuristic and no performance gain could be recognized.
 A potential reason for this could be, that the fracture class may look quite similar to the control class and the region of interest may be too small. 
 Image enhancement techniques could be applied to intensify the small local texture region of interests.
-Koonsanit et. al. propose N-CLAHE (Normalized Contrast Limited Adaptive Histogram Equalization) as an image enhancement technique \citep{Koonsanit2017}.
+Koonsanit et al. propose N-CLAHE (Normalized Contrast Limited Adaptive Histogram Equalization) as an image enhancement technique \citep{Koonsanit2017}.
 It is based on the CLAHE algorithm, which is a contrast enhancement technique that uses several histograms of distinct image sections to improve the contrast of images \citep{Zuiderveld1994}.
 N-CLAHE is a modified version of CLAHE, which normalizes pixel intensity values before applying the CLAHE algorithm.
-The method was successfully applied to Chest-X-ray images as a preprocessing step for COVID-19 detection and improved textural details of the images \citep{Horry2020}.
+The method was successfully applied to Chest X-ray images as a preprocessing step for COVID-19 detection and improved textural details of the images \citep{Horry2020}.
 As the developed custom augmentations did not work, this could pose an interesting research direction.
 \par
 \textbf{Effectiveness of DINO pretraining depends on the pathologies.} 
 In the second setting, DINO pretraining on CheXpert achieved slightly better results than the supervised baseline when fine-tuned (see table \ref{table:finetuning-supervised-new}).
 Fracture represents a low prevalence class in the CheXpert dataset (3.9\% positive occurences) and pretrained representations seem to slightly enhance the detection of fracture as OOD class.
-This is consistent with recent findings of Van der Sluijs et. al. \citep{Vandersluijs2023}, which show that pre-trained visual representations can improve the performance in classifying low-prevalence classes compared to their supervised counterparts.
+This is consistent with recent findings of Van der Sluijs et al. \citep{Vandersluijs2023}, which show that pre-trained visual representations can improve the performance in classifying low-prevalence classes compared to their supervised counterparts.
 Still, the state-of-the-art performance (SOTA) of ODIN could not be reached.
-The authors in \citep{Berger2021} conduct an ablation study and show that perturbation and not the temperatures scaling leads to the high performance of ODIN on chest-X-rays.
+The authors in \citep{Berger2021} conduct an ablation study and show that perturbation and not the temperatures scaling leads to the high performance of ODIN on chest X-rays.
 %The ineffectiveness of temperature scaling was also observed in this thesis (see fig \ref{fig:auroc-vs-temp}).
-It could be interesting to incorporate perturbations into the proposed unsupervised OoDD framework.
+It could be interesting to incorporate perturbations into the proposed unsupervised OOD detection framework.
 % Further, it is unclear if the results of ODIN are reproducible to other datasets.
-% Berger et. al. did not use OOD samples from the CheXpert dataset
+% Berger et al. did not use OOD samples from the CheXpert dataset
 % The results of ODIN should be reproduced on other pathologies and it should be evaluated if the perturbation is also effective for other pathologies and datasets.
 % Applying generalized ODIN (GODIN) \citep{Hsu2020} could also be a promising research direction.
 % The proposed method is similar to ODIN, e.g. input preprocessing is also applied to the images \citep{Hsu2020}, but it does not require access to OOD samples.
 % \sout{However, ODIN assumes access to the OOD class labels that poses a limitation in the real world. 
 % A potential way to overcome this issue would be to apply generalized ODIN (GODIN) \citep{Hsu2020}.
 % The proposed method is similar to ODIN, e.g. input preprocessing is also applied to the images \citep{Hsu2020}.
-% In contrast to ODIN it does not require access to OOD samples and a comparison between the performance of GODIN and ODIN on chest-x-ray OoDD could be insightful.}
+% In contrast to ODIN it does not require access to OOD samples and a comparison between the performance of GODIN and ODIN on chest-x-ray OOD detection could be insightful.}
 \\
 No satisfactory results were achieved for the third setting (ID: \textit{Lung Opacity}, \textit{Pleural Effusion}, OOD: \textit{Fracture}, \textit{Pneumonia}).
 The proposed ID-OOD split of the third setting in \citep{Berger2021} is questionable because the Pneumonia class is a type of Lung Opacity \citep{Hansell2008} and although no overlap was assumed between the ID and OOD class labels, the classes are very similar. 
@@ -72,15 +72,15 @@ Instead of Pneumonia, classes like Cardiomegaly or Pneumothorax should be used a
 \textbf{Limitations of Proposed Methods and Dataset.}
 The experiments were conducted on a limited scope of the larger problem.
 Especially the second and third setting contain at most two ID classes and two OOD classes.
-The findings should be evaluated on different Chest X-ray datasets e.g. the NIH Chest-X-ray dataset \citep{Wang2017} and across the ID-OOD splits developed in \citep{Cao2020} to ensure validity and generalizability.
+The findings should be evaluated on different Chest X-ray datasets e.g. the NIH Chest X-ray dataset \citep{Wang2017} and across the ID-OOD splits developed in \citep{Cao2020} to ensure validity and generalizability.
 For example, one ID-OOD splits for novel disease detection developed in \citep{Cao2020} contains ten ID classes and four OOD classes.
 Reproducing the results on dataset splits of larger scale is necessary for a more comprehensive evaluation.
 To ensure consistency with \citep{Berger2021}, no label overlap between ID classes was assumed. 
 In reality, this is not a plausible assumption as the occurrence of pathologies is not mutually exclusive.
-Results of this thesis should therefore also be evaluated on dataset splits with label overlap and OoDD methods should be modified to handle the multi-label case.
-For unsupervised OoDD with feature similarity as anomaly score this would not make a difference and the same approach could be applied.
-However, for supervised methods, the OoDD methods would need to be modified to handle the multi-label case.
-Hendrycks et al. recently proposed a method to handle the multi-label case for supervised OoDD and use the logistic sigmoid function for multi label classification and instead of MSP, they apply the maximum unnormalized logit as an anomaly score \citep{Hendrycks2022}.
+Results of this thesis should therefore also be evaluated on dataset splits with label overlap and OOD detection methods should be modified to handle the multi-label case.
+For unsupervised OOD detection with feature similarity as anomaly score this would not make a difference and the same approach could be applied.
+However, for supervised methods, the OOD detection methods would need to be modified to handle the multi-label case.
+Hendrycks et al. recently proposed a method to handle the multi-label case for supervised OOD detection and use the logistic sigmoid function for multi label classification and instead of MSP, they apply the maximum unnormalized logit as an anomaly score \citep{Hendrycks2022}.
 % In addition, the resolution of the processed images is low. 
 % Small details of local textures might be missed and affect the pathology detection. 
 % Existing research methods could be applied to integrate images of higher resolution [SOURCES suchen].
@@ -89,13 +89,13 @@ Hendrycks et al. recently proposed a method to handle the multi-label case for s
 CheXpert labels were used as ground truth labels for the experiments.
 However, the labels are noisy as they are extracted by NLP methods (see \ref{section: dataset}) and are also assigned uncertainty labels.
 In addition, the label quality might be inconsistent across the different pathologies.
-Abdalla et. al. examine the label quality of the CheXpert dataset in a recent study \citep{Abdalla2023}.
+Abdalla et al. examine the label quality of the CheXpert dataset in a recent study \citep{Abdalla2023}.
 They evaluate the consistency of the official gold standard CheXpert labels and conclude that the label noise deviates by pathology \citep{Abdalla2023}.
 The gold standard labels are based on the majority vote of five radiologists randomly chosen from a pool of eight radiologists \citep{Irvin2019}.
 The authors suppose, that the quality of the gold label set depends on the choice of the radiologists and randomly sample from the pool of eight radiologists to evaluate the agreement of all possible pairings \citep{Abdalla2023}. 
 While pneumothorax and lung opacity show high label consistency, the median agreement between the radiologist's labels for the fracture class is merely 50\% \citep{Abdalla2023}.
 Actual reported performances in this thesis may therefore be lower than the reported performances.
-Nguyen et. al. released a new dataset called VinDr-CXR that contains 18,000 chest x-ray images that were manually annotated by a group of 17 radiologists \citep{Nguyen2022}.
+Nguyen et al. released a new dataset called VinDr-CXR that contains 18,000 chest x-ray images that were manually annotated by a group of 17 radiologists \citep{Nguyen2022}.
 One way to deal with the label inconsistency could be to pretrain the DINO models on the CheXpert dataset and then fine-tune on the VinDr-CXR dataset to evaluate the consistency across reported performances.
 \par
 \textbf{Future Work.}
@@ -103,12 +103,12 @@ Apart from images, radiology reports are a further source of information that co
 Experts opinions of radiologists are often based on the combination of both. 
 Datasets such as MIMIC-CXR \citep{Johnson2019} provide both images and reports. 
 Multimodal SSL techniques such as CLIP \citep{Radford2021} can combine text and image data, and it was recently that they are powerful OOD detectors across a large cohort of datasets \citep{Michels2023}.
-Tiu et. al. already applied CLIP to chest-X-ray pathology classification \citep{Tiu2022}.
+Tiu et al. already applied CLIP to chest X-ray pathology classification \citep{Tiu2022}.
 They train a CLIP model on the MIMIC-CXR dataset that learns to match the chest X-ray images with their corresponding radiology reports \citep{Tiu2022}.
 Importantly they do not use the labels of the images for training and rather leverage the available text reports \citep{Tiu2022}.
 This could improve on the problem of noisy labels and label inconsistency and could be a promising research direction for future work.
-Further, as DINO has already produced promising results, one could also apply the all-purpose feature extractor DINOv2 \citep{Oquab2023} to OoDD of Chest-X-ray images. 
+Further, as DINO has already produced promising results, one could also apply the all-purpose feature extractor DINOv2 \citep{Oquab2023} to OOD detection of Chest X-ray images. 
 Research should further put weight on exploring how the global crop scale of the DINO learning objective relates to the performance.
-A larger global crop scale could be beneficial for chest-X-rays as otherwise, small pathology regions might be missed.
-Finally, ablation studies should be carried out, that explore the impact of the ViT patch size on the OoDD performance on x-ray images.
+A larger global crop scale could be beneficial for chest X-rays as otherwise, small pathology regions might be missed.
+Finally, ablation studies should be carried out, that explore the impact of the ViT patch size on the OOD detection performance on x-ray images.
 Especially for small textural chest-x-ray incongruities, decreased patch sizes might be advisable.

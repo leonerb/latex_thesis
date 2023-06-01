@@ -46,7 +46,7 @@ For unsupervised OOD detection, the DINO augmentations outperform the rotation a
 However, the 1-NN mean accuracy is significantly higher on setting 2, if additional rotations are applied to the CheXpert images.
 In setting 3 no significant difference is observable for the training accuracy.
 Thus, a clear correlation between unsupervised OOD detection and 1-NN mean accuracy is not observable.
-The performance of both augmentation schemes was tested for fine-tuning experiments and the additional rotation lead to a higher ID accuracy and a higher OoDD performance. 
+The performance of both augmentation schemes was tested for fine-tuning experiments and the additional rotation lead to a higher ID accuracy and a higher OOD detection performance. 
 In the remaining thesis, a rotation is added to the pretraining augmentations in all experiments.
 \loadFigure{Figure:dino-rotate-augs-v-default-augs}
 \par
@@ -139,7 +139,7 @@ First, the performance across the OOD pathologies Pleural Effusion, Cardiomegaly
 Even for small fractions of OOD data (1\% and 5\%), the performance increases compared to the unsupervised baseline (ViT pretrained with DINO on setting 1).
 For reference, 1\% and 5 \% of the OOD dataset correspond to 109 and 547 samples, respectively.
 The performance increases with higher fractions of OOD data and reaches a maximum of 81.7\% AUROC (unsupervised outlier exposure) and 82.2\% AUROC (supervised outlier exposure), if the whole OOD dataset is available.
-Supervised outlier exposure did not lead to a clear performance increase over unsupervised outlier exposure, which implies that fine-grained labels are not necessary for outlier exposure on chest-X-rays.
+Supervised outlier exposure did not lead to a clear performance increase over unsupervised outlier exposure, which implies that fine-grained labels are not necessary for outlier exposure on chest X-rays.
 The results are summarized in figure \ref{fig:ood-fraction-avg}.
 \loadFigure{Figure:ood-fraction-fracture}
 \par

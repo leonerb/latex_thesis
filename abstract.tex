@@ -1,14 +1,14 @@
 %%% Die folgende Zeile nicht ändern!
 \section*{\ifthenelse{\equal{\sprache}{deutsch}}{Zusammenfassung}{Abstract}}
 %%% Zusammenfassung:
-Out-of-distribution detection (OoDD) is a strategy that aims to detect unsuitable input samples that could lead to model failure at prediction time.
+Out-of-distribution detection (OOD detection) is a strategy that aims to detect unsuitable input samples that could lead to model failure at prediction time.
 This failure should be avoided in medical applications, where reliable predictions are crucial.
 A recent work \citep{Berger2021} has used supervised classifiers that are trained on the in-distribution (ID) to extract confidence scores and to identify out-of-distribution (OOD) samples.
-In this thesis, self-supervised learning (SSL) methods are applied to compute representations of chest-X-rays without presumed labels.
-The nearest-neighbour based feature similarity between training features and test features \citep{Michels2023,Sun2022} is used to extract scores for OoDD from the representations of SimCLR \citep{Chen2020} and DINO \citep{Caron2021}.
-It is shown that SSL methods can perform unsupervised OoDD on chest X-rays and that two strategies improve the performance of SSL methods for OoDD:
+In this thesis, self-supervised learning (SSL) methods are applied to compute representations of chest X-rays without presumed labels.
+The nearest-neighbour based feature similarity between training features and test features \citep{Michels2023,Sun2022} is used to extract scores for OOD detection from the representations of SimCLR \citep{Chen2020} and DINO \citep{Caron2021}.
+It is shown that SSL methods can perform unsupervised OOD detection on chest X-rays and that two strategies improve the performance of SSL methods for OOD detection:
 (i) Fine-tuning with a supervised classifier, which leads to comparable performance to supervised methods but also uses the same labels.
-(ii) Expanding the training data with labelled OOD samples \citep{Fort2021,Hendrycks2018}.
+(ii) Expanding the training data with labeled OOD samples \citep{Fort2021,Hendrycks2018}.
 This can also enhance the performance, even without access to OOD class labels.
 Three different dataset splits with different ID and OOD classes are considered.
 Pretraining with SSL methods and (ii) were applied to the first setting that includes healthy patients as ID and patients with one out of six pathologies as OOD.

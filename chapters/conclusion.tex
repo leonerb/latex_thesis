@@ -1,18 +1,18 @@
 \section{Conclusion}
-In conclusion, this thesis has shown various limitations of novel disease OOD detection on Chest-X-ray images but also demonstrated, that improvements of supervised baseline methods are possible with SSL. 
+In conclusion, this thesis has shown various limitations of novel disease OOD detection on Chest X-ray images but also demonstrated, that improvements of supervised baseline methods are possible with SSL. 
 Still, the same amount of labels was needed to fine-tune the pretrained models as for the supervised baseline methods.
 A new ID-OOD split was developed, and it was shown that outlier exposure with pretrained ViTs can achieve good results for selected pathologies even with small label fractions and no access to fine-grained OOD class labels.
 Filtering patients with rib fractures versus patients without detectable pathologies could not be significantly improved, which shows that the performance of outlier exposure is highly dependent on the choice of pathology for the settings.
 Two additional ID-OOD splits were adopted from the literature and evaluated on the same OOD classes.
 The unsupervised performance did not match the supervised baseline methods, but fine-tuned results were comparable.
-The SOTA method ODIN could not be reached, which shows the effectiveness of perturbation-based methods on Chest-X-ray images.
+The SOTA method ODIN could not be reached, which shows the effectiveness of perturbation-based methods on Chest X-ray images.
 All proposed methods, which worked in setting 2, fail for the split that includes Lung Opacity and Pleural Effusion as ID and Fracture and Pneumonia as OOD.
 A possible reason could be, that the OOD class Pneumonia is too similar to the ID class Lung Opacity.
 This reinstates the need for redesigning ID-OOD splits and highlights the importance of domain knowledge to choose the right OOD classes in highly specific environments.
 \par 
-Overall, SSL pretraining on chest-X-ray images and using the pretrained weights for OOD detection is a promising research direction for future work.
-Results of this thesis should be evaluated on other chest-X-ray datasets and different ID-OOD splits to ensure consistency across dataset and pathologies.
-Improved settings for OOD detection of novel diseases of chest-X-ray images should be explored.
-An interesting use case could be the OOD detection of COVID-19 in chest-X-ray images.
+Overall, SSL pretraining on chest X-ray images and using the pretrained weights for OOD detection is a promising research direction for future work.
+Results of this thesis should be evaluated on other chest X-ray datasets and different ID-OOD splits to ensure consistency across dataset and pathologies.
+Improved settings for OOD detection of novel diseases of chest X-ray images should be explored.
+An interesting use case could be the OOD detection of COVID-19 in chest X-ray images.
 The performance of proposed OOD detection methods should be also evaluated on other medical imaging procedures such as MRI or CT scans.
-Finally, multi-modal models that leverage both images and reports should be explored for OOD detection on chest-X-ray images.
+Finally, multi-modal models that leverage both images and reports should be explored for OOD detection on chest X-ray images.
