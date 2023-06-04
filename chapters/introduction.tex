@@ -1,28 +1,29 @@
 \section{Introduction}
 \raggedbottom
 Nowadays, most Machine Learning (ML) applications operate under closed-world assumptions.
-Models are trained on the \textit{training set}, hyperparameters are tuned on the \textit{validation set}, and the true performance is evaluated on a held-out \textit{test set}, which is not included in the training process.
+Models are trained on the \textit{training set}, hyperparameters are tuned on the \textit{validation set}, and the actual performance is evaluated on a held-out \textit{test set}, which is not included in the training process.
 It is implicitly assumed, that the \textit{test set} accuracy is a proxy for the true performance that would be encountered if the models were used in real-world applications.
 \par
 The ability of ML models to accurately predict novel samples is known as \textit{generalization} \citep{Bishop2006}.
 Recent works question the generalization ability of ML models trained under closed-world assumptions and discuss performance issues \citep{Recht2018,Zech2018}.
 Performance issues can be caused by inappropriate input data and one strategy to address this problem is out-of-distribution detection (OOD detection).
-OOD detection is defined as the task of identifying those test samples, that are drawn from a distribution that differs from the training distribution \citep{Yang2021}.
-What constitutes a shift in the distribution depends on the application, but it is often assumed that the OOD samples are drawn from a distribution with labels different from the training distribution \citep{Yang2021}.
+OOD detection is defined as identifying those test samples drawn from a distribution that differs from the training distribution \citep{Yang2021}.
+What constitutes a shift in the distribution depends on the application.
+However, it is often assumed that the OOD samples are drawn from a distribution with labels different from the training distribution \citep{Yang2021}.
 The data known to the classifier is described as \textit{in-distribution} (ID), while new, often unknown data represent samples from \textit{out-of-distribution} (OOD).
 Reliable model output on OOD samples cannot be guaranteed, and separate consideration is appropriate.
 \par
-OOD detection is particularly important in high-risk environments such as medicine, where human intervention is often required.
+OOD detection is critical in high-risk environments such as medicine, where human intervention is often required.
 Chest X-rays are commonly used imaging procedures in medicine to diagnose patients with dyspnea or chest pain.
-Some common pathologies detected in X-rays include pneumonia, cardiomegaly, pleural effusion, atelectasis, edema, pneumothorax and fractures.
+Some common pathologies detected in X-rays include \textit{Pneumonia}, \textit{Cardiomegaly}, \textit{Pleural Effusion}, \textit{Atelectasis}, \textit{Edema}, \textit{Pneumothorax} and \textit{Fractures}.
 Due to the constant time pressure in emergency rooms and the high number of patients, pre-screening X-rays with artificial intelligence systems could reduce the workload for radiologists. 
 \par
 Deep learning shows promising results in predicting pathologies in chest X-rays.
-For example, Rajpurkar et al. \citep{Rajpurkar2017} introduced CheXNet and achieve comparable performance to radiologists in detecting different diseases in chest X-rays.
+For example, Rajpurkar et al. \citep{Rajpurkar2017} introduced CheXNet and achieved comparable performance to radiologists in detecting different diseases in chest X-rays.
 On the other hand, failures of deep learning models in chest X-ray images have been identified in different studies.
 Rayner et al. \citep{Rayner2019} analyze the impact of a selection bias related to training labels and conclude that the benchmark performance in the literature does not necessarily translate into clinical applicability.
-Zech et al. \citep{Zech2018} also show that the performance of pneumonia screening of chest X-rays from outside hospitals was significantly lower than that of chest X-rays from the original hospital cohort in three out of five cases.
-An important factor for the acceptance of artificial intelligence systems is the right calibration to limit their predictive overconfidence because wrong detections could be dangerous especially in medicine.
+Zech et al. \citep{Zech2018} also show that the performance of \textit{Pneumonia} screening of chest X-rays from outside hospitals was significantly lower than that of chest X-rays from the original hospital cohort in three out of five cases.
+An essential factor for accepting artificial intelligence systems is the correct calibration to limit their predictive overconfidence because wrong detections could be dangerous especially in medicine.
 Confidence calibration aims to align the predictive probability of a classifier to the true class probability \citep{Guo2017}.
 Preprocessing the input X-ray images and limiting prediction on OOD samples outside the model's competence could be a part of the solution to generalization problems and to limit overconfidence.
 \par
@@ -38,9 +39,10 @@ However, supervised classifiers are trained on labeled data and in most applicat
 In addition to that, supervised classifiers lead to highly specific weights.
 \par
 In contrast to supervised learning, models are trained without label knowledge in unsupervised learning.
-Self-supervised learning (SSL) is a subset of unsupervised learning and extracts general features of the input data that can be used for downstream tasks such as image classification or image segmentation \citep{Jing2019}.
+Self-supervised learning (SSL) is a subset of unsupervised learning that extracts the input data's general features that can be used for downstream tasks such as image classification or image segmentation \citep{Jing2019}.
 Self-supervised models are trained on a pretext task and labels are generated based on the input data itself \citep{Jaiswal2021}.
-In computer vision, the pretext task is often defined by augmenting the input images (e.g. image cropping or image rotation) to generate different views of the image and then the model is trained with a specific learning objective on augmented samples \citep{Jaiswal2020}.
+In computer vision, the pretext task is often defined by augmenting the input images (e.g. image cropping or image rotation) to generate different views of the image.
+Then, the model is trained with a specific learning objective on augmented samples \citep{Jaiswal2020}.
 Commonly used learning objectives such as DINO \citep{Caron2021} and SimCLR \citep{Chen2020} report impressive results and especially DINO models show unsupervised image segmentation capabilities for natural images \citep{Caron2021}.
 Azizi et al. \citep{Azizi2021} apply SimCLR to chest X-ray images and achieve comparable performance to supervised models and Park et al. \citep{Park2022} use a learning paradigm similar to DINO to extract features from chest X-ray images.
 \par
@@ -52,7 +54,7 @@ This motivates applying pretrained ViT models for OOD detection of chest X-ray i
 The goal of this thesis is to investigate the performance of SSL methods on OOD detection of chest X-ray images and to analyze necessary adaptions of the methods to accept chest X-ray images as input.
 Further, the performance of SSL methods is compared to supervised methods.
 The rest of this thesis is structured as follows: The next chapter introduces commonly used OOD detection methods and explains both ViTs and the SSL methods SimCLR and DINO.
-In the third chapter the dataset is described.
+In the third chapter, the dataset is described.
 The ID-OOD splits are explained and the experimental setup and implementation details are presented.
 In chapter four the results are presented, which are discussed in the fifth chapter.
 The final chapter concludes the thesis and motivates future research directions.

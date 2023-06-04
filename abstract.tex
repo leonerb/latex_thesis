@@ -1,16 +1,30 @@
 %%% Die folgende Zeile nicht ändern!
 \section*{\ifthenelse{\equal{\sprache}{deutsch}}{Zusammenfassung}{Abstract}}
-%%% Zusammenfassung:
-Out-of-distribution detection (OOD detection) is a strategy that aims to detect unsuitable input samples that could lead to model failure at prediction time.
-This failure should be avoided in medical applications, where reliable predictions are crucial.
-A recent work \citep{Berger2021} has used supervised classifiers that are trained on the in-distribution (ID) to extract confidence scores and to identify out-of-distribution (OOD) samples.
-In this thesis, self-supervised learning (SSL) methods are applied to compute representations of chest X-rays without presumed labels.
-The nearest-neighbour based feature similarity between training features and test features \citep{Michels2023,Sun2022} is used to extract scores for OOD detection from the representations of SimCLR \citep{Chen2020} and DINO \citep{Caron2021}.
-It is shown that SSL methods can perform unsupervised OOD detection on chest X-rays and that two strategies improve the performance of SSL methods for OOD detection:
-(i) Fine-tuning with a supervised classifier, which leads to comparable performance to supervised methods but also uses the same labels.
-(ii) Expanding the training data with labeled OOD samples \citep{Fort2021,Hendrycks2018}.
-This can also enhance the performance, even without access to OOD class labels.
-Three different dataset splits with different ID and OOD classes are considered.
-Pretraining with SSL methods and (ii) were applied to the first setting that includes healthy patients as ID and patients with one out of six pathologies as OOD.
-The second (ID: \textit{Cardiomegaly}, \textit{Pneumothorax}; OOD: \textit{Fracture}) and third setting (ID: \textit{Lung Opacity}, \textit{Pleural Effusion}; OOD: \textit{Fracture}, \textit{Pneumonia}) are adopted from \citep{Berger2021} and besides pretraining, method (i) was applied.
-In comparison, the second setting reached a higher performance than the third one, which indicates that the detection accuracy varies depending on the included pathologies. 
+% introduction
+Out-of-distribution detection is a strategy that aims to detect input samples that could lead to model failure at prediction time.
+Model failure must be avoided in medical applications where reliable predictions are critical.
+% methods
+%\\
+A recent work \citep{Berger2021} has used score-based methods to identify out-of-distribution (OOD) samples for chest X-ray images.
+Score-based OOD detection relies on the prediction of a supervised classifier trained on the in-distribution (ID) classes \citep{Yang2021}.
+In this thesis, the self-supervised learning (SSL) paradigms SimCLR \citep{Chen2020} and DINO \citep{Caron2021} are used to compute representations of chest X-rays without presumed labels.
+The architecture of both methods combines a feature extractor and a specific projection head.
+Also, a Vision Transformer (ViT) \citep{Dosovitskiy2020} is used as a feature extractor and pretrained ViTs are applied to compute training features and test features from chest X-rays.
+Then, the nearest neighbor feature similarity between both sets of features is used as a score for OOD detection \citep{Michels2023,Sun2022}.
+% exp setup
+%\\
+Three different dataset splits of CheXpert \citep{Irvin2019} are considered.
+The first one includes healthy patients as ID and patients with one out of six pathologies as OOD.
+The second (ID: \textit{Cardiomegaly}, \textit{Pneumothorax}; OOD: \textit{Fracture}) and third setting (ID: \textit{Lung Opacity}, \textit{Pleural Effusion}; OOD: \textit{Fracture}, \textit{Pneumonia}) are taken from \citep{Berger2021}.
+Pretraining was performed on all settings and on CheXpert.
+To compare with supervised baseline methods, pretrained ViTs were also fine-tuned on ID classes.
+% results
+%\\
+The main findings of this thesis are:
+(i) Expanding the training data with only a few unlabeled OOD samples can improve the performance of pretrained ViTs for OOD detection on setting one.
+(ii) The performance of pretrained ViTs fine-tuned with ID data is comparable to the supervised baseline performance in \citep{Berger2021} on settings two and three.
+(iii) Adding rotations to the image augmentations improves the ID accuracy between \textit{Cardiomegaly} and \textit{Pneumothorax}, but not the feature similarity-based OOD detection accuracy against \textit{Fracture} samples.
+% conclusion
+%\\
+Overall, SSL methods can be used to pretrain ViTs for OOD detection on chest X-rays but are less performant than supervised baseline methods if not fine-tuned on ID data.
+The reliance on labeled samples for OOD detection on chest X-rays motivates further research to reduce the need for labels.
