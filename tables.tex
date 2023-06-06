@@ -192,7 +192,7 @@ Cell values of the upper triangle are marked by "-" because the concurrence matr
         \toprule
         Model name & Layers & $d_{model}$ & $d_{ff}$ & \#heads & \#parameters \\
         \midrule
-        ViT-S \citep{Touvron2020} & 12 & 384 & 1536 & 12 & 22M \\
+        ViT-S \citep{Touvron2020} & 12 & 384 & 1536 & 6 & 22M \\
         ViT-B \citep{Dosovitskiy2020} & 12 & 768 & 3072 & 12 & 86M \\
         \bottomrule    
     \end{tabular}
@@ -341,7 +341,7 @@ Adapted from \citep{Caron2021}.}
     \centering
     \begin{tabular}{L{0.6cm} C{2.5cm} C{1.6cm} C{0.8cm} C{1.7cm} C{0.8cm} C{1.7cm} C{0.7cm} C{0.7cm} C{0.8cm}}
     \toprule
-    & &  & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
+    & &  & \multicolumn{2}{c}{AUROC (\%)} &  \multicolumn{2}{c}{AUPRC (\%)} &  \multicolumn{2}{c}{ID}\\
     \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
     Eval& Model/ Method& Pretrained (On)&  MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
     \hline
@@ -360,7 +360,7 @@ Adapted from \citep{Caron2021}.}
     \bottomrule
     \end{tabular}
     \caption{\textbf{Supervised results with ViT-S backbone and cross-entropy.} All pretrained models are DINO models and the respective ID training set is used for finetuning.
-    The Mahahalanobis distance is calculated in the feature space of the ViT encoder as well as in the penultimate layer of the projection with cross-entropy on top. 
+    The Mahahalanobis distance is calculated in the feature space of the ViT encoder and in the penultimate layer of the projection with cross-entropy on top. 
     The values that correspond to the ViT encoder are in brackets.
     The supervised baseline of Berger et al. \citep{Berger2021} is used as a reference.
     Best column values are marked in bold.
@@ -376,7 +376,7 @@ Adapted from \citep{Caron2021}.}
     \centering
     \begin{tabular}{l c c c c c c}
     \toprule
-    & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
+    & \multicolumn{2}{c}{AUROC (\%)} &  \multicolumn{2}{c}{AUPRC (\%)} &  \multicolumn{2}{c}{ID}\\
     \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
     Initialization & Mahal. & Feat. Sim. & Mahal. & Feat. Sim. & Train acc & Test acc\\
     \hline
@@ -395,7 +395,7 @@ Adapted from \citep{Caron2021}.}
     \centering
     \begin{tabular}{l l c c c c c c}
     \toprule
-    & & \multicolumn{2}{c}{AUROC \%} &  \multicolumn{2}{c}{AUPRC \%} &  \multicolumn{2}{c}{ID}\\
+    & & \multicolumn{2}{c}{AUROC (\%)} &  \multicolumn{2}{c}{AUPRC (\%)} &  \multicolumn{2}{c}{ID}\\
     \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
     Eval& Model & MSP & Mahal. & MSP & Mahal. & Train acc & Test acc\\
     \hline
@@ -406,8 +406,8 @@ Adapted from \citep{Caron2021}.}
     \multicolumn{1}{c|}{}& Sup ViT-B & 49.7 & \textbf{50.9} (45.7) & 52.1 & \textbf{52.7} (46.8) & \textbf{90.0} & 70.5 \\
     \bottomrule
     \end{tabular}
-    \caption{\textbf{Supervised results with ViT-S and ViT-B backbone and cross-entropy.} DINO ImageNet weights are used for initialization.
-    Bold values depict the best values for each setting and metric.
+    \caption{\textbf{Comparison between Sup ViT-S and Sup ViT-B.} DINO ImageNet weights are used for initialization.
+    Bold values represent the best values for each setting and metric.
     The ID classes for setting 2 are \textit{Cardiomegaly} and \textit{Pneumothorax} and the OOD class is \textit{Fracture}.
 	The ID classes for setting 3 are \textit{Lung Opacity} and \textit{Pleural Effusion} and the OOD classes are \textit{Fracture} and \textit{Pneumonia}.}
     \label{table:vit-imagenet-model-size}
@@ -420,9 +420,10 @@ Adapted from \citep{Caron2021}.}
     \centering
     \begin{tabular}{l c c}
     \toprule
-    & AUROC (\%) & AUPRC (\%) \\
-    \cmidrule(lr){2-3}  
-    Initialization & MSP & MSP \\
+    %Initialization & AUROC (\%) & AUPRC (\%) \\
+   % \cmidrule(lr){2-3}  
+    %Initialization & & \\
+    Initialization & AUROC (\%) & AUPRC (\%) \\
     \hline
     CheXpert* & 52.2 & 52.9 \\
     Setting 1* & \textbf{53.6} & 53.2\\
@@ -431,7 +432,8 @@ Adapted from \citep{Caron2021}.}
     \end{tabular}
     \caption{\textbf{Custom augmentations applied to setting 1.} 
     Rows marked with a * are DINO weights which were pretrained on the respective dataset.
-    Values are only reported for the \textit{Fracture} OOD class.}
+    Values are only reported for the \textit{Fracture} OOD class.
+    The AUROC for OOD detection is based on the softmax probability of the \textit{No Finding} ID class.}
     \label{table:custom-augs-fracture-results}
 \end{table}
 %</Table:custom-augs-fracture-results>
@@ -449,12 +451,12 @@ Adapted from \citep{Caron2021}.}
 	%\midrule
 	\\[-3pt]
 	\midrule
-	Cardiomegaly&57.81&55.26&58.24&\textbf{60.33}\\
-	Fracture&53.43&54.53&\textbf{56.43}&55.69\\
-	Lung Opacity&55.55&55.49&59.10&\textbf{60.30}\\
-	Pleural Effusion&58.48&58.05&\textbf{64.33}&61.56\\
-	Pneumothorax&60.10&60.54&57.51&\textbf{61.23}\\
-	Support Devices&53.58&53.50&56.97&\textbf{57.44}\\
+	Cardiomegaly&57.8&55.3&58.2&\textbf{60.33}\\
+	Fracture&53.4&54.5&\textbf{56.4}&55.7\\
+	Lung Opacity&55.6&55.5&59.1&\textbf{60.30}\\
+	Pleural Effusion&58.5&58.1&\textbf{64.3}&61.6\\
+	Pneumothorax&60.1&60.5&57.5&\textbf{61.2}\\
+	Support Devices&53.6&53.5&57.0&\textbf{57.4}\\
 	\hline
 	\multicolumn{1}{L{3cm}}{Mean $\Delta$ (ImageNet $-$ CheXpert)} & \multicolumn{2}{c}{$-$0.26 pp.} & \multicolumn{2}{c}{$+$0.66 pp.}  \\
 	%\parbox[b]{2.8cm}{\noindent Avg. diff. (CheXpert - ImageNet)}& & & & \\

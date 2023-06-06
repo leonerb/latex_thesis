@@ -2,9 +2,9 @@
 \begin{figure}[h]
 	\centering
     \includegraphics[width=\textwidth]{figures/multilabel-struc.pdf}
-    \caption{\textbf{Hierarchical structure of the CheXpert dataset.} 
-	The labels are grouped into 14 categories.
-	The dotted arrow from the \textit{Support Devices} class indicates, that patients with a support device can also be labeled as \textit{No Finding}, representing the only source of overlap between the \textit{No Finding} class and other classes.
+    \caption{\textbf{Label extraction and hierarchical structure of the CheXpert dataset.} 
+	Labels are grouped into 14 categories.
+	The dotted arrow from the \textit{Support Devices} class indicates that patients with a support device can also be labeled as \textit{No Finding}, representing the only source of overlap between the \textit{No Finding} class and other classes.
 	Adapted from \citep{Irvin2019}.}
     \label{fig:multilabel-struc}
 \end{figure}
@@ -80,9 +80,9 @@
 	\centering
     \includegraphics[width=\textwidth]{figures/dino-arch-new.pdf}
 	\caption{\textbf{DINO teacher and student network.} The Figure is adapted from \citep{Caron2021}.
-	A single pair of views $(x_1,x_2)$ is assumed for simplicity of illustration \citep{Caron2021}.
-	Exponential moving average is abbreviated as EMA.
-	The crossed out gradient $\cancel{\nabla}$ indicates, that there is a gradient back propagation for the student weights but not for the teacher weights.
+	A single pair of views $(x_1,x_2)$ is assumed to simplify the illustration \citep{Caron2021}.
+	The exponential moving average is abbreviated as EMA.
+	The crossed out gradient $\cancel{\nabla}$ indicates a gradient backpropagation for the student weights but not for the teacher weights.
 	}
 	\label{fig:dino-arch}
 \end{figure}
@@ -115,12 +115,12 @@
 		%\midrule
 		\\[-3pt]
 		\midrule
-		Cardiomegaly&\centering57.81&55.26&58.24&\textbf{60.33}\\
-		Fracture&53.43&54.53&\textbf{56.43}&55.69\\
-		Lung Opacity&55.55&55.49&59.10&\textbf{60.30}\\
-		Pleural Effusion&58.48&58.05&\textbf{64.33}&61.56\\
-		Pneumothorax&60.10&60.54&57.51&\textbf{61.23}\\
-		Support Devices&53.58&53.50&56.97&\textbf{57.44}\\
+		Cardiomegaly&57.8&55.3&58.2&\textbf{60.3}\\
+		Fracture&53.4&54.5&\textbf{56.4}&55.7\\
+		Lung Opacity&55.6&55.5&59.1&\textbf{60.3}\\
+		Pleural Effusion&58.5&58.1&\textbf{64.3}&61.6\\
+		Pneumothorax&60.1&60.5&57.5&\textbf{61.2}\\
+		Support Devices&53.6&53.5&57.0&\textbf{57.4}\\
 		\hline
 		\multicolumn{1}{L{6cm}}{Mean $\Delta$ (ImageNet $-$ CheXpert)} & \multicolumn{2}{c}{$-$0.26 pp.} & \multicolumn{2}{c}{$+$0.66 pp.}  \\
 		%\parbox[b]{2.8cm}{\noindent Avg. diff. (CheXpert - ImageNet)}& & & & \\
@@ -141,9 +141,9 @@
 	\end{subfigure}
     \caption{\textbf{Comparison between CheXpert and ImageNet normalization for the first setting.}
 	%Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch} shows the results for SimCLR and DINO respectively across both normalizations.
-	AUROC values are based on the feature similarity score and maximum values are marked in bold.
+	AUROC values are based on the feature similarity score and maximum values are shown in bold.
 	%Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} depicts the results for both models restricted to ImageNet normalization only.
-	The dotted line refers to the performance equivalent to the chance level at 50\% AUROC.
+	The dotted line refers to the chance level performance at 50\% AUROC.
 	For the ImageNet normalization, all images were scaled with $\mu=(0.485, 0.456, 0.406)$ and $\sigma=(0.229, 0.224, 0.225)$. 
     The CheXpert normalization stands for a normalization with $\mu=(0.5330, 0.5330, 0.5330)$ and $\sigma=(0.0349, 0.0349, 0.0349)$ \citep[\href{https://github.com/christophbrgr/ood_detection_framework}{\color{Periwinkle}{implementation}}]{Berger2021}.
 	The ID class is \textit{No Finding}.}
@@ -157,7 +157,9 @@
 		\input{figures/auroc-vs-k.pgf}
 		%AUROC in relation to the number of nearest neighbors used for feature similarity.
 	\caption{\textbf{AUROC (\%) values for setting 1-3 based on $k$-NN feature similarity with different values for $k$.}  
-	The values for setting 1 are calculated as a top-3 average over \textit{Pleural Effusion}, \textit{Cardiomegaly} and \textit{Pneumothorax}.
+	The values for setting 1 (ID: \textit{No Finding}) are calculated as a top-3 average over \textit{Pleural Effusion}, \textit{Cardiomegaly} and \textit{Pneumothorax}.
+	The ID classes for setting 2 are \textit{Cardiomegaly} and \textit{Pneumothorax} and the OOD class is \textit{Fracture}.
+	The ID classes for setting 3 are \textit{Lung Opacity} and \textit{Pleural Effusion} and the OOD classes are \textit{Fracture} and \textit{Pneumonia}.
 	$N_i$ refers to the length of the training dataset of the i-th setting, where $i \in \{1,2,3\}$.}
 	\label{fig:auroc-vs-k}
 \end{figure}
@@ -203,7 +205,7 @@
 \begin{figure}[h]
 	\centering
 	\input{figures/supervised-vs-unsupervised.pgf}
-	\caption{\textbf{Comparison of supervised (Sup ViT, Berger et al. \citep{Berger2021}) and unsupervised models (ViT DINO pretrained) for setting 2 and setting 3.}
+	\caption{\textbf{Comparison of supervised (Sup ViT, Berger et al. \citep{Berger2021}) and unsupervised (ViT DINO pretrained) models for setting 2 and setting 3.}
 	The ID classes for setting 2 are \textit{Cardiomegaly} and \textit{Pneumothorax} and the OOD class is \textit{Fracture}.
 	The ID classes for setting 3 are \textit{Lung Opacity} and \textit{Pleural Effusion} and the OOD classes are \textit{Fracture} and \textit{Pneumonia}.}
 	\label{fig:supervised-vs-unsupervised}
@@ -292,9 +294,9 @@
 	\centering
 	\includegraphics[width=\textwidth]{figures/custom_augs_applied.pdf}
 	\caption{\textbf{Custom augmentations applied to a frontal chest X-ray image.}
-	The green bounding boxes represent border values, where possible slices are sampled on which the augmentations are applied. 
-	The red bounding boxes represent those slices.
-	The simulated \textit{Fracture} is in the upper part of the right image side (left side of the patient) and is marked with a blue arrow.}
+	The green bounding boxes represent the limit values.
+	Within the green bounding boxes, possible slices are sampled and augmentations are applied to those slices (red bounding boxes).
+	The simulated \textit{Fracture} is located in the upper part of the right side of the image (left side of the patient) and is marked with a blue arrow.}
 	\label{fig:custom-augs-applied}
 \end{figure}
 %</Figure:custom-augs-applied>
@@ -304,7 +306,7 @@
 	\centering
 	\input{figures/ood-fraction-avg.pgf}
 	\caption{\textbf{Outlier exposure on setting 1.} Average OOD detection performance between \textit{No Finding} (ID) and \textit{Pleural Effusion}, \textit{Cardiomegaly} and \textit{Pneumothorax} (OOD).
-	Supervised outlier exposure assumes access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Out-of-Distribution Detection}).}
+	Supervised outlier exposure requires access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Outlier Exposure}).}
 	\label{fig:ood-fraction-avg}
 \end{figure}
 %</Figure:ood-fraction-avg>
@@ -314,7 +316,7 @@
 	\centering
 	\input{figures/ood-fraction-fracture.pgf}
 	\caption{\textbf{Outlier exposure on setting 1.} OOD detection performance between \textit{No Finding} (ID) and \textit{Fracture} (OOD).
-	Supervised outlier exposure assumes access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Out-of-Distribution Detection}).}
+	Supervised outlier exposure requires access to fine-grained OOD labels and unsupervised outlier exposure does not (see \ref{section: Outlier Exposure}).}
 	\label{fig:ood-fraction-fracture}
 \end{figure}
 %</Figure:ood-fraction-fracture>

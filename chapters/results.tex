@@ -16,7 +16,7 @@ Only for the \textit{Fracture} class and \textit{Pleural Effusion}, the AUROC is
 As indicated by the bold values, the ViT features of the discarded DINO projection head outperform the ViT features obtained by SimCLR for each of the six OOD pathologies.
 Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} shows the outperformance for the ImageNet normalization.
 The DINO AUROC values for the ImageNet normalization are consistently between 55\% and 62\% for all OOD pathologies, with a maximum of 61.23\% for the OOD pathology \textit{Pneumothorax}.
-The minimum AUROC value is 55.69\% for the OOD pathology \textit{Fracture}.
+The minimum AUROC value is 55.7\% for the OOD pathology \textit{Fracture}.
 %\par
 % Apart from the performance, the low standard deviation of the CheXpert dataset statistics ($\sigma=0.0349$), leads to a normalized input range of approximately [-17,14].
 % Therefore, to mitigate the risk of convergence problems for high input values \citep{Lecun2002, He2015, Santurkar2019} and because of higher performance, the ImageNet normalization is used for all following experiments.
@@ -46,7 +46,7 @@ For setting 3, $k$ is set to the length of the corresponding in-distribution tra
 % We will also add a rotation of 20 degrees to the adopted DINO augmentations and compare the performance of both augmentation schemes.
 % \par
 Figure \ref{fig:dino-rotate-augs-v-default-augs} summarizes the results of the third experiment.
-A rotation of $\pm$ 20 degrees was added to the adopted DINO augmentations and the performance is compared to the augmentations without rotation.
+A rotation between [-20, 20] degrees was added to the adopted DINO augmentations and the performance is compared to the augmentations without rotation.
 For unsupervised OOD detection, the DINO augmentations outperform the rotation augmentations in all settings.
 However, the 1-NN mean accuracy is significantly higher on setting 2 when additional rotations are applied to the CheXpert images.
 On setting 3, there is no significant difference in training accuracy and the AUROC is also comparable.
@@ -56,14 +56,14 @@ In the remaining work, a rotation is added to the pretraining augmentations in a
 \loadFigure{Figure:dino-rotate-augs-v-default-augs}
 \par
 It is often insightful to visualize the self-attention maps of the ViT encoder.
-The self-attention of the \texttt{[CLS]} token of the last layer is used to visualize the output of each head \citep{Caron2021,Dosovitskiy2020}.
+The self-attention of the \texttt{[class]} token of the last layer is used to visualize the output of each head \citep{Caron2021,Dosovitskiy2020}.
 For each of the ID classes, an input image of the respective class is passed to the ViT encoder, which has been pretrained on setting 1-3.
 Pixel regions are marked with respect to self-attention values.
 The results for all six attention heads are summarized in Table \ref{table:attention-maps}.
 Note that the rows correspond to different models.
 For example, the second and third rows show the ViT attention maps for the \textit{Cardiomegaly} and \textit{Pneumothorax} classes pretrained with DINO on setting 2 with the corresponding ID classes.
 The same is true for the first row (pretrained on setting 1) and for the fourth and fifth row (pretrained on setting 3).
-In the visualizations, blue colormap values correspond to regions of lowest attention, while yellow values indicate regions of interest of the ViT encoder with higher attention values.
+In the visualizations, blue colormap values correspond to regions of low attention, while yellow values indicate regions of interest of the ViT encoder with higher attention values.
 \loadTable{Table:attention-maps}
 \par
 The results show that while some basic properties of chest X-rays are expressed through higher attention values, most heads do not attend to the region of interest.
@@ -79,22 +79,22 @@ It is now analyzed in experiment four how well the pretrained models perform, wh
 %To that end, another DINO model was pretrained on the whole CheXpert dataset.
 % The pretrained model weights are used as initializations for finetuning a cross-entropy based classifier on top of the ViT encoder.
 In this case, the performance is only evaluated on settings 2 and 3 in the first part, because setting 1 contains only one ID class and therefore no direct supervised classifier can be trained without modifications.
-Setting 1 will be revisited later, and the performance of a supervised classifier on this setting is evaluated if custom augmentations are applied (creating a second class next to the \textit{No Finding} class), or if fractions of the OOD dataset are made available.
+Setting 1 is revisited later, and the performance of a supervised classifier on this setting is evaluated if custom augmentations are applied (creating a second class next to the \textit{No Finding} class) or if fractions of the OOD dataset are made available.
 %\par
 %With label access to the ID training set, supervised OOD detection is evaluated with MSP and Mahahalanobis distance as OOD score (see \ref{section: Out-of-Distribution Detection}).
 The fine-tuning results for setting 2 and 3 are summarized in Table \ref{table:finetuning-supervised-new}.
 For setting 2, pretraining on the full CheXpert dataset outperforms the other methods, reaching up to 70.8\% AUROC and 72.1\% AUPRC.
-The supervised baseline in \citep{Berger2021} performs worse with 58 \% AUROC and 69.5 \% AUPRC respectively, but the authors report a higher test accuracy of 88.8 \% versus 87.9 \% for the Sup ViT model.
-Pretraining on setting 2 yields only 63.4 \% AUROC and 64.5 \% AUPRC when the Mahahalanobis distance is used as the OOD score.
+The supervised baseline in \citep{Berger2021} performs worse with 58\% AUROC and 69.5\% AUPRC respectively, but the authors report a higher test accuracy of 88.8\% versus 87.9\% for the Sup ViT model.
+Pretraining on setting 2 yields only 63.4\% AUROC and 64.5\% AUPRC when the Mahahalanobis distance is used as the OOD score.
 This performance is comparable to fine-tuning model weights pretrained on the ImageNet dataset.
 This suggests that pretraining on the settings does not lead to a measurable performance improvement over using ImageNet weights.
-Fine-tuning the supervised classifier from random weights leads to the worst performance of 56.7 \% AUROC and 56.1 \% AUPRC.
+Fine-tuning the supervised classifier from random weights leads to the worst performance of 56.7\% AUROC and 56.1\% AUPRC.
 There is no apparent difference between applying the Mahahalanobis distance in the ViT encoder's feature space and in the classifier's penultimate layer for the best-performing model (Sup ViT pretrained on CheXpert).
 Therefore, in the following experiments, the Mahahalanobis distance is computed only in the feature space of the ViT encoder.
 \par
 Similar results hold for setting 3. 
-However, the supervised baseline in \citep{Berger2021} outperforms the pretrained model (CheXpert) if the AUPRC is used as a performance metric (60.1 \% vs. 56.5\%).
-Pretraining on the CheXpert dataset leads to higher AUROC values (54.2 \% vs. 45.8 \%) compared to \citep{Berger2021} if the MSP is used as an OOD score. 
+However, the supervised baseline in \citep{Berger2021} outperforms the pretrained model (CheXpert) if the AUPRC is used as a performance metric (60.1\% vs. 56.5\%).
+Pretraining on the CheXpert dataset leads to higher AUROC values (54.2\% vs. 45.8\%) compared to \citep{Berger2021} if the MSP is used as an OOD score. 
 The performance on setting 3 is worse than on setting 2 and most AUROC- and AUPRC values are close to random guessing of 50\%.
 %Finetuning on setting 2 increased the performance, while finetuning on setting 3 even decreased the performance.
 % This is because the OOD class Pneumonia used in setting 3 is a subclass of the ID pathology Lung Opacity (see Figure \ref{fig:multilabel-struc}) and although no OOD labels were exposed to the classifier during training, the OOD detection performance might decrease with increasing accuracy, as the model does not distinguish between both classes.
@@ -104,8 +104,8 @@ The performance on setting 3 is worse than on setting 2 and most AUROC- and AUPR
 So far, only the ViT-S/16 has been used as the backbone.
 Experiment five compares the performance of ViT-S/16 and ViT-B/16 as backbone architectures.
 The results are summarized in Table \ref{table:vit-imagenet-model-size}.
-On setting 2, the MSP-based AUROC is the same for both model sizes with 65.9 \% AUROC.
-Based on AUPRC, the Sup ViT-B model outperforms the Sup ViT-S model with 67.9 \% AUPRC versus 66.8 \% AUPRC.
+On setting 2, the MSP-based AUROC is the same for both model sizes with 65.9\% AUROC.
+Based on AUPRC, the Sup ViT-B model outperforms the Sup ViT-S model with 67.9\% AUPRC versus 66.8\% AUPRC.
 Using the Mahahalanobis distance as OOD score, the AUROC is 3 percentage points higher for the Sup ViT-B (66.7\% vs. 63.3\%).
 \par
 For setting 3, AUPRC and AUROC are slightly higher for the smaller architecture based on the MSP.
@@ -126,9 +126,9 @@ In addition, the supervised performance is lower than the unsupervised performan
 The AUROC of ODIN is also higher than before and beats the Sup ViT model by a wide margin.
 \par
 In experiment six, custom augmentations are applied to the dataset split of setting 1.
-The custom augmentations are described in detail in section \ref{section: adapted-methods} and should force the classifier to detect \textit{Fractures} in the images.
-As shown in Table \ref{table:custom-augs-fracture-results} with different initializations, the performance is slightly worse than the previous performance of 55.69 \% AUROC  and 55.0 \% AUPRC (see Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}).
-If pretrained on CheXpert, the AUROC and AUPRC values are 52.2 \% and 52.9 \%, respectively. 
+The custom augmentations are described in detail in section \ref{section: custom augmentations} and should force the classifier to detect \textit{Fractures} in the images.
+As shown in Table \ref{table:custom-augs-fracture-results} with different initializations, the performance is slightly worse than the previous performance of 55.7\% AUROC and 55.0\% AUPRC (see Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}).
+If pretrained on CheXpert, the AUROC and AUPRC values are 52.2\% and 52.9\%, respectively. 
 Even pretraining on setting 1, which in-distribution consists of healthy patients, leads to a performance close to a random guess.
 The same is true for random initializations.
 \loadTable{Table:custom-augs-fracture-results}
@@ -136,7 +136,7 @@ The same is true for random initializations.
 Although the described augmentations can also be generalized to other pathologies, further experiments are omitted.
 There is no noticeable improvement in performance and manually designing augmentations for each pathology is cumbersome.
 \par
-The focus in the last experiment is now shifted towards outlier exposure on setting 1 and a small subsample of OOD images is exposed during training (see section \ref{section: Out-of-Distribution Detection}).
+The focus in the last experiment is now shifted towards outlier exposure on setting 1 and a small subsample of OOD images is exposed during training (see section \ref{section: Outlier Exposure}).
 First, the performance across the OOD pathologies \textit{Pleural Effusion}, \textit{Cardiomegaly} and \textit{Pneumothorax} is evaluated.
 \loadFigure{Figure:ood-fraction-avg}
 \par

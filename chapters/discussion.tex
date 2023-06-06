@@ -22,7 +22,7 @@ This is different to natural images: For example Rafiee et al. \citep{Rafiee2022
 The effectiveness of adding rotations to the augmentations for OOD detection of chest X-ray images should be further examined as the supervised OOD performance was significantly higher for setting 2 when rotations were added to the pretraining augmentations and fine-tuning was applied.
 In a recent study, Elgendi et al. \citep{Elgendi2021} investigate the effectiveness of geometric augmentations (e.g. rotations) to detect COVID-19 in chest X-rays.
 They conclude that geometric augmentations are not effective for COVID-19 detection and hypothesize \citep{Elgendi2021} that \textit{Pneumonias} tend to be of unspecific size and shape and therefore geometric augmentations might not be effective.
-As setting 3 contains the unspecific \textit{Lung Opacity} as ID class, this could be a reason for the ineffectiveness of rotations.
+As setting 3 contains the unspecific \textit{Lung Opacity} as ID class, this could be a reason for the ineffectiveness of rotations in this setup.
 Further, one can hypothesize that \textit{Cardiomegaly} and \textit{Pneumothorax} often share a more "typical pattern" and therefore rotations are more effective for setting 2 and lead to higher ID accuracy.
 In the following, each setting is discussed in detail.
 \par
@@ -31,13 +31,13 @@ In the following, each setting is discussed in detail.
 \textbf{Outlier exposure and custom augmentations.}
 In the first setting, outlier exposure and custom augmentations were applied.
 Unsupervised outlier exposure worked even with quite small label fractions, which is helpful in the real world as although access to OOD samples is needed for better results, no fine-grained OOD class labels are required (see Figure \ref{fig:ood-fraction-avg}).
-This is consistent with the findings of \citep{Fort2021} that showed that outlier exposure with pretrained ViTs is effective for OOD detection on natural images and genomic data and that access to fine-grained OOD labels only leads to minor improvements against ignoring the outlier labels.
+This is consistent with the findings of Fort et al. \citep{Fort2021} that showed that outlier exposure with pretrained ViTs is effective for OOD detection on natural images and genomic data and that access to fine-grained OOD labels only leads to minor improvements against ignoring the outlier labels.
 The performance improvements against the unsupervised baseline (see Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}), were only achieved for a small subset of OOD pathologies and the \textit{Fracture} class still showed no significant improvements (see Figure \ref{fig:ood-fraction-fracture}).
 No performance increases were observed for applying custom augmentations tailored explicitly for the \textit{Fracture} class (see Table \ref{table:custom-augs-fracture-results}).
 The augmentations can be interpreted as heuristic and no performance gain could be recognized.
 A potential reason for this is, that the \textit{Fracture} class may look quite similar to the control class and the region of interest may be too small. 
 Image enhancement techniques could be applied to intensify the small local texture region of interest.
-Koonsanit et al. propose N-CLAHE (Normalized Contrast Limited Adaptive Histogram Equalization) as an image enhancement technique \citep{Koonsanit2017}.
+Koonsanit et al. \citep{Koonsanit2017} propose N-CLAHE (Normalized Contrast Limited Adaptive Histogram Equalization) as an image enhancement technique.
 It is based on the CLAHE algorithm, which is a contrast enhancement technique that uses several histograms of distinct image sections to improve the contrast of images \citep{Zuiderveld1994}.
 N-CLAHE is a modified version of CLAHE, which normalizes pixel intensity values before applying the CLAHE algorithm.
 The method was successfully applied to chest X-ray images as a preprocessing step for COVID-19 detection and improved textural details of the images \citep{Horry2020}.

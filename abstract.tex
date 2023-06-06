@@ -1,8 +1,9 @@
 %%% Die folgende Zeile nicht ändern!
 \section*{\ifthenelse{\equal{\sprache}{deutsch}}{Zusammenfassung}{Abstract}}
 % introduction
-Out-of-distribution detection is a strategy that aims to detect input samples that could lead to model failure at prediction time.
-Model failure must be avoided in medical applications where reliable predictions are critical.
+Out-of-distribution detection is a strategy that aims to detect input samples that are significantly different from the training distribution.
+If a model processes these samples by mistake, the predictions may be unreliable.
+In medical applications, reliable predictions are crucial and model failure must be avoided.
 % methods
 %\\
 A recent work \citep{Berger2021} has used score-based methods to identify out-of-distribution (OOD) samples for chest X-ray images.
@@ -21,7 +22,7 @@ To compare with supervised baseline methods, pretrained ViTs were also fine-tune
 % results
 %\\
 The main findings of this thesis are:
-(i) Expanding the training data with only a few unlabeled OOD samples can improve the performance of pretrained ViTs for OOD detection on setting one.
+(i) Expanding the training data with only a few unlabeled OOD samples \citep{Fort2021} can improve the performance of pretrained ViTs for OOD detection on setting one.
 (ii) The performance of pretrained ViTs fine-tuned with ID data is comparable to the supervised baseline performance in \citep{Berger2021} on settings two and three.
 (iii) Adding rotations to the image augmentations improves the ID accuracy between \textit{Cardiomegaly} and \textit{Pneumothorax}, but not the feature similarity-based OOD detection accuracy against \textit{Fracture} samples.
 % conclusion
