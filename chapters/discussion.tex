@@ -9,18 +9,19 @@ A total of three settings were examined.
 The first setting contains one ID class and six OOD classes (ID: \textit{No Finding}; OOD: \textit{Cardiomegaly}, \textit{Fracture}, \textit{Lung Opacity}, \textit{Pleural Effusion}, \textit{Pneumothorax}, \textit{Support Devices}), the second setting contains two ID classes and one OOD class (ID: \textit{Cardiomegaly}, \textit{Pneumothorax}; OOD: \textit{Fracture}), and the third setting two ID classes and two OOD classes (ID: \textit{Lung Opacity}, \textit{Pleural Effusion}; OOD: \textit{Fracture}, \textit{Pneumonia}).
 \par
 \textbf{Effect of ImageNet normalization.} ImageNet and CheXpert normalization were compared as a preprocessing step.
-It was shown, that ImageNet normalization leads to slight performance improvements for pretraining with DINO (see Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot}).
+It was shown that ImageNet normalization leads to slight performance improvements for pretraining with DINO (see Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot}).
 ImageNet is also commonly used in other studies for chest X-rays \citep{Azizi2021,Pham2020}.
 Due to the low standard deviation of the CheXpert dataset, CheXpert normalization normalizes images to high input values, which can lead to convergence problems \citep{Lecun2002, He2015, Santurkar2019}.
 ImageNet normalization is therefore favorable to CheXpert normalization.
 \par
 \textbf{Adding rotations to the augmentations.}
 The effect of adding rotations to the augmentations was examined, and it was shown that unsupervised OOD detection performance was slightly worse when rotations were added to the augmentations.
-The 1-NN mean accuracy however increased for setting 2 and for setting 3 no clear trend could be established (see Figure \ref{fig:dino-rotate-augs-v-default-augs}).
+The 1-NN mean accuracy however increased for setting 2.
+For setting 3 however, no clear trend could be established (see Figure \ref{fig:dino-rotate-augs-v-default-augs}).
 In fact, no clear trend could be observed between the 1-NN mean accuracy and the unsupervised OOD detection performance independent of the applied augmentations.
-This is different to natural images: For example Rafiee et al. \citep{Rafiee2022} establish a correlation between the 10-NN mean ID accuracy and unsupervised OOD detection performance for near- and far OOD on natural images.
+This is different to natural images: For example, Rafiee et al. \citep{Rafiee2022} establish a correlation between the 10-NN mean ID accuracy and unsupervised OOD detection performance for near- and far OOD on natural images.
 The effectiveness of adding rotations to the augmentations for OOD detection of chest X-ray images should be further examined as the supervised OOD performance was significantly higher for setting 2 when rotations were added to the pretraining augmentations and fine-tuning was applied.
-In a recent study, Elgendi et al. \citep{Elgendi2021} investigate the effectiveness of geometric augmentations (e.g. rotations) to detect COVID-19 in chest X-rays.
+In a recent study, Elgendi et al. \citep{Elgendi2021} investigated the effectiveness of geometric augmentations (e.g. rotations) to detect COVID-19 in chest X-rays.
 They conclude that geometric augmentations are not effective for COVID-19 detection and hypothesize \citep{Elgendi2021} that \textit{Pneumonias} tend to be of unspecific size and shape and therefore geometric augmentations might not be effective.
 As setting 3 contains the unspecific \textit{Lung Opacity} as ID class, this could be a reason for the ineffectiveness of rotations in this setup.
 Further, one can hypothesize that \textit{Cardiomegaly} and \textit{Pneumothorax} often share a more "typical pattern" and therefore rotations are more effective for setting 2 and lead to higher ID accuracy.
@@ -32,10 +33,10 @@ In the following, each setting is discussed in detail.
 In the first setting, outlier exposure and custom augmentations were applied.
 Unsupervised outlier exposure worked even with quite small label fractions, which is helpful in the real world as although access to OOD samples is needed for better results, no fine-grained OOD class labels are required (see Figure \ref{fig:ood-fraction-avg}).
 This is consistent with the findings of Fort et al. \citep{Fort2021} that showed that outlier exposure with pretrained ViTs is effective for OOD detection on natural images and genomic data and that access to fine-grained OOD labels only leads to minor improvements against ignoring the outlier labels.
-The performance improvements against the unsupervised baseline (see Table \ref{fig:setting1-chexnorm-v-imgnorm-dino-last-epoch}), were only achieved for a small subset of OOD pathologies and the \textit{Fracture} class still showed no significant improvements (see Figure \ref{fig:ood-fraction-fracture}).
+The performance improvements against the unsupervised baseline (ViT DINO pretrained on setting 1) were only achieved for a small subset of OOD pathologies and the \textit{Fracture} class still showed no significant improvements (see Figure \ref{fig:ood-fraction-fracture}).
 No performance increases were observed for applying custom augmentations tailored explicitly for the \textit{Fracture} class (see Table \ref{table:custom-augs-fracture-results}).
 The augmentations can be interpreted as heuristic and no performance gain could be recognized.
-A potential reason for this is, that the \textit{Fracture} class may look quite similar to the control class and the region of interest may be too small. 
+A potential reason for this is that the \textit{Fracture} class may look quite similar to the control class and the region of interest may be too small. 
 Image enhancement techniques could be applied to intensify the small local texture region of interest.
 Koonsanit et al. \citep{Koonsanit2017} propose N-CLAHE (Normalized Contrast Limited Adaptive Histogram Equalization) as an image enhancement technique.
 It is based on the CLAHE algorithm, which is a contrast enhancement technique that uses several histograms of distinct image sections to improve the contrast of images \citep{Zuiderveld1994}.
@@ -48,7 +49,7 @@ In the second setting, DINO pretraining on CheXpert achieved slightly better res
 Fracture represents a low prevalence class in the CheXpert dataset (3.9\% positive occurrences) and pretrained representations seem to slightly enhance the detection of \textit{Fracture} as an OOD class.
 This is consistent with recent findings of Van der Sluijs et al. \citep{Vandersluijs2023}, which show that pretrained visual representations can improve the performance in classifying low-prevalence classes compared to their supervised counterparts.
 Still, the state-of-the-art performance (SOTA) of ODIN could not be reached (see Figure \ref{fig:supervised-vs-unsupervised}).
-The authors in \citep{Berger2021} conduct an ablation study and show that perturbation and not the temperature scaling leads to the high performance of ODIN on chest X-rays.
+The authors in \citep{Berger2021} conduct an ablation study and show that perturbation and not temperature scaling leads to the high performance of ODIN on chest X-rays.
 %The ineffectiveness of temperature scaling was also observed in this thesis (see fig \ref{fig:auroc-vs-temp}).
 Incorporating perturbations into the proposed unsupervised OOD detection framework could be interesting.
 % Further, it is unclear if the results of ODIN are reproducible to other datasets.
@@ -64,21 +65,21 @@ Incorporating perturbations into the proposed unsupervised OOD detection framewo
 No satisfactory results were achieved for the third setting.
 The proposed ID-OOD split of the third setting in \citep{Berger2021} is questionable because \textit{Pneumonia} is a type of \textit{Lung Opacity} \citep{Hansell2008} and although no overlap was assumed between the ID and OOD class labels, the classes are very similar. 
 Therefore, the trained models might confuse the two classes which degrades the OOD performance. 
-Another classifier based approach would be to learn the sub labels of the super ID class to better separate it from the OOD class, still requiring label knowledge.
+Another classifier-based approach would be to learn the sub labels of the super ID class to better separate it from the OOD class, still requiring label knowledge.
 Outlier exposure could also be applied to setting 3, which was successful in setting 1.
 Instead of \textit{Pneumonia}, classes like \textit{Cardiomegaly} or \textit{Pneumothorax} should be used as OOD classes.
 %\sout{Similar to setting two, applying GODIN could also be a promising research direction.}
 \par
 \textbf{Limitations of proposed methods and dataset.}
 The experiments were performed on a limited scope of the larger problem.
-In particular, the second and third setting contain at most two ID classes and two OOD classes.
+In particular, the second and third settings contain at most two ID classes and two OOD classes.
 The findings should be evaluated on different chest X-ray datasets, such as the NIH chest X-ray dataset \citep{Wang2017} and on the ID-OOD splits developed in \citep{Cao2020} to ensure validity and generalizability.
 For example, an ID-OOD split for novel disease detection developed in \citep{Cao2020} contains ten ID classes and four OOD classes.
 For a more comprehensive evaluation, it is necessary to replicate the results on larger dataset splits.
 To ensure consistency with \citep{Berger2021}, it was assumed that exactly one pathology occurs in each image.
 In reality, this is not a plausible assumption as the occurrence of pathologies is not mutually exclusive.
 Therefore, the results of this work should also be evaluated on dataset splits with a multi-label ID dataset and OOD detection methods should be modified to handle the multi-label case.
-For unsupervised OOD detection with feature similarity as anomaly score this would not make a difference and the same approach could be applied.
+The same approach could be applied in principle for unsupervised OOD detection with feature similarity as anomaly score.
 However, for supervised OOD detection, the methods must be modified to handle the multi-label case.
 Hendrycks et al. \citep{Hendrycks2022} recently proposed a method and use the logistic sigmoid function for multi-label classification.
 Instead of MSP they compute the maximum unnormalized logit as an anomaly score.
@@ -93,7 +94,7 @@ In addition, the label quality might be inconsistent across the different pathol
 Abdalla et al. \citep{Abdalla2023} examine the label quality of the CheXpert dataset in a recent study.
 They evaluate the consistency of the official gold standard CheXpert labels and conclude that the label noise deviates by pathology \citep{Abdalla2023}.
 The gold standard labels are based on the majority vote of five radiologists randomly chosen from a pool of eight radiologists \citep{Irvin2019}.
-The authors suppose, that the quality of the gold label set depends on the choice of the radiologists and randomly sample from the pool of eight radiologists to evaluate the agreement of all possible pairings \citep{Abdalla2023}. 
+The authors suppose that the quality of the gold label set depends on the choice of the radiologists and randomly sample from the pool of eight radiologists to evaluate the agreement of all possible pairings \citep{Abdalla2023}. 
 While \textit{Pneumothorax} and \textit{Lung Opacity} show high label consistency, the median agreement between the radiologist's labels for the \textit{Fracture} class is merely 50\% \citep{Abdalla2023}.
 Actual performances may therefore be lower than the reported performances in this thesis.
 Nguyen et al. \citep{Nguyen2022} released the dataset VinDr-CXR which contains 18,000 chest X-ray images that a group of 17 radiologists manually annotated.

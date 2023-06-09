@@ -2,7 +2,7 @@
 \raggedbottom
 Nowadays, most Machine Learning (ML) applications operate under closed-world assumptions.
 Models are trained on the \textit{training set}, hyperparameters are tuned on the \textit{validation set}, and the actual performance is evaluated on a held-out \textit{test set}, which is not included in the training process.
-It is implicitly assumed, that the \textit{test set} accuracy is a proxy for the true performance that would be encountered if the models were used in real-world applications.
+It is implicitly assumed that the \textit{test set} accuracy is a proxy for the true performance that would be encountered if the models were used in real-world applications.
 \par
 The ability of ML models to accurately predict novel samples is known as \textit{generalization} \citep{Bishop2006}.
 Recent works question the generalization ability of ML models trained under closed-world assumptions and discuss performance issues \citep{Recht2018,Zech2018}.
@@ -48,10 +48,10 @@ Azizi et al. \citep{Azizi2021} apply SimCLR to chest X-ray images and achieve co
 \par
 SimCLR and DINO combine a backbone architecture functioning as a feature extractor and a projection network \citep{Caron2021,Chen2020}. 
 As a backbone architecture, the authors of DINO use the Vision Transformer (ViT) \citep{Caron2021}.
-The ViT is a transformer architecture \citep{Vaswani2017} reformulated to accept images as input \citep{Dosovitskiy2020} and Fort et al. \citep{Fort2021} recently explored pretrained ViT models to achieve high performance on a range of OOD detection tasks.
+The ViT is a Transformer architecture \citep{Vaswani2017} reformulated to accept images as input \citep{Dosovitskiy2020} and Fort et al. \citep{Fort2021} recently explored pretrained ViT models to achieve high performance on a range of OOD detection tasks.
 This motivates applying pretrained ViT models for OOD detection of chest X-ray images.
 \par
-The goal of this thesis is to investigate the performance of SSL methods on OOD detection of chest X-ray images and to analyze necessary adaptions of the methods to accept chest X-ray images as input.
+The goal of this thesis is to investigate the performance of SSL methods on OOD detection of chest X-ray images and to analyze necessary adaptations of the methods to accept chest X-ray images as input.
 Further, the performance of SSL methods is compared to supervised methods.
 The rest of this thesis is structured as follows: The next chapter introduces commonly used OOD detection methods and explains both ViTs and the SSL methods SimCLR and DINO.
 In the third chapter, the dataset is described.

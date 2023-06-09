@@ -15,7 +15,7 @@ When pretrained with DINO, the AUROC is on average 0.66 percentage points higher
 Only for the \textit{Fracture} class and \textit{Pleural Effusion}, the AUROC is higher (+0.74 pp and +2.77 pp respectively) for the CheXpert normalization compared to the ImageNet normalization.
 As indicated by the bold values, the ViT features of the discarded DINO projection head outperform the ViT features obtained by SimCLR for each of the six OOD pathologies.
 Figure \ref{fig:setting1-chexnorm-v-imgnorm-dino-barplot} shows the outperformance for the ImageNet normalization.
-The DINO AUROC values for the ImageNet normalization are consistently between 55\% and 62\% for all OOD pathologies, with a maximum of 61.23\% for the OOD pathology \textit{Pneumothorax}.
+The DINO AUROC values for the ImageNet normalization are consistently between 55\% and 62\% for all OOD pathologies, with a maximum of 61.2\% for the OOD pathology \textit{Pneumothorax}.
 The minimum AUROC value is 55.7\% for the OOD pathology \textit{Fracture}.
 %\par
 % Apart from the performance, the low standard deviation of the CheXpert dataset statistics ($\sigma=0.0349$), leads to a normalized input range of approximately [-17,14].
@@ -36,8 +36,8 @@ The results are summarized in Figure \ref{fig:auroc-vs-k}.
 For setting 1, the AUROC remains constant until $k=1000$ and then decreases.
 Setting 2 is mostly insensitive to the choice of $k$, but for values of $k>5000$, the AUROC decreases slightly.
 While the performance is slightly worse for the first two settings with an increasing value of $k$, the performance increases for setting 3, when the number of nearest neighbors used for feature similarity is higher.
-There is no clear consistency across the settings and the number of neighbors $k$ is set to 1 when evaluating settings 1 or 2.
-For setting 3, $k$ is set to the length of the corresponding in-distribution training set (\textit{Lung Opacity} and \textit{Pleural Effusion}).
+There is no clear consistency across the settings and the number of neighbors $k$ is set to 1 when evaluating the settings 1 or 2.
+For setting 3, $k$ is set to the length $N_3$ of the corresponding in-distribution training dataset (\textit{Lung Opacity} and \textit{Pleural Effusion}).
 \loadFigure{Figure:auroc-vs-k}
 \par
 % The impact of different image augmentations is now discussed.
@@ -45,8 +45,8 @@ For setting 3, $k$ is set to the length of the corresponding in-distribution tra
 % The authors in \citep{Azizi2021} added a rotation of 20 degrees to their augmentations.
 % We will also add a rotation of 20 degrees to the adopted DINO augmentations and compare the performance of both augmentation schemes.
 % \par
+A rotation between [-20, 20] degrees was added to the adopted DINO augmentations in the third experiment and the performance is compared to the augmentations without rotation.
 Figure \ref{fig:dino-rotate-augs-v-default-augs} summarizes the results of the third experiment.
-A rotation between [-20, 20] degrees was added to the adopted DINO augmentations and the performance is compared to the augmentations without rotation.
 For unsupervised OOD detection, the DINO augmentations outperform the rotation augmentations in all settings.
 However, the 1-NN mean accuracy is significantly higher on setting 2 when additional rotations are applied to the CheXpert images.
 On setting 3, there is no significant difference in training accuracy and the AUROC is also comparable.
@@ -75,7 +75,7 @@ $\text{Head}_1$ seems to attend to the heart region for the \textit{Cardiomegaly
 %\loadTable{Table:attention-maps}
 \par
 In the former part, the unsupervised performance of the pretrained models was investigated.
-It is now analyzed in experiment four how well the pretrained models perform, when labels are available to fine-tune a cross-entropy based classifier on top of the ViT encoder.
+It is now analyzed in experiment four how well the pretrained models perform, when labels are available to fine-tune a cross-entropy-based classifier on top of the ViT encoder.
 %To that end, another DINO model was pretrained on the whole CheXpert dataset.
 % The pretrained model weights are used as initializations for finetuning a cross-entropy based classifier on top of the ViT encoder.
 In this case, the performance is only evaluated on settings 2 and 3 in the first part, because setting 1 contains only one ID class and therefore no direct supervised classifier can be trained without modifications.
@@ -106,7 +106,7 @@ Experiment five compares the performance of ViT-S/16 and ViT-B/16 as backbone ar
 The results are summarized in Table \ref{table:vit-imagenet-model-size}.
 On setting 2, the MSP-based AUROC is the same for both model sizes with 65.9\% AUROC.
 Based on AUPRC, the Sup ViT-B model outperforms the Sup ViT-S model with 67.9\% AUPRC versus 66.8\% AUPRC.
-Using the Mahahalanobis distance as OOD score, the AUROC is 3 percentage points higher for the Sup ViT-B (66.7\% vs. 63.3\%).
+Using the Mahahalanobis distance as OOD score, the AUROC is 3.4 percentage points higher for the Sup ViT-B (66.7\% vs. 63.3\%).
 \par
 For setting 3, AUPRC and AUROC are slightly higher for the smaller architecture based on the MSP.
 However, the Sup ViT-B performs better than the Sup ViT-S when the Mahahalanobis distance is used as an OOD score.
@@ -148,5 +148,5 @@ The results are summarized in Figure \ref{fig:ood-fraction-avg}.
 \loadFigure{Figure:ood-fraction-fracture}
 \par
 In contrast to the other three mentioned OOD classes \textit{Pleural Effusion}, \textit{Cardiomegaly} and \textit{Pneumothorax}, outlier exposure leads to only a small performance increase for \textit{Fracture}.
-Even if the entire OOD dataset is available, the performance reaches a maximum of 59.0\% AUROC (unsupervised outlier exposure) and 59.9\% AUROC (supervised outlier exposure), which is only slightly above the baseline performance of 55.7\% AUROC.
+Even if the entire OOD dataset is available, the performance reaches 59.0\% AUROC (unsupervised outlier exposure) and 59.5\% AUROC (supervised outlier exposure), which is only slightly above the unsupervised performance of 56.4\% AUROC.
 The results are summarized in Figure \ref{fig:ood-fraction-fracture} and suggest that the classifier is not able to distinguish between \textit{No Finding} and the OOD pathology \textit{Fracture}.

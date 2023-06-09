@@ -9,7 +9,7 @@
 \subsection{Out-of-Distribution Detection}
 \label{section: Out-of-Distribution Detection}
 \subsubsection{General Task}
-Out-of-distribution detection is a method to filter test samples that significantly deviate from the training distribution \citep{Yang2021}.
+Out-of-distribution detection is a method to filter test samples that deviate from the training distribution \citep{Yang2021}.
 Those examples are considered out-of-distribution and reliable detection of such samples is indispensable for safety reasons \citep{Yang2021}.
 Because the definition of the OOD dataset is task-oriented, it is common to distinguish between near OOD and far OOD \citep{Winkens2020}.
 In the first case, ID and OOD datasets are (semantically) similar and in the second case, they are considered "unrelated" \citep{Winkens2020}.
@@ -72,12 +72,12 @@ The second component of ODIN is adding a preprocessing step for each test sample
 As preprocessing, small perturbations are added to the input image $x'$ \citep{Liang2018}.
 A gradient step is performed on the test input, resulting in a perturbed input $\tilde{x}'$ \citep{Liang2018}: 
 \begin{align}
-	\tilde{x}' = x' - \epsilon \text{sign}(-\nabla_x \log \text{max}_i  S_i(x',\tau)).
+	\tilde{x}' = x' - \epsilon \text{sign}(-\nabla_{x'} \log \text{max}_i  S_i(x',\tau)).
 \end{align}
 The parameter $\epsilon$ is the perturbation magnitude \citep{Liang2018}.
 Then, the perturbed input $\tilde{x}'$ is used to calculate the confidence score \citep{Liang2018}:
 \begin{align}
-	S_{ODIN}(x,\tau) = \max_i S_i(\tilde{x}',\tau).
+	S_{ODIN}(x',\tau) = \max_i S_i(\tilde{x}',\tau).
 \end{align}
 The temperature and perturbation size are tuned on validation data in the original paper and access to OOD samples is assumed \citep{Liang2018,Hsu2020}. 
 Although \citep{Liang2018} argue that the parameters are insensitive to the tuning data and thus transferable, this is different from MSP and Mahalanobis distance which do not require access to OOD samples.
@@ -87,10 +87,10 @@ When labels are not available, unsupervised methods can still be used to compute
 Suppose that $g(x)$ is the representation of an input $x$.
 Similar to \citep{Michels2023,Sun2022}, an OOD score can be constructed by applying the cosine similarity to a set of $k$-nearest neighbors.
 Let $k$ be the number of nearest neighbors.
-The training embeddings are denoted as $\{g(x_1),\dots,g(x_N)\}$ and the set of the $k$-nearest neighbors of a test sample $x'$ is denoted as $N_{x'} = \{g(x_{i_1}),\dots,g(x_{i_k})\}$, where $i_1,\dots,i_k$ are the corresponding $k$ training set indices.
+The training embeddings are denoted as $\{g(x_1),\dots,g(x_N)\}$ and the set of the $k$-nearest neighbors ($k$ most similar samples) of a test sample $x'$ is denoted as $N_{x'} = \{g(x_{i_1}),\dots,g(x_{i_k})\}$, where $i_1,\dots,i_k$ are the corresponding $k$ training set indices.
 The OOD score is calculated as \citep{Michels2023,Sun2022}
 \begin{align}
-	S_{NN}(x',k) = \frac{1}{k}\sum_{i=1}^k \text{sim}(x',N_{x'}(i)).
+	S_{NN}(x',k) = \frac{1}{k}\sum_{i=1}^k \text{sim}(g(x'),N_{x'}(i)).
 	\label{equation:knn-score}
 \end{align}
 The cosine similarity is used as the similarity measure, i.e. $\text{sim}(x,y) = \frac{x\cdot y}{\Vert x \Vert \Vert y \Vert}$ and in the case of $k=1$, the score is equivalent to the cosine similarity between the test sample and its nearest neighbor in \citep{Michels2023}.
@@ -106,13 +106,13 @@ Since the actual fine-grained OOD classes are essentially unknown, this thesis r
 In contrast, the second setting assumes that the (fine-grained) labels are known for all exposed outlier samples \citep{Fort2021,Roy2021}.
 The pretrained feature extractor with a linear classifier on top is fine-tuned on $I+O$ classes \citep{Fort2021}.
 In this case, the term used is \textit{supervised outlier exposure}.
-In both supervised and unsupervised outlier exposure, the OOD score for a test input $x'$ is computed as the sum over the class probability of the $I$ in-distribution classes \citep{Fort2021}:
+In both supervised and unsupervised outlier exposure, the OOD score for a test input $x'$ is computed as the sum over the class probabilities of the $I$ in-distribution classes \citep{Fort2021}:
 \begin{align}
-	S_{OE}(x') = \sum_{i=1}^{I}p(y=c|x') 
+	S_{OE}(x') = \sum_{i=1}^{I}p(y=c|x'). 
 \end{align}
 \subsubsection{OOD Detection on Chest X-ray Images}
 \label{section: OOD detection on Chest X-ray Images}
-Detecting erroneous inputs to a machine learning model is especially important in the medical domain.
+Detecting erroneous inputs for ML models is especially important in the medical domain.
 In general, OOD detection on chest X-ray images is a challenging task because variations between different pathologies are often nuanced \citep{Salehi2022}.
 Detecting OOD samples is directly connected to the usability of the model and to the safety of the patient.
 The authors in \citep{Cohen2019} demonstrate the former and develop \textit{Chester} as a disease prediction system for chest X-rays, where an integral pre-processing part of their pipeline is the detection of OOD samples through a reconstruction loss \citep{Dumoulin2017}. 
@@ -143,8 +143,8 @@ The results in \citep{Berger2021} are used as the supervised baseline.
 Vision Transformers are the reformulation of the Transformer architecture \cite{Vaswani2017} to images.
 Originally, sequences of natural language are split into tokens and then processed by the text Transformer \citep{Vaswani2017}.  
 Similarly, ViTs process images as a fixed number of flattened image patches \citep{Dosovitskiy2020}.
-Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced in this thesis with an emphasis on the encoder part, since only the encoder is used within the ViT architecture.
-Then, minor adaptions needed to accept images instead of text as input are presented.
+Although the Transformer is designed as an encoder-decoder architecture, the Transformer architecture is introduced in this thesis with an emphasis on the encoder part, since only the encoder is used within the ViT architecture \citep{Dosovitskiy2020}.
+Then, minor adaptations needed to accept images instead of text as input are presented.
 \par
 The input is assumed to be a sequence $(x_1,\dots,x_n)$, which is mapped to a continuous representation $z=(z_1,\dots,z_n)$ by the encoder \citep{Vaswani2017}.
 The encoder is an encoder \textit{stack} and consists of a stack of $L$ layers \citep{Vaswani2017}.
@@ -194,7 +194,7 @@ Multi-head attention allows the model to mutually attend to the knowledge of sev
 	\text{head}_i & = \text{Attention}(QW_i^Q,KW_i^K,VW_i^V), \\
 	& W_{i}^{Q}, W_{i}^{k} \in \mathbb{R}^{d_{model}\times d_k} , W_i^V \in \mathbb{R}^{d_{model} \times d_v}, W^O \in \mathbb{R}^{hd_v \times d_{model}}.	
 \end{align}
-After concatenating the attention of each head, the outputs are projected back onto the model dimension $d_{model}$ with the matrix $W^O$ and passed to the second sublayer of the Transformer encoder block \citep{Vaswani2017}.
+After concatenating the attention of each head, the outputs are projected back onto the model dimension $d_{model}$ with the matrix $W^O$ and are passed to the second sublayer of the Transformer encoder block \citep{Vaswani2017}.
 \par
 The second sublayer is a fully connected neural network with two linear layers separated by a ReLU activation \citep{Vaswani2017}.
 The output of this feed-forward network is also wrapped by a residual connection, followed by layer normalization, as explained above.
@@ -207,7 +207,7 @@ Thus, the second sublayer is implemented by the following formula:
 In previous paragraphs, the input sequence of the Transformer was assumed to be a one-dimensional text sequence (i.e. a sentence).
 The following paragraph introduces necessary architectural modifications to allow 2D images as inputs \citep{Dosovitskiy2020}.
 \par
-Assume a 2D image $x\in \mathbb{R}^{H\times W \times C }$ where $(H, W)$ is the shape (height $\times$ width) and C is the number of (color) channels of the image expressed as a 3D tensor \citep{Dosovitskiy2020}.
+Assume a 2D image $x\in \mathbb{R}^{H\times W \times C }$ where $(H, W)$ is the shape (height $\times$ width) and $C$ is the number of (color) channels of the image expressed as a 3D tensor \citep{Dosovitskiy2020}.
 The image is now divided into image patches of size $(P, P)$ and the input tensor $x$ is flattened into a sequence of two-dimensional patches $x_p \in \mathbb{R}^{N \times (P^2C)}$ where the number of input patches is computed as $N = HW/P^2$ \citep{Dosovitskiy2020}.
 Each patch is spatially flattened and concatenated across the color channels \citep{Dosovitskiy2020}.
 The sequence of flattened image patches is projected to the constant model dimension $d_{model}$ with a linearly trainable patch embedding \citep{Dosovitskiy2020,Vaswani2017}.
@@ -239,6 +239,7 @@ SimCLR is a training schema for learning contrastive visual representations \cit
 Contrastive learning is a learning objective that encourages augmented versions of the same training samples to be close together in an embedding space while simultaneously repelling those embeddings from different samples \citep{Jaiswal2020}.
 SimCLR is self-supervised, i.e. no label knowledge is assumed \citep{Chen2020}.
 The framework consists of four main parts and the notation of the original paper is adapted \citep{Chen2020}.
+Figure \ref{fig:simclr-arch} depicts the architecture of SimCLR.
 \par
 In the first component, data augmentation is applied to the input image, resulting in two randomly altered image views $\tilde{x}_i$ and $\tilde{x}_j$ that form a positive pair (i.e. an instance of the same class) and are passed to the encoder network \citep{Chen2020}.
 The original SimCLR image augmentations consist of \textit{random resized cropping}, \textit{random color distortions} and \textit{random Gaussian blur} \citep{Chen2020}.
@@ -283,9 +284,9 @@ A major difference between the DINO paradigm and the original KD concept is that
 Both teacher and student networks are parametrized by a weight vector $\theta_t$ and $\theta_s$ respectively.
 The output $g_{\theta_s}$ of the student network is trained to equal the output $g_{\theta_t}$ of the teacher network \citep{Caron2021}.
 \par
-Multiple views of an image $x$ are passed through each network, given both student and teacher network.
+Multiple views of an image $x$ are passed through each network, given both student and teacher networks.
 The architectural choice of each network is discussed after giving an overview of the training objective.
-The output of both teacher- and student network is normalized with a softmax function, which results in two $D$-dimensional probability distributions $P_s$ and $P_t$ \citep{Caron2021}:
+The outputs of both teacher- and student network are normalized with a softmax function, which results in two $D$-dimensional probability distributions $P_s$ and $P_t$ \citep{Caron2021}:
 \begin{align}
 	P_{s}(x)^{(i)} = \frac{\exp(g_{\theta_{s}}(x)^{(i)}/\tau_{s})}{\sum_{d=1}^{D}\exp(g_{\theta_{s}}(x)^{(d)}/\tau_{s})}, \hspace{8pt} i=1,\dots,D, \\
 	P_{t}(x)^{(i)} = \frac{\exp(g_{\theta_{t}}(x)^{(i)}/\tau_{t})}{\sum_{d=1}^{D}\exp(g_{\theta_{t}}(x)^{(d)}/\tau_{t})}, \hspace{8pt} i=1,\dots,D.
@@ -332,10 +333,10 @@ First, the backbone $f$ is applied, and the resulting features are passed to the
 \begin{equation}
 \text{GELU}(x) = x \Phi(x).
 \end{equation}
-The cumulative distribution $\Phi(x)$ of the standard normal probability mass functions is used inside the GELU function, which is applied after each of the first two layers \citep{Hendrycks2016b}.
+The cumulative distribution $\Phi(x)$ of the standard normal probability mass function is used inside the GELU function, which is applied after each of the first two layers \citep{Hendrycks2016b}.
 The last layer of the projection head does \textit{not} use a GELU activation and projects the features to a bottleneck dimension of 256 \citep{Caron2021}.
 Then, the output is $\ell_2$-normalized ($x \leftarrow x/\Vert x \Vert_2$) so that each vector has unit norm \citep{Caron2021}.
-Finally, the output is passed to a fully connected layer of dimension $D$ with weight normalization.
+Finally, the output is passed to a fully connected layer of dimension $D$ with weight normalization \citep{Salimans2016}.
 Weight normalization speeds up convergence by reformulating the weight vectors in a neural net with different parameters and was proposed in \citep{Salimans2016}.
 The weights $w$ of a neural net are reparametrized to a new parameter vector $v$ of the same dimension as $w$ and with a scalar parameter $g$ \citep{Salimans2016}:
 \begin{equation}
@@ -435,11 +436,11 @@ An uncertainty label is assigned if there is no positive mention and at least on
 Negative labels are only assigned if at least one mention label is negative \citep{Irvin2019}. 
 If there is overall no mention of an observation, a \textit{blank} label is set as the label of the respective class \citep{Irvin2019}.
 Medical imaging datasets differ from commonly used computer vision benchmarks like CIFAR-10 \citep{Krizhevsky2009a}, CIFAR-100 \citep{Krizhevsky2009b} or ImageNet \citep{Deng2009} in terms of appearance and variability of input images.
-Chest X-ray images are grayscaled.
+Chest X-ray images are grayscale.
 As only the upper body part is included, there is also low input variability.
 Further, classifying the underlying pathologies is challenging for certified board radiologists and depends on the pathology.
 On the CheXpert dataset, the miss rate (False Negative Rate) for classifying \textit{Consolidation} can range from 55\% to 52\% or 37\% depending on the human radiologist assessing the X-ray image \citep{Irvin2019}, where lower values indicate good performance.
-On the \textit{Atelectasis} class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance \citep{Irvin2019}.
+In the \textit{Atelectasis} class, expert performance might be as high as 92\% precision (Positive Predictive Value) with higher values corresponding to better performance \citep{Irvin2019}.
 In addition, a study has shown that performance on the same pathology can also vary between X-ray datasets \citep{Majkowska2020}.
 \loadFigure{Figure:multilabel-struc}
 \par
@@ -469,7 +470,7 @@ The label names are taken from the CheXpert dataset \citep{Irvin2019} and adhere
 \par
 \textit{Cardiomegaly} is the first condition of interest.
 It is a general term for heart enlargements, where the cardiothoracic ratio is often used to measure the severity of the increase in size.
-In \citep{Dahnert2011} the ratio is defined as the ratio between heart size and thorax width. 
+In \citep{Dahnert2011}, the ratio is defined as the ratio between heart size and thorax width. 
 Values between 0.45 - 0.55 are marked as mild \textit{Cardiomegaly} and values above 0.55 are considered as severe cases of \textit{Cardiomegaly} \citep{Dahnert2011}.
 \textit{Pneumothorax} is a medical condition related to the pulmonary pleura and is used as an ID pathology.
 It is defined as a loss of negative pressure in the pleural space, which can lead to a lung collapse \citep{Dahnert2011, Hansell2008}.
@@ -480,7 +481,8 @@ If the mentioned pleural space is filled with an aggregation of fluid, the condi
 \textit{Lung Opacity} is a collective term and refers to lung areas that appear more opaque than the surrounding area \citep{Hansell2008}.
 Because the lung appears dark on radiographs, opaque areas are white in contrast to the lung appearance.
 It should be emphasized that the term is non-specific and is not descriptive in terms of neither the extent nor the origin of the pathology \citep{Hansell2008}.
-\textit{Pneumonia} is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue that also appears as a \textit{Lung Opacity} on chest X-rays \citep{Hansell2008}.
+\textit{Pneumonia} is another lung disease and refers as a broad term to an infection within the lung airspace or the interstitial lung tissue \citep{Hansell2008}.
+This disease also appears as a \textit{Lung Opacity} on chest X-rays \citep{Hansell2008}.
 A \textit{Rib Fracture} is the term for a broken rib bone.
 Sample images of the conditions are depicted in Figure \ref{fig:pathologies}.
 %\loadFigure{Figure:pathologies} 
@@ -492,7 +494,7 @@ Sample images of the conditions are depicted in Figure \ref{fig:pathologies}.
 \subsubsection{Pretraining and Unsupervised OOD detection Framework}
 SSL models are pretrained on settings 1-3 (see \ref{section: ID-OOD splits}) and for a comparison on the entire CheXpert dataset.
 All image views are used for pretraining.
-During  DINO training, the mean accuracy of a $1$-knn classifier on top of the ViT features is evaluated, to monitor the training progress \citep{Wu2018,Caron2021}.
+During DINO training, the mean ID accuracy of a $1$-knn classifier on top of the ViT features is evaluated, to monitor the training progress \citep{Wu2018,Caron2021}.
 Then, the projection head is removed \citep{Caron2021,Chen2020} and the features of the pretrained ViT encoder are used for unsupervised OOD detection.
 The training and test sets are passed through the ViT encoder, and the $k$-NN feature similarity between training and test features is used as the unsupervised OOD detection score (see Equation \ref{equation:knn-score}).
 Like Sun et al. \citep{Sun2022}, the features are $\ell_2$-normalized before calculating the cosine similarity.
@@ -502,7 +504,7 @@ To also compare with the supervised baseline of \citep{Berger2021}, the pretrain
 The MLP head consists of two fully connected layers with a hidden dimension of 256 and an output dimension set to the number of ID classes.
 Between the linear layers, dropout is applied with a dropout rate of 0.5 \citep{Srivastava2014} followed by ReLU activation \citep{Agarap2018}.
 The loss function is set to the cross-entropy loss. 
-To detect OOD samples, MSP and Mahalanobis distance are used as supervised confidence scores (see section \ref{section: Supervised Out-of-Distribution Detection})
+To detect OOD samples, MSP and Mahalanobis distance are used as supervised confidence scores (see section \ref{section: Supervised Out-of-Distribution Detection}).
 Fine-tuned models are referred to as Sup ViT.
 \par
 \subsubsection{Augmentations for Pretraining}
@@ -511,7 +513,7 @@ Minor adjustments are made to the augmentations used for pretraining.
 For example, \textit{Gaussian blur} is not applied because local textures and important pathological areas may not be well-defined if applied \citep{Azizi2021}.
 Furthermore, saturation and hue are also set to zero for the \textit{random color distortions}, since hue and saturation are not meaningful for grayscale images with only one color channel.
 The augmentations used for SimCLR are \textit{random resized crop} and \textit{random color distortions}.
-If not mentioned otherwise, global crops scale and local crops scale of DINO models are copied from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{github} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
+If not mentioned otherwise, global crops scale and local crops scale of DINO models are copied from the pretraining arguments of the official \href{https://github.com/facebookresearch/dino#pretrained-models}{GitHub} implementation and are set to [0.25, 1] and [0.05, 0.25] respectively. 
 The augmentations used for DINO are \textit{random resized cropping}, \textit{random color distortions} and \textit{random horizontal flipping}.
 In addition, an ablation study is evaluated and the (adapted) DINO augmentations are extended by a random rotation of between [-20, 20] degrees and referred to as \textit{rotate augmentations}. 
 This modification is inspired by \citep{Azizi2021} and is compared to the previously adapted augmentations.
@@ -556,8 +558,9 @@ When training on the entire CheXpert dataset, $\tau_t$ is set to 0.07 and the ma
 Global crops are processed with an image size of $224\times224$ pixels and local crops are processed with an image size of $96\times96$.
 \par
 Sup ViTs are trained for 100 epochs with a batch size of 256 and a learning rate of 3.0e-04. 
-Stochastic Gradient descent is used with a momentum of 0.9 and a weight decay of 0.0001 to minimize the loss.
+Stochastic gradient descent is used with a momentum of 0.9 and a weight decay of 0.0001 to minimize the loss.
 The image size is set to $224\times224$ pixels.
+To train the Sup ViT, \textit{random resized crop}, \textit{random horizontal flip}, \textit{random color distortions} and \textit{random rotation} are used as augmentations and the crop scale is set to [0.8, 1].
 \par
 For outlier exposure the same setup is used as for the Sup ViT.
 OOD samples are provided during training with a percentage of $\text{OOD}_\text{fraction}$ and are oversampled by a factor of $1/(\text{OOD}_\text{fraction})$.
@@ -574,7 +577,7 @@ SimCLR and DINO are pretrained with ImageNet normalization and CheXpert normaliz
 \par
 \textbf{Experiment 2: Choice of $k$ for feature similarity.} The performance of feature similarity as an unsupervised OOD score depends on the choice of the number of nearest neighbors $k$.
 In the second experiment, the performance of feature similarity as an unsupervised OOD detection score is evaluated for different values of $k$.
-Pretraining is performed on setting 1-3 and the pretrained models are evaluated on all settings.
+Pretraining is performed on settings 1-3 and the pretrained models are evaluated on all settings.
 \par
 \textbf{Experiment 3: Adding rotations to the augmentations.}
 The adopted DINO augmentations (see \ref{section: augmentations for pretraining}) are used in the former experiments.
